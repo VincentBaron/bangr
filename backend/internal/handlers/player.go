@@ -7,7 +7,7 @@ import (
 	"github.com/VincentBaron/bangr/backend/internal/models"
 	"github.com/VincentBaron/bangr/backend/internal/services"
 	"github.com/gin-gonic/gin"
-	"github.com/zmb3/spotify"
+	"github.com/zmb3/spotify/v2"
 )
 
 type PlayerHandler struct {
@@ -21,7 +21,7 @@ func NewPlayerHandler(playerService *services.PlayerService) *PlayerHandler {
 }
 
 func (h *PlayerHandler) Player(c *gin.Context) {
-	spotifyClient, ok := c.MustGet("spotifyClient").(spotify.Client)
+	spotifyClient, ok := c.MustGet("spotifyClient").(*spotify.Client)
 	if !ok {
 		log.Fatalf("Error getting Spotify client from context")
 	}
@@ -31,7 +31,7 @@ func (h *PlayerHandler) Player(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	player, err := h.playerService.HandlePlayer(spotifyClient, queryParams)
+	player, err := h.playerService.HandlePlayer(c, spotifyClient, queryParams)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

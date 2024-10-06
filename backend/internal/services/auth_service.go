@@ -1,12 +1,16 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/VincentBaron/bangr/backend/internal/config"
@@ -14,7 +18,9 @@ import (
 	"github.com/VincentBaron/bangr/backend/internal/repositories"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/zmb3/spotify"
+	"github.com/google/uuid"
+	"github.com/zmb3/spotify/v2"
+	spotifyauth "github.com/zmb3/spotify/v2/auth"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -28,26 +34,30 @@ func NewAuthService(userRepo *repositories.Repository[models.User]) *AuthService
 	}
 }
 
+// In-memory map to store state to userID mapping
+var stateToUserIDMap = struct {
+	sync.RWMutex
+	m map[string]uuid.UUID
+}{m: make(map[string]uuid.UUID)}
+
 func (s *AuthService) CallbackService(c *gin.Context) error {
-	code := c.Query("code")
 	state := c.Query("state")
 
-	// Create a new authenticator
-	auth := spotify.NewAuthenticator(config.Conf.SpotifyRedirectURL, spotify.ScopeUserReadPrivate)
-	auth.SetAuthInfo(config.Conf.SpotifyClientID, config.Conf.SpotifyClientSecret)
-
-	// Exchange the code for a token
-	token, err := auth.Exchange(code)
-	if err != nil {
-		log.Println(err)
-		return fmt.Errorf("failed to exchange code for token: %w", err)
+	// Retrieve the userID using the state
+	stateToUserIDMap.RLock()
+	userID, exists := stateToUserIDMap.m[state]
+	stateToUserIDMap.RUnlock()
+	if !exists {
+		log.Println("Invalid state parameter")
+		return fmt.Errorf("invalid state parameter")
 	}
 
-	// Convert the state parameter to a uint
-	userID, err := strconv.ParseUint(state, 10, 64)
+	// Create a new authenticator
+	auth := spotifyauth.New(spotifyauth.WithRedirectURL(config.Conf.SpotifyRedirectURL), spotifyauth.WithScopes(spotifyauth.ScopeUserReadPrivate), spotifyauth.WithClientID(config.Conf.SpotifyClientID), spotifyauth.WithClientSecret(config.Conf.SpotifyClientSecret))
+	token, err := auth.Token(c, state, c.Request)
 	if err != nil {
 		log.Println(err)
-		return fmt.Errorf("failed to parse state parameter: %w", err)
+		return fmt.Errorf("failed to get token: %w", err)
 	}
 
 	// Update the user record with the access token and refresh token
@@ -57,17 +67,25 @@ func (s *AuthService) CallbackService(c *gin.Context) error {
 		return fmt.Errorf("failed to find user: %w", err)
 	}
 
-	client := spotify.Authenticator{}.NewClient(token)
-	spotifyUser, err := client.CurrentUser()
+	httpClient := spotifyauth.New().Client(c, token)
+	client := spotify.New(httpClient)
+	spotifyUser, err := client.CurrentUser(c)
 	if err != nil {
 		log.Println(err)
 		return fmt.Errorf("failed to get current user: %w", err)
+	}
+
+	playlist, err := client.CreatePlaylistForUser(context.Background(), spotifyUser.ID, "Bangerz 🔥", "Add your favorite song every 3 days to listen to other people's favorite songs!", false, false)
+	if err != nil {
+		log.Println(err)
+		return fmt.Errorf("failed to create playlist: %w", err)
 	}
 
 	user.SpotifyToken.AccessToken = token.AccessToken
 	user.SpotifyToken.RefreshToken = token.RefreshToken
 	user.SpotifyToken.Expiry = token.Expiry
 	user.SpotifyUserID = spotifyUser.ID
+	user.SpotifyPlaylistLink = playlist.ID.String()
 
 	if err := s.userRepository.Save(user); err != nil {
 		log.Println(err)
@@ -98,9 +116,17 @@ func (s *AuthService) Signup(c *gin.Context, payload *models.User) (*string, err
 		return nil, fmt.Errorf("failed to save user: %w", err)
 	}
 
-	state := strconv.FormatUint(uint64(user.ID), 10) // Convert the user's ID to a string
+	// Generate a unique state
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	state := strconv.FormatUint(rng.Uint64(), 10)
+
+	// Store the state to userID mapping
+	stateToUserIDMap.Lock()
+	stateToUserIDMap.m[state] = user.ID
+	stateToUserIDMap.Unlock()
+
 	// Redirect the user to the Spotify authorization page
-	scopes := "playlist-modify-private user-read-currently-playing user-modify-playback-state user-read-playback-state"
+	scopes := strings.Join(config.Conf.SpotifyScopes, " ")
 	encodedScopes := url.QueryEscape(scopes)
 	url := "https://accounts.spotify.com/authorize?response_type=code" +
 		"&client_id=" + config.Conf.SpotifyClientID +
@@ -120,7 +146,7 @@ func (s *AuthService) Login(c *gin.Context, username, password string) error {
 		// handle error
 	}
 
-	if user.ID == 0 {
+	if user.ID == uuid.Nil {
 		log.Println("User not found")
 		return fmt.Errorf("user not found")
 	}

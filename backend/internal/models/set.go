@@ -1,13 +1,39 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Set struct {
-	gorm.Model
-	Link   string `json:"link"`
-	UserID uint   `gorm:"not null"`
+	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"-"`
+	Name      string    `json:"name"`
+	Link      string    `json:"link"`
+	UserID    uuid.UUID `gorm:"not null" json:"-"`
+	Tracks    []Track   `json:"tracks"`
+}
+
+type Track struct {
+	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
+	SetID     uuid.UUID `json:"-"`
+	Name      string    `json:"name"`
+	Artist    string    `json:"artist"`
+	URI       string    `json:"uri"`
+	Likes     []Like    `json:"likes"`
+	Liked     bool      `json:"liked" gorm:"-"`
+}
+
+type Like struct {
+	ID      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
+	UserID  uuid.UUID `json:"-" gorm:"uniqueIndex:idx_user_track"`
+	TrackID uuid.UUID `json:"track_id" gorm:"uniqueIndex:idx_user_track"`
 }
 
 type SetDetails struct {
-	Tracks []string `json:"tracks"`
+	Tracks []Track `json:"tracks"`
 }

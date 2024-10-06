@@ -3,12 +3,14 @@ package models
 import (
 	"time"
 
-	"gorm.io/gorm"
+	"github.com/google/uuid"
 )
 
 type SpotifyToken struct {
-	gorm.Model
-	UserID       uint      `gorm:"notnull;unique"` // Ensure uniqueness if one-to-one
+	ID           uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	UserID       uuid.UUID
 	AccessToken  string    `json:"access_token"`
 	RefreshToken string    `json:"refresh_token"`
 	Expiry       time.Time `json:"expiry"`

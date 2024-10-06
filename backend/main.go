@@ -44,10 +44,11 @@ func main() {
 	// Initialize repositories
 	userRepository := repositories.NewRepository[models.User](config.DB)
 	setRepository := repositories.NewRepository[models.Set](config.DB)
+	trackRepository := repositories.NewRepository[models.Track](config.DB)
 
 	// Initialize services
 	authService := services.NewAuthService(userRepository)
-	setService := services.NewSetService(setRepository)
+	setService := services.NewSetService(setRepository, trackRepository)
 	playerService := services.NewPlayerService()
 
 	// Initialize handlers
@@ -63,9 +64,9 @@ func main() {
 	r.POST("/login", authHandler.Login)
 	r.GET("/callback", authHandler.CallbackHandler)
 	r.GET("/sets", middleware.RequireAuth, setHandler.GetSets)
-	r.GET("/sets/:id", middleware.RequireAuth, setHandler.GetSet)
 	r.POST("/sets", middleware.RequireAuth, setHandler.CreateSet)
 	r.GET("/player", middleware.RequireAuth, playerHandler.Player)
+	r.PUT("/tracks/:id/like", middleware.RequireAuth, setHandler.LikeTrack)
 
 	// r.GET("/status", handler.handleStatus)
 	// r.POST("/store-token", storeTokenHandler)
