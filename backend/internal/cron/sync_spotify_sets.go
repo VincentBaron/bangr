@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/VincentBaron/sets/backend/internal/config"
-	"github.com/VincentBaron/sets/backend/internal/models"
-	"github.com/VincentBaron/sets/backend/internal/repositories"
+	"github.com/VincentBaron/bangr/backend/internal/config"
+	"github.com/VincentBaron/bangr/backend/internal/models"
+	"github.com/VincentBaron/bangr/backend/internal/repositories"
 	"github.com/google/uuid"
 	"github.com/robfig/cron"
 	"github.com/zmb3/spotify/v2"

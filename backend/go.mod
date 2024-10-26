@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
+	github.com/robfig/cron v1.2.0
 	github.com/zmb3/spotify/v2 v2.4.2
 	golang.org/x/crypto v0.28.0
 	golang.org/x/oauth2 v0.23.0
