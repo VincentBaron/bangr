@@ -56,7 +56,7 @@ export default function SetsPage() {
             className="w-1/3 border border-red-500 inline-flex m-4 justify-center"
           >
             {index === 1 ? (
-              <SpotifyPlaylist set={set} />
+              <SpotifyPlayer set={set} />
             ) : (
               <SpotifyPlaylist set={set} />
             )}

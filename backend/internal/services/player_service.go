@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/VincentBaron/bangr/backend/internal/models"
 	"github.com/gin-gonic/gin"
 	"github.com/zmb3/spotify/v2"
@@ -66,14 +68,16 @@ func (s *PlayerService) HandlePlayer(c *gin.Context, spotifyClient *spotify.Clie
 	case models.PLayerActivate:
 		err = spotifyClient.TransferPlayback(c, params.DeviceID, false)
 		if err != nil {
+			fmt.Println("yolo1")
 			return nil, err
 		}
-		err = spotifyClient.PlayOpt(c, &spotify.PlayOptions{
-			PlaybackContext: (*spotify.URI)(&params.PlaylistLink),
-		})
-		if err != nil {
-			return nil, err
-		}
+		// err = spotifyClient.PlayOpt(c, &spotify.PlayOptions{
+		// 	PlaybackContext: (*spotify.URI)(&params.PlaylistLink),
+		// })
+		// if err != nil {
+		// 	fmt.Println("yolo2")
+		// 	return nil, err
+		// }
 	default:
 		currentlyPlaying, err = spotifyClient.PlayerCurrentlyPlaying(c)
 		if err != nil {
