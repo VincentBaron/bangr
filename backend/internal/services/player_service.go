@@ -71,13 +71,6 @@ func (s *PlayerService) HandlePlayer(c *gin.Context, spotifyClient *spotify.Clie
 			fmt.Println("yolo1")
 			return nil, err
 		}
-		// err = spotifyClient.PlayOpt(c, &spotify.PlayOptions{
-		// 	PlaybackContext: (*spotify.URI)(&params.PlaylistLink),
-		// })
-		// if err != nil {
-		// 	fmt.Println("yolo2")
-		// 	return nil, err
-		// }
 	default:
 		currentlyPlaying, err = spotifyClient.PlayerCurrentlyPlaying(c)
 		if err != nil {

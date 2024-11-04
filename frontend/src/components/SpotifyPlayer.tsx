@@ -1,18 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
-import { Set } from "../pages/SetsPage";
-import { Track } from "../pages/SetsPage";
+import { Set, Track } from "../pages/SetsPage";
+import { usePlayer } from "../context/PlayerContext";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 interface SpotifyPlayerProps {
   set: Set;
-}
-
-declare global {
-  interface Window {
-    onSpotifyWebPlaybackSDKReady: () => void;
-    Spotify: any;
-  }
 }
 
 interface PlayerState {
@@ -29,45 +24,13 @@ interface PlayerState {
 export default function SpotifyPlayer({ set }: SpotifyPlayerProps) {
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const playerRef = useRef<any>(null);
+  const { player } = usePlayer();
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.id = "spotify-player";
-    script.src = "https://sdk.scdn.co/spotify-player.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    window.onSpotifyWebPlaybackSDKReady = () => {
-      if (!playerRef.current) {
-        const access_token: string = Cookies.get(
-          "SpotifyAuthorization"
-        ) as string;
-        const player = new window.Spotify.Player({
-          name: "Web Playback SDK Quick Start Player",
-          getOAuthToken: (cb: (token: string) => void) => {
-            cb(access_token);
-          },
-        });
-
-        playerRef.current = player;
-
-        player.addListener("ready", ({ device_id }: { device_id: string }) => {
-          console.log("Ready with Device ID", device_id);
-          axios.get(
-            `http://localhost:8080/player?action=activate&device_id=${device_id}&&playlist_link=${set.link}`,
-            { withCredentials: true }
-          );
-        });
-
-        player.addListener(
-          "not_ready",
-          ({ device_id }: { device_id: string }) => {
-            console.log("Device ID has gone offline", device_id);
-          }
-        );
-
-        player.addListener("player_state_changed", (state: PlayerState) => {
+    if (player) {
+      (player as any).addListener(
+        "player_state_changed",
+        (state: PlayerState) => {
           if (state) {
             setPlayingTrack({
               id: state.track_window.current_track.id,
@@ -78,46 +41,39 @@ export default function SpotifyPlayer({ set }: SpotifyPlayerProps) {
             });
             setIsPlaying(!state.paused);
           }
-        });
+        }
+      );
+    }
+  }, [player]);
 
-        player.connect();
-      }
-    };
-  }, [set]);
-
-  const togglePlayPause = () => {
-    console.log("playing track uri" + playingTrack?.uri);
-    console.log("set track uri" + set.tracks[0].uri);
-    const player = playerRef.current;
+  const togglePlayPause = useCallback(() => {
     if (player) {
       player
         .togglePlay()
         .then(() => {
-          setIsPlaying(!isPlaying);
+          setIsPlaying((prev) => !prev);
         })
         .catch((error: any) => {
           console.error("Failed to toggle play/pause", error);
         });
     }
-  };
+  }, [player]);
 
-  const playNextTrack = () => {
-    const player = playerRef.current;
+  const playNextTrack = useCallback(() => {
     if (player) {
       player.nextTrack().catch((error: any) => {
         console.error("Failed to play next track", error);
       });
     }
-  };
+  }, [player]);
 
-  const playPreviousTrack = () => {
-    const player = playerRef.current;
+  const playPreviousTrack = useCallback(() => {
     if (player) {
       player.previousTrack().catch((error: any) => {
         console.error("Failed to play previous track", error);
       });
     }
-  };
+  }, [player]);
 
   const likeSong = (trackID: string) => () => {
     axios.put(
@@ -127,59 +83,53 @@ export default function SpotifyPlayer({ set }: SpotifyPlayerProps) {
     );
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === "Space") {
+        event.preventDefault();
+        togglePlayPause();
+      } else if (event.code === "ArrowDown") {
+        event.preventDefault();
+        playNextTrack();
+      } else if (event.code === "ArrowUp") {
+        event.preventDefault();
+        playPreviousTrack();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [togglePlayPause, playNextTrack, playPreviousTrack]);
+
   return (
-    <div className="flex flex-col items-center">
-      {playingTrack && (
-        <div className="border border-gray-300 p-4 mb-10 my-2 w-full max-w-md bg-purple-200">
-          <div className="flex justify-between items-center">
-            <div className="flex-1 truncate">
-              <span className="text-blue-500">{playingTrack.name}</span>
-              <span className="mx-2">-</span>
-              <span className="text-black">{playingTrack.artist}</span>
-            </div>
-            <div>
-              {playingTrack.uri !== set?.tracks?.[0]?.uri && (
-                <button className="btn-spotify" onClick={playPreviousTrack}>
-                  PREV
-                </button>
-              )}
-              <button className="btn-spotify mx-2" onClick={togglePlayPause}>
-                {isPlaying ? "PAUSE" : "PLAY"}
-              </button>
-              {playingTrack.uri !==
-                set?.tracks?.[set.tracks.length - 1]?.uri && (
-                <button className="btn-spotify" onClick={playNextTrack}>
-                  NEXT
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      {set &&
-        set.tracks?.map((track) => (
+    <Card className="w-full max-w-md mx-auto my-4">
+      <CardContent>
+        {set.tracks?.map((track) => (
           <div
             key={track.id}
-            className={`border border-gray-300 p-4 my-2 w-full max-w-md flex justify-between items-center ${
+            className={`flex items-center justify-between py-2 px-4 rounded-lg transition-all ${
               playingTrack && playingTrack.uri === track.uri
-                ? "bg-yellow-200"
-                : ""
+                ? isPlaying
+                  ? "bg-gray-100 shadow-md animate-pulse"
+                  : "bg-gray-100 shadow-md"
+                : "hover:bg-gray-50"
             }`}
           >
-            <div className="flex-1 truncate">
-              <span className="text-blue-500">{track.name}</span>
-              <span className="mx-2">-</span>
-              <span className="text-black">{track.artist}</span>
+            <div className="flex items-center">
+              <div>
+                <p className="text-blue-500">{track.name}</p>
+                <p className="text-gray-500">{track.artist}</p>
+              </div>
             </div>
-            {track.liked ? (
-              <p className="text-green-500">Liked</p>
-            ) : (
-              <button className="btn-spotify" onClick={likeSong(track.id)}>
-                Like
-              </button>
-            )}
+            <Button variant="outline" size="sm" onClick={likeSong(track.id)}>
+              {track.liked ? "Liked" : "Like"}
+            </Button>
           </div>
         ))}
-    </div>
+      </CardContent>
+    </Card>
   );
 }
