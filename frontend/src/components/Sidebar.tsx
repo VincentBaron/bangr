@@ -54,7 +54,7 @@ const Sidebar: React.FC = () => {
   ) || { amount: 0, winners: 0 };
 
   return (
-    <div className="w-1/4 p-4 box-border">
+    <div className="h-full p-4 box-border">
       <Card className="h-full flex flex-col bg-white shadow-lg">
         <CardContent className="flex flex-col h-full overflow-hidden">
           {/* PrizePool Section */}

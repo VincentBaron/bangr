@@ -6,19 +6,21 @@ import Sidebar from "./components/Sidebar";
 function App() {
   return (
     <PlayerProvider>
-      <div className="flex flex-col min-h-screen">
-        <header className="flex justify-start p-4">
-          <img
-            src="../public/assets/logo.svg" // Ensure this path is correct
-            className="h-20 w-20 absolute" // Increased size
-          />
-        </header>
-        <main className="flex-grow flex overflow-hidden">
-          <div className="flex-grow flex items-center justify-center">
+      <div className="grid grid-cols-[1fr_400px] min-h-screen w-full">
+        <div className="flex items-center p-4 w-full flex-col relative">
+          <div className="flex items-center absolute left-0">
+            <img
+              src="../public/assets/logo.svg" // Ensure this path is correct
+              className="h-20 w-20" // Increased size
+              alt="Website Logo"
+            />
+            <h1 className="text-4xl font-bold ml-4">Bangr</h1>
+          </div>
+          <div className="flex justify-center items-center flex-grow w-full">
             <SetsPage />
           </div>
-          <Sidebar />
-        </main>
+        </div>
+        <Sidebar />
       </div>
     </PlayerProvider>
   );
