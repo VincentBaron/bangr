@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
 import { usePlayer } from "../context/PlayerContext";
 import SpotifyPlaylist from "../components/SpotifyPlaylist";
+import PlayerControls from "../components/PlayerControls";
 
 export interface Track {
   id: string;
@@ -23,6 +24,7 @@ export default function SetsPage() {
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
   const { player, deviceId } = usePlayer();
   const [transitionDirection, setTransitionDirection] = useState<string>("");
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   useEffect(() => {
     axios
@@ -51,14 +53,34 @@ export default function SetsPage() {
     }
   }, [player, deviceId, selectedIndex, sets]);
 
-  const handlePrev = () => {
+  const handlePrevPlaylist = () => {
     setTransitionDirection("left");
     setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
+    setIsPlaying(true);
   };
 
-  const handleNext = () => {
+  const handleNextPlaylist = () => {
     setTransitionDirection("right");
     setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets.length - 2));
+    setIsPlaying(true);
+  };
+
+  const handlePrevTrack = () => {
+    if (player) {
+      player.previousTrack().catch((error: any) => {
+        console.error("Failed to play previous track", error);
+      });
+    }
+    setIsPlaying(true);
+  };
+
+  const handleNextTrack = () => {
+    if (player) {
+      player.nextTrack().catch((error: any) => {
+        console.error("Failed to play next track", error);
+      });
+    }
+    setIsPlaying(true);
   };
 
   const getVisibleSets = () => {
@@ -71,24 +93,8 @@ export default function SetsPage() {
       }));
   };
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === "ArrowLeft") {
-        handlePrev();
-      } else if (event.code === "ArrowRight") {
-        handleNext();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [handlePrev, handleNext]);
-
   return (
-    <div className="overflow-hidden  w-full">
+    <div className="overflow-hidden w-full">
       <div
         className={`flex justify-center transition-transform duration-300 items-center ${
           transitionDirection === "left"
@@ -104,6 +110,14 @@ export default function SetsPage() {
           </div>
         ))}
       </div>
+      <PlayerControls
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        handlePrevPlaylist={handlePrevPlaylist}
+        handleNextPlaylist={handleNextPlaylist}
+        handlePrevTrack={handlePrevTrack}
+        handleNextTrack={handleNextTrack}
+      />
     </div>
   );
 }

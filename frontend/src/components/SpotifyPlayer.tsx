@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Set, Track } from "../pages/SetsPage";
 import { usePlayer } from "../context/PlayerContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import PlayerControls from "./PlayerControls";
 
 interface SpotifyPlayerProps {
   set: Set;
@@ -46,34 +46,21 @@ export default function SpotifyPlayer({ set }: SpotifyPlayerProps) {
     }
   }, [player]);
 
-  const togglePlayPause = useCallback(() => {
-    if (player) {
-      player
-        .togglePlay()
-        .then(() => {
-          setIsPlaying((prev) => !prev);
-        })
-        .catch((error: any) => {
-          console.error("Failed to toggle play/pause", error);
-        });
-    }
-  }, [player]);
-
-  const playNextTrack = useCallback(() => {
-    if (player) {
-      player.nextTrack().catch((error: any) => {
-        console.error("Failed to play next track", error);
-      });
-    }
-  }, [player]);
-
-  const playPreviousTrack = useCallback(() => {
+  const handlePrevTrack = () => {
     if (player) {
       player.previousTrack().catch((error: any) => {
         console.error("Failed to play previous track", error);
       });
     }
-  }, [player]);
+  };
+
+  const handleNextTrack = () => {
+    if (player) {
+      player.nextTrack().catch((error: any) => {
+        console.error("Failed to play next track", error);
+      });
+    }
+  };
 
   const likeSong = (trackID: string) => () => {
     axios.put(
@@ -83,29 +70,8 @@ export default function SpotifyPlayer({ set }: SpotifyPlayerProps) {
     );
   };
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === "Space") {
-        event.preventDefault();
-        togglePlayPause();
-      } else if (event.code === "ArrowDown") {
-        event.preventDefault();
-        playNextTrack();
-      } else if (event.code === "ArrowUp") {
-        event.preventDefault();
-        playPreviousTrack();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [togglePlayPause, playNextTrack, playPreviousTrack]);
-
   return (
-    <Card className="w-full max-w-md mx-auto my-4">
+    <Card className="w-full max-w-md mx-auto my-4 bg-dark text-primary">
       <CardContent>
         {set.tracks?.map((track) => (
           <div
@@ -113,18 +79,23 @@ export default function SpotifyPlayer({ set }: SpotifyPlayerProps) {
             className={`flex items-center justify-between py-2 px-4 rounded-lg transition-all ${
               playingTrack && playingTrack.uri === track.uri
                 ? isPlaying
-                  ? "bg-gray-100 shadow-md animate-pulse"
-                  : "bg-gray-100 shadow-md"
-                : "hover:bg-gray-50"
+                  ? "bg-gray shadow-md animate-pulse"
+                  : "bg-gray shadow-md"
+                : "hover:bg-divider-gray"
             }`}
           >
             <div className="flex items-center">
               <div>
-                <p className="text-blue-500">{track.name}</p>
-                <p className="text-gray-500">{track.artist}</p>
+                <p className="text-pink">{track.name}</p>
+                <p className="text-secondary">{track.artist}</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={likeSong(track.id)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={likeSong(track.id)}
+              className="text-primary border-divider-gray"
+            >
               {track.liked ? "Liked" : "Like"}
             </Button>
           </div>
