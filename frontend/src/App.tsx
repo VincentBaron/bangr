@@ -54,7 +54,7 @@ function App() {
               className="h-20 w-20" // Increased size
               alt="Website Logo"
             />
-            <h1 className="text-4xl font-bold ml-4">Bangr</h1>
+            <h1 className="text-4xl font-bold ml-4 text-primary">Bangr</h1>
           </div>
           <div className="flex justify-center items-center flex-grow w-full">
             <SetsPage />

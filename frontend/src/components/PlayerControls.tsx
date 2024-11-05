@@ -82,7 +82,8 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
   ]);
 
   return (
-    <Card className="flex justify-center items-center mt-4 bg-gray p-3 neon-shadow-orange border-softOrange">
+    // <Card className="flex justify-center items-center mt-4 bg-gray p-3 neon-shadow-orange border-purple">
+    <div>
       <button
         onClick={() => {
           handlePrevPlaylist();
@@ -90,7 +91,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
         }}
         className="mx-2"
       >
-        <ChevronLeft className="text-softOrange" size={24} />
+        <ChevronLeft className="text-purple" size={24} />
       </button>
       <button
         onClick={() => {
@@ -99,13 +100,13 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
         }}
         className="mx-2"
       >
-        <SkipBack className="text-softOrange" size={24} />
+        <SkipBack className="text-purple" size={24} />
       </button>
       <button onClick={handlePlayPause} className="mx-2">
         {isPlaying ? (
-          <Pause className="text-softOrange" size={24} />
+          <Pause className="text-purple" size={24} />
         ) : (
-          <Play className="text-softOrange" size={24} />
+          <Play className="text-purple" size={24} />
         )}
       </button>
       <button
@@ -115,7 +116,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
         }}
         className="mx-2"
       >
-        <SkipForward className="text-softOrange" size={24} />
+        <SkipForward className="text-purple" size={24} />
       </button>
       <button
         onClick={() => {
@@ -124,9 +125,10 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
         }}
         className="mx-2"
       >
-        <ChevronRight className="text-softOrange" size={24} />
+        <ChevronRight className="text-purple" size={24} />
       </button>
-    </Card>
+    </div>
+    // </Card>
   );
 };
 
