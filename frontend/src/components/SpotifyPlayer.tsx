@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Set, Track } from "../pages/SetsPage";
 import { usePlayer } from "../context/PlayerContext";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import PlayerControls from "./PlayerControls";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface SpotifyPlayerProps {
   set: Set;
@@ -55,36 +54,41 @@ export default function SpotifyPlayer({ set }: SpotifyPlayerProps) {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto my-4 bg-dark text-primary">
-      <CardContent>
-        {set.tracks?.map((track) => (
-          <div
-            key={track.id}
-            className={`flex items-center justify-between py-2 px-4 rounded-lg transition-all ${
-              playingTrack && playingTrack.uri === track.uri
-                ? isPlaying
-                  ? "bg-gray shadow-md animate-pulse"
-                  : "bg-gray shadow-md"
-                : "hover:bg-divider-gray"
-            }`}
-          >
-            <div className="flex items-center">
-              <div>
-                <p className="text-pink">{track.name}</p>
-                <p className="text-secondary">{track.artist}</p>
-              </div>
+    <div>
+      {set.tracks?.map((track) => (
+        <div
+          key={track.id}
+          className={`flex items-center justify-between py-2 px-4 rounded-lg transition-all ${
+            playingTrack && playingTrack.uri === track.uri
+              ? isPlaying
+                ? "bg-gray shadow-md animate-pulse"
+                : "bg-gray shadow-md"
+              : "hover:bg-divider-gray"
+          }`}
+        >
+          <div className="flex items-center">
+            <Avatar className="mr-2">
+              <AvatarImage
+                src={`https://i.scdn.co/image/${track.id}`}
+                alt={track.name}
+              />
+              <AvatarFallback>{track.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="text-primary">{track.name}</p>
+              <p className="text-secondary">{track.artist}</p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={likeSong(track.id)}
-              className="text-primary border-divider-gray"
-            >
-              {track.liked ? "Liked" : "Like"}
-            </Button>
           </div>
-        ))}
-      </CardContent>
-    </Card>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={likeSong(track.id)}
+            className="bg-purple border-divider-gray"
+          >
+            {track.liked ? "Liked" : "Like"}
+          </Button>
+        </div>
+      ))}
+    </div>
   );
 }

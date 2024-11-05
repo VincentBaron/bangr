@@ -94,7 +94,7 @@ export default function SetsPage() {
   };
 
   return (
-    <div className="overflow-hidden w-full">
+    <div className="flex w-full flex-col items-center">
       <div
         className={`flex justify-center transition-transform duration-300 items-center ${
           transitionDirection === "left"

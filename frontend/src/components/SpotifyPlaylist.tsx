@@ -11,7 +11,7 @@ interface SpotifyPlaylistProps {
 
 export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
   return (
-    <Card className="bg-gray text-primary w-full max-w-md mx-auto my-4">
+    <Card className="bg-gray text-primary border-purple w-full max-w-md mx-auto my-4 neon-shadow">
       <CardHeader>
         <CardTitle className="">{set.name}</CardTitle>
       </CardHeader>
@@ -33,14 +33,14 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
                   <AvatarFallback>{track.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-pink">{track.name}</p>
+                  <p className="text-primary">{track.name}</p>
                   <p className="text-secondary">{track.artist}</p>
                 </div>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-primary border-divider-gray"
+                className="text-primary bg-purple "
               >
                 {track.liked ? "Liked" : "Like"}
               </Button>

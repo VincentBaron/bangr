@@ -46,7 +46,7 @@ function App() {
     //   </Routes>
     // </Router>
     <PlayerProvider>
-      <div className="grid grid-cols-[1fr_400px] min-h-screen w-full">
+      <div className="flex min-h-screen w-full">
         <div className="flex items-center p-4 w-full flex-col relative">
           <div className="flex items-center absolute left-0">
             <img
@@ -60,7 +60,7 @@ function App() {
             <SetsPage />
           </div>
         </div>
-        <Sidebar />
+        {/* <Sidebar /> */}
       </div>
     </PlayerProvider>
   );

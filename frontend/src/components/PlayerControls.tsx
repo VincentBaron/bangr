@@ -9,6 +9,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { usePlayer } from "../context/PlayerContext";
+import { Card } from "./ui/card";
 
 interface PlayerControlsProps {
   isPlaying: boolean;
@@ -81,7 +82,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
   ]);
 
   return (
-    <div className="flex justify-center items-center mt-4">
+    <Card className="flex justify-center items-center mt-4 bg-gray p-3 neon-shadow-orange border-softOrange">
       <button
         onClick={() => {
           handlePrevPlaylist();
@@ -89,7 +90,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
         }}
         className="mx-2"
       >
-        <ChevronLeft size={24} />
+        <ChevronLeft className="text-softOrange" size={24} />
       </button>
       <button
         onClick={() => {
@@ -98,10 +99,14 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
         }}
         className="mx-2"
       >
-        <SkipBack size={24} />
+        <SkipBack className="text-softOrange" size={24} />
       </button>
       <button onClick={handlePlayPause} className="mx-2">
-        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+        {isPlaying ? (
+          <Pause className="text-softOrange" size={24} />
+        ) : (
+          <Play className="text-softOrange" size={24} />
+        )}
       </button>
       <button
         onClick={() => {
@@ -110,7 +115,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
         }}
         className="mx-2"
       >
-        <SkipForward size={24} />
+        <SkipForward className="text-softOrange" size={24} />
       </button>
       <button
         onClick={() => {
@@ -119,9 +124,9 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
         }}
         className="mx-2"
       >
-        <ChevronRight size={24} />
+        <ChevronRight className="text-softOrange" size={24} />
       </button>
-    </div>
+    </Card>
   );
 };
 

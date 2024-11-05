@@ -31,3 +31,11 @@ body {
 /* * {
   outline: 1px solid red;
 } */
+
+.neon-shadow {
+  box-shadow: 0 0 1px #9b00ff, 0 0 3px #9b00ff, 0 0 6px #9b00ff, 0 0 5px #9b00ff;
+}
+
+.neon-shadow-orange {
+  box-shadow: 0 0 1px #ff8c42, 0 0 3px #ff8c42, 0 0 6px #ff8c42, 0 0 2px #ff8c42;
+}
