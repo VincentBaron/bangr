@@ -46,22 +46,6 @@ export default function SpotifyPlayer({ set }: SpotifyPlayerProps) {
     }
   }, [player]);
 
-  const handlePrevTrack = () => {
-    if (player) {
-      player.previousTrack().catch((error: any) => {
-        console.error("Failed to play previous track", error);
-      });
-    }
-  };
-
-  const handleNextTrack = () => {
-    if (player) {
-      player.nextTrack().catch((error: any) => {
-        console.error("Failed to play next track", error);
-      });
-    }
-  };
-
   const likeSong = (trackID: string) => () => {
     axios.put(
       `http://localhost:8080/tracks/${trackID}/like`,

@@ -11,9 +11,9 @@ interface SpotifyPlaylistProps {
 
 export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
   return (
-    <Card className="bg-dark text-primary w-full max-w-md mx-auto my-4">
+    <Card className="bg-gray text-primary w-full max-w-md mx-auto my-4">
       <CardHeader>
-        <CardTitle>{set.name}</CardTitle>
+        <CardTitle className="">{set.name}</CardTitle>
       </CardHeader>
       <CardContent>
         {set.active ? (

@@ -9,21 +9,6 @@ module.exports = {
   ],
   prefix: "",
   theme: {
-    extend: {
-      colors: {
-        dark: "#0D0D0D",
-        primary: "#FFFFFF",
-        secondary: "#B3B3B3",
-        gray: "#1A1A1A",
-        pink: "#FF0080",
-        orange: "#FF6A00",
-        pink: "#FF33A8",
-        orange: "#FF8800",
-        green: "#00C851",
-        yellow: "#FFBB33",
-        red: "#FF4444",
-      },
-    },
     container: {
       center: "true",
       padding: "2rem",
@@ -65,6 +50,24 @@ module.exports = {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Main color palette
+        dark: "#0D0D0D", // Main background color
+        primary: "#FFFFFF", // Primary text color (headings, main text)
+        secondary: "#B3B3B3", // Secondary text color (subtext, descriptions)
+        gray: "#1A1A1A", // Card background color, secondary background sections, or dividers
+
+        // Gradient and highlight colors from logo
+        pink: "#FF0080", // Primary button background, important highlights
+        orange: "#FF6A00", // Secondary button background, accent highlights
+
+        // Interaction colors
+        hoverPink: "#FF33A8", // Hover state for primary buttons, links, and icons
+        hoverOrange: "#FF8800", // Hover state for secondary buttons, links, and icons
+
+        // Status and alert colors
+        green: "#00C851", // Success messages, notifications
+        yellow: "#FFBB33", // Warning alerts
+        red: "#FF4444", // Error alerts or destructive actions
       },
     },
   },
