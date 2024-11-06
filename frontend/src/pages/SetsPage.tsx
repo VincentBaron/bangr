@@ -13,10 +13,10 @@ export interface Track {
 }
 export interface Set {
   id: string;
-  name: string;
   link: string;
   tracks: Track[];
   active?: boolean;
+  username: string;
 }
 
 export default function SetsPage() {
@@ -32,17 +32,14 @@ export default function SetsPage() {
       .then((response: AxiosResponse<any>) => {
         const fetchedSets = response.data.sets as Set[];
         setSets([
-          { id: "dummy", name: "", link: "", tracks: [] },
+          { id: "dummy", username: "", link: "", tracks: [] },
           ...fetchedSets,
-          { id: "dummy", name: "", link: "", tracks: [] },
+          { id: "dummy", username: "", link: "", tracks: [] },
         ]);
       });
   }, []);
 
   useEffect(() => {
-    console.log("player: " + player);
-    console.log("deviceId:" + deviceId);
-    console.log("sets:" + sets);
     if (player && deviceId && sets.length > 0) {
       const set = sets[selectedIndex];
       console.log(set.link);

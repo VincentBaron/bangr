@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/VincentBaron/bangr/backend/internal/config"
+	"github.com/VincentBaron/bangr/backend/internal/dto"
 	"github.com/VincentBaron/bangr/backend/internal/models"
 	"github.com/VincentBaron/bangr/backend/internal/repositories"
 	"github.com/gin-gonic/gin"
@@ -24,29 +25,44 @@ func NewSetService(setRepo *repositories.Repository[models.Set], tracksRepo *rep
 	}
 }
 
-func (s *SetService) GetSets(c *gin.Context) ([]models.Set, error) {
-
+func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
+	setsResp := make([]dto.GetSetResp, 0)
 	user := c.MustGet("user").(*models.User)
 	// Get all sets
-	sets, err := s.setRepository.FindAllByFilter(map[string]interface{}{}, "Tracks")
+	sets, err := s.setRepository.FindAllByFilter(map[string]interface{}{}, "Tracks", "User")
 	var likes []models.Like
 	config.DB.Model(&models.Like{}).Where("user_id = ?", user.ID).Find(&likes)
 	tracksUserLikesMap := make(map[uuid.UUID]bool)
 	for _, like := range likes {
 		tracksUserLikesMap[like.TrackID] = true
 	}
-	for i, set := range sets {
-		for j, track := range set.Tracks {
+	for _, set := range sets {
+		tracksResp := make([]dto.GetTrackResp, 0)
+		for _, track := range set.Tracks {
+			liked := false
 			if _, ok := tracksUserLikesMap[track.ID]; ok {
-				sets[i].Tracks[j].Liked = true
+				liked = true
 			}
+			tracksResp = append(tracksResp, dto.GetTrackResp{
+				ID:     track.ID,
+				URI:    track.URI,
+				Name:   track.Name,
+				Artist: track.Artist,
+				Liked:  liked,
+			})
 		}
+		setsResp = append(setsResp, dto.GetSetResp{
+			ID:       set.ID,
+			Link:     set.Link,
+			Tracks:   tracksResp,
+			Username: set.User.Username,
+		})
 	}
 
 	if err != nil {
 		return nil, err
 	}
-	return sets, nil
+	return setsResp, nil
 }
 
 func (s *SetService) LikeTrack(c *gin.Context, trackID uuid.UUID) error {

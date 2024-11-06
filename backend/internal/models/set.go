@@ -13,6 +13,7 @@ type Set struct {
 	Name      string    `json:"name"`
 	Link      string    `json:"link"`
 	UserID    uuid.UUID `gorm:"not null" json:"-"`
+	User      User      `json:"user"`
 	Tracks    []Track   `json:"tracks"`
 }
 
@@ -25,7 +26,6 @@ type Track struct {
 	Artist    string    `json:"artist"`
 	URI       string    `json:"uri"`
 	Likes     []Like    `json:"likes"`
-	Liked     bool      `json:"liked" gorm:"-"`
 }
 
 type Like struct {

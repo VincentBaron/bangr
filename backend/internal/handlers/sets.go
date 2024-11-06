@@ -21,10 +21,6 @@ func NewSetHandler(setService *services.SetService) *SetHandler {
 }
 
 func (h *SetHandler) GetSets(c *gin.Context) {
-
-	// Create a new slice to store the playlist names
-	var sets []models.Set
-
 	sets, err := h.setService.GetSets(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

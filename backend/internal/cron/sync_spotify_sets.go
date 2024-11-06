@@ -105,6 +105,7 @@ func (h *cronHandler) syncSpotifySets() error {
 			Name:   playlist.Name,
 			Link:   playlist.ExternalURLs["spotify"],
 			UserID: user.ID,
+			User:   user,
 		}
 		err = h.setRepository.Save(&set)
 		if err != nil {

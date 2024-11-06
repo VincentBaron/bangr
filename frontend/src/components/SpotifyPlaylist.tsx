@@ -13,7 +13,7 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
   return (
     <Card className="bg-gray text-primary border-purple w-full max-w-md mx-auto my-4 neon-shadow">
       <CardHeader>
-        <CardTitle className="">{set.name}</CardTitle>
+        <CardTitle className="">{set.username}</CardTitle>
       </CardHeader>
       <CardContent>
         {set.active ? (
