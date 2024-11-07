@@ -5,10 +5,11 @@ import (
 )
 
 type GetSetResp struct {
-	ID       uuid.UUID      `json:"id"`
-	Link     string         `json:"link"`
-	Tracks   []GetTrackResp `json:"tracks"`
-	Username string         `json:"username"`
+	ID            uuid.UUID      `json:"id"`
+	Link          string         `json:"link"`
+	Tracks        []GetTrackResp `json:"tracks"`
+	Username      string         `json:"username"`
+	ProfilePicURL string         `json:"profilePicURL"`
 }
 
 type GetTrackResp struct {

@@ -78,10 +78,11 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 			})
 		}
 		setsResp = append(setsResp, dto.GetSetResp{
-			ID:       set.ID,
-			Link:     set.Link,
-			Tracks:   tracksResp,
-			Username: set.User.Username,
+			ID:            set.ID,
+			Link:          set.Link,
+			Tracks:        tracksResp,
+			Username:      set.User.Username,
+			ProfilePicURL: set.User.ProfilePicURL,
 		})
 	}
 

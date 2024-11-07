@@ -6,10 +6,9 @@ import PlayerControls from "../components/PlayerControls";
 
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 export interface Track {
@@ -27,6 +26,7 @@ export interface Set {
   tracks: Track[];
   active?: boolean;
   username: string;
+  profilePicURL?: string;
 }
 
 export default function SetsPage() {
@@ -35,6 +35,7 @@ export default function SetsPage() {
   const { player, deviceId } = usePlayer();
   const [transitionDirection, setTransitionDirection] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [api, setApi] = useState<CarouselApi>();
 
   useEffect(() => {
     axios
@@ -61,12 +62,14 @@ export default function SetsPage() {
   }, [player, deviceId, selectedIndex, sets]);
 
   const handlePrevPlaylist = () => {
+    api?.scrollPrev();
     setTransitionDirection("left");
     setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
     setIsPlaying(true);
   };
 
   const handleNextPlaylist = () => {
+    api?.scrollNext();
     setTransitionDirection("right");
     setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets.length - 2));
     setIsPlaying(true);
@@ -90,45 +93,32 @@ export default function SetsPage() {
     setIsPlaying(true);
   };
 
-  const getVisibleSets = () => {
-    if (sets.length < 3) return sets;
-    return sets
-      .slice(selectedIndex - 1, selectedIndex + 2)
-      .map((set, index) => ({
-        ...set,
-        active: index === 1, // Set the active key for the middle set
-      }));
-  };
-
   return (
     <div className="flex w-full flex-col items-center">
       <div className="">
-        {/* {getVisibleSets().map((set, index) => (
-          <div
-            key={index}
-            className="inline-flex m-4 justify-center"
-            data-active={index === 1 ? true : undefined}
-          >
-            <SpotifyPlaylist set={set} />
-          </div>
-        ))} */}
         <Carousel
+          setApi={setApi}
           opts={{
             align: "start",
           }}
-          className="w-full max-["
+          className="w-full max-w-[100vw]"
         >
           <CarouselContent>
             {sets.map((set, index) => {
               return (
-                <CarouselItem key={index} className="basis-1/3">
-                  <SpotifyPlaylist set={set} />
+                <CarouselItem
+                  key={index}
+                  className="group basis-1/3 "
+                  data-active={selectedIndex === index}
+                >
+                  <SpotifyPlaylist
+                    set={set}
+                    className="group-data-[active=false]:scale-[85%] transition-all duration-300 group-data-[active=false]:opacity-60"
+                  />
                 </CarouselItem>
               );
             })}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
         </Carousel>
       </div>
       <PlayerControls

@@ -9,7 +9,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { usePlayer } from "../context/PlayerContext";
-import { Card } from "./ui/card";
 
 interface PlayerControlsProps {
   isPlaying: boolean;

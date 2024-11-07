@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   Dialog,
   DialogContent,
@@ -45,21 +46,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
 }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-
-  const handleProfilePictureChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePicture(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleGenreToggle = (genre: string) => {
     setSelectedGenres((prev) =>
@@ -69,22 +56,41 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send login request to your backend
+    axios
+      .post(
+        "http://localhost:8080/login",
+        { username: username, password },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        console.log("response data: ", response.data);
+      })
+      .catch((error) => {
+        console.log("error response data:", error.response.data);
+      });
     console.log("Login attempt with:", { username, password });
-    // For demo purposes, we'll just call onSignUp
     onSignUp();
   };
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send signup request to your backend
+    axios
+      .post("http://localhost:8080/signup", {
+        username: username,
+        password,
+        selectedGenres,
+      })
+      .then((response) => {
+        window.location.href = response.data.url;
+      })
+      .catch((error) => {
+        console.log("error response data:", error.response.data);
+      });
     console.log("Signup attempt with:", {
       username,
       password,
-      profilePicture,
       selectedGenres,
     });
-    // For demo purposes, we'll just call onSignUp
     onSignUp();
   };
 
@@ -144,26 +150,6 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-              </div>
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="picture">Profile Picture</Label>
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage
-                      src={profilePicture || ""}
-                      alt="Profile picture"
-                    />
-                    <AvatarFallback>
-                      {username.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Input
-                    id="picture"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleProfilePictureChange}
-                  />
-                </div>
               </div>
               <div className="grid w-full gap-1.5">
                 <Label>Favorite Genres</Label>

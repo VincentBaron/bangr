@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import playerAnimation from "../../public/assets/playing_anim.json";
 import Lottie from "react-lottie";
 import { Flame } from "lucide-react";
+import { Avatar } from "@radix-ui/react-avatar";
+import { cn } from "@/lib/utils";
 
-interface SpotifyPlaylistProps {
+interface SpotifyPlaylistProps extends React.HTMLAttributes<HTMLDivElement> {
   set: Set;
 }
 
@@ -22,7 +24,11 @@ interface PlayerState {
   paused: boolean;
 }
 
-export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
+export default function SpotifyPlaylist({
+  set,
+  className,
+  ...props
+}: SpotifyPlaylistProps) {
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSet, setCurrentSet] = useState(set);
@@ -83,13 +89,24 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
     }
   };
 
+  if (currentSet.tracks.length === 0) {
+    return <div></div>;
+  }
+
   return (
-    <Card className="bg-gray text-primary border-purple w-full max-w-md mx-auto my-4 neon-shadow">
-      <CardHeader>
+    <Card
+      className={cn(
+        "bg-gray text-primary border-purple w-full max-w-md mx-auto my-4 neon-shadow",
+        className
+      )}
+      {...props}
+    >
+      <CardHeader className="flex-row gap-5">
+        <Avatar></Avatar>
         <CardTitle className="">{currentSet.username}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div>
+        <div className="flex flex-col gap-4">
           {currentSet.tracks?.map((track) => (
             <div
               key={track.id}

@@ -86,6 +86,9 @@ func (s *AuthService) CallbackService(c *gin.Context) error {
 	user.SpotifyToken.Expiry = token.Expiry
 	user.SpotifyUserID = spotifyUser.ID
 	user.SpotifyPlaylistLink = playlist.ID.String()
+	if len(spotifyUser.Images) > 0 {
+		user.ProfilePicURL = spotifyUser.Images[0].URL
+	}
 
 	if err := s.userRepository.Save(user); err != nil {
 		log.Println(err)
