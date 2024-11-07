@@ -37,6 +37,7 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
   };
 
   useEffect(() => {
+    setCurrentSet(set);
     if (player) {
       (player as any).addListener(
         "player_state_changed",
@@ -56,11 +57,7 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
         }
       );
     }
-  }, [player]);
-
-  useEffect(() => {
-    setCurrentSet(set);
-  }, [set]);
+  }, [player, set]);
 
   const toggleLikeSong = (track: Track) => async () => {
     try {
@@ -72,7 +69,13 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
       setCurrentSet((prevSet) => ({
         ...prevSet,
         tracks: prevSet.tracks.map((t) =>
-          t.id === track.id ? { ...t, liked: !t.liked } : t
+          t.id === track.id
+            ? {
+                ...t,
+                liked: !t.liked,
+                likes: t.liked ? t.likes - 1 : t.likes + 1,
+              }
+            : t
         ),
       }));
     } catch (error) {
@@ -90,19 +93,21 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
           {currentSet.tracks?.map((track) => (
             <div
               key={track.id}
-              className={`grid grid-cols-[20px_70px_150px_70px] rounded-lg transition-all`}
+              className={`grid grid-cols-[60px_270px_70px] rounded-lg transition-all`}
             >
-              <div className="flex items-center justify-center">
-                {playingTrack && playingTrack.uri === track.uri && isPlaying ? (
-                  <Lottie options={defaultOptions} height={25} width={25} />
-                ) : null}
-              </div>
-              <div className={`flex justify-center items-center `}>
+              <div className="relative flex justify-center items-center">
                 <img
                   src={track.img_url}
                   alt={track.name}
                   className={`w-10 h-10`}
                 />
+                {playingTrack &&
+                  playingTrack.uri === track.uri &&
+                  isPlaying && (
+                    <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
+                      <Lottie options={defaultOptions} height={30} width={30} />
+                    </div>
+                  )}
               </div>
               <div>
                 <p className="text-primary">{track.name}</p>
