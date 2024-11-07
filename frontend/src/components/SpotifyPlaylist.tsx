@@ -3,7 +3,8 @@ import { usePlayer } from "../context/PlayerContext";
 import { Set, Track } from "../pages/SetsPage";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import playerAnimation from "../../public/assets/playing_anim.json";
+import Lottie from "react-lottie";
 import { Flame } from "lucide-react";
 
 interface SpotifyPlaylistProps {
@@ -24,10 +25,18 @@ interface PlayerState {
 export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [tracks, setTracks] = useState<Track[]>(set.tracks);
+  const [currentSet, setCurrentSet] = useState(set);
   const { player } = usePlayer();
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: playerAnimation,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
   useEffect(() => {
-    console.log(tracks);
     if (player) {
       (player as any).addListener(
         "player_state_changed",
@@ -40,7 +49,7 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
               uri: "spotify:track:" + state.track_window.current_track.id,
               liked: false,
               likes: 0,
-              imgURL: "",
+              img_url: "",
             });
             setIsPlaying(!state.paused);
           }
@@ -49,41 +58,50 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
     }
   }, [player]);
 
-  const toggleLikeSong = (track: Track) => () => {
-    console.log("yolo");
-    axios.put(
-      `http://localhost:8080/tracks/${track.id}/like?liked=${!track.liked}`,
-      {},
-      { withCredentials: true }
-    );
-    setTracks((prevTracks) =>
-      prevTracks.map((t) => (t.id === track.id ? { ...t, liked: !t.liked } : t))
-    );
+  useEffect(() => {
+    setCurrentSet(set);
+  }, [set]);
+
+  const toggleLikeSong = (track: Track) => async () => {
+    try {
+      await axios.put(
+        `http://localhost:8080/tracks/${track.id}/like?liked=${!track.liked}`,
+        {},
+        { withCredentials: true }
+      );
+      setCurrentSet((prevSet) => ({
+        ...prevSet,
+        tracks: prevSet.tracks.map((t) =>
+          t.id === track.id ? { ...t, liked: !t.liked } : t
+        ),
+      }));
+    } catch (error) {
+      console.error("Failed to toggle like", error);
+    }
   };
 
   return (
     <Card className="bg-gray text-primary border-purple w-full max-w-md mx-auto my-4 neon-shadow">
       <CardHeader>
-        <CardTitle className="">{set.username}</CardTitle>
+        <CardTitle className="">{currentSet.username}</CardTitle>
       </CardHeader>
       <CardContent>
         <div>
-          {tracks?.map((track) => (
+          {currentSet.tracks?.map((track) => (
             <div
               key={track.id}
-              className={`grid grid-cols-[50px_150px_70px] rounded-lg transition-all ${
-                playingTrack && playingTrack.uri === track.uri
-                  ? isPlaying
-                    ? "bg-gray shadow-md animate-pulse"
-                    : "bg-gray shadow-md"
-                  : "hover:bg-divider-gray"
-              }`}
+              className={`grid grid-cols-[20px_70px_150px_70px] rounded-lg transition-all`}
             >
-              <div className="flex justify-center items-center">
+              <div className="flex items-center justify-center">
+                {playingTrack && playingTrack.uri === track.uri && isPlaying ? (
+                  <Lottie options={defaultOptions} height={25} width={25} />
+                ) : null}
+              </div>
+              <div className={`flex justify-center items-center `}>
                 <img
                   src={track.img_url}
                   alt={track.name}
-                  className="w-10 h-10"
+                  className={`w-10 h-10`}
                 />
               </div>
               <div>

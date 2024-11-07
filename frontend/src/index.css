@@ -39,3 +39,69 @@ body {
 .neon-shadow-orange {
   box-shadow: 0 0 1px #ff8c42, 0 0 3px #ff8c42, 0 0 6px #ff8c42, 0 0 2px #ff8c42;
 }
+
+.neon-border {
+  position: relative;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: linear-gradient(#0d0d0d, #0d0d0d) padding-box,
+    linear-gradient(
+        0deg,
+        #f911ec,
+        #f911ec 25%,
+        transparent 25%,
+        transparent 50%,
+        #f911ec 50%,
+        #f911ec 75%,
+        transparent 75%,
+        transparent
+      )
+      border-box;
+  background-size: 200% 200%;
+  animation: neon-border-animation 2s linear infinite;
+}
+
+@keyframes neon-border-animation {
+  0% {
+    background-position: 0% 100%;
+  }
+  50% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+.spotify-playing-indicator {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(
+      0deg,
+      #1db954,
+      #1db954 25%,
+      transparent 25%,
+      transparent 50%,
+      #1db954 50%,
+      #1db954 75%,
+      transparent 75%,
+      transparent
+    )
+    border-box;
+  background-size: 200% 200%;
+  animation: spotify-playing-animation 2s linear infinite;
+}
+
+@keyframes spotify-playing-animation {
+  0% {
+    background-position: 0% 100%;
+  }
+  50% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
