@@ -150,6 +150,7 @@ func (h *cronHandler) syncSpotifySets() error {
 					Name:   item.Track.Track.Name,
 					Artist: strings.Join(artistNames, ", "),
 					URI:    trackURI,
+					ImgURL: item.Track.Track.Album.Images[0].URL,
 				}
 				err = h.trackRepository.Save(&track)
 				if err != nil {

@@ -18,6 +18,8 @@ export interface Track {
   name: string;
   artist: string;
   liked: boolean;
+  likes: number;
+  img_url: string;
 }
 export interface Set {
   id: string;

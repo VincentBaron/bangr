@@ -57,7 +57,7 @@ module.exports = {
         gray: "#1A1A1A", // Card background color, secondary background sections, or dividers
 
         // Gradient and highlight colors from logo
-        purple: "#9B00FF", // Primary button background, important highlights (replaces pink)
+        purple: "#E105FB", // Primary button background, important highlights (replaces pink)
         softOrange: "#FF8C42", // Secondary button background, accent highlights (faded orange from logo)
 
         // Interaction colors

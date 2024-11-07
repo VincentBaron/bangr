@@ -18,4 +18,5 @@ type GetTrackResp struct {
 	Artist string    `json:"artist"`
 	Liked  bool      `json:"liked"`
 	Likes  int       `json:"likes"`
+	ImgURL string    `json:"img_url"`
 }

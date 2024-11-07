@@ -26,6 +26,7 @@ type Track struct {
 	Artist    string    `json:"artist"`
 	URI       string    `json:"uri"`
 	Likes     []Like    `json:"likes"`
+	ImgURL    string    `json:"imgURL"`
 }
 
 type Like struct {
@@ -38,4 +39,8 @@ type Like struct {
 
 type SetDetails struct {
 	Tracks []Track `json:"tracks"`
+}
+
+type LikeQueryParams struct {
+	Liked bool `form:"liked"`
 }

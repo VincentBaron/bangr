@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { usePlayer } from "../context/PlayerContext";
 import { Set, Track } from "../pages/SetsPage";
 import axios from "axios";
-import SpotifyPlayer from "./SpotifyPlayer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Flame } from "lucide-react";
 
 interface SpotifyPlaylistProps {
   set: Set;
@@ -25,8 +24,10 @@ interface PlayerState {
 export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [tracks, setTracks] = useState<Track[]>(set.tracks);
   const { player } = usePlayer();
   useEffect(() => {
+    console.log(tracks);
     if (player) {
       (player as any).addListener(
         "player_state_changed",
@@ -38,6 +39,8 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
               artist: state.track_window.current_track.artists[0].name,
               uri: "spotify:track:" + state.track_window.current_track.id,
               liked: false,
+              likes: 0,
+              imgURL: "",
             });
             setIsPlaying(!state.paused);
           }
@@ -46,12 +49,15 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
     }
   }, [player]);
 
-  const likeSong = (trackID: string) => () => {
+  const toggleLikeSong = (track: Track) => () => {
     console.log("yolo");
     axios.put(
-      `http://localhost:8080/tracks/${trackID}/like`,
+      `http://localhost:8080/tracks/${track.id}/like?liked=${!track.liked}`,
       {},
       { withCredentials: true }
+    );
+    setTracks((prevTracks) =>
+      prevTracks.map((t) => (t.id === track.id ? { ...t, liked: !t.liked } : t))
     );
   };
 
@@ -62,7 +68,7 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
       </CardHeader>
       <CardContent>
         <div>
-          {set.tracks?.map((track) => (
+          {tracks?.map((track) => (
             <div
               key={track.id}
               className={`grid grid-cols-[50px_150px_70px] rounded-lg transition-all ${
@@ -73,25 +79,32 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
                   : "hover:bg-divider-gray"
               }`}
             >
-              <Avatar className="mr-2">
-                <AvatarImage
-                  src={`https://i.scdn.co/image/${track.id}`}
+              <div className="flex justify-center items-center">
+                <img
+                  src={track.img_url}
                   alt={track.name}
+                  className="w-10 h-10"
                 />
-                <AvatarFallback>{track.name.charAt(0)}</AvatarFallback>
-              </Avatar>
+              </div>
               <div>
                 <p className="text-primary">{track.name}</p>
                 <p className="text-secondary">{track.artist}</p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={likeSong(track.id)}
-                className="bg-purple border-divider-gray"
-              >
-                {track.liked ? "Liked" : "Like"}
-              </Button>
+              <div className="flex row items-center">
+                <button
+                  onClick={toggleLikeSong(track)}
+                  className={`p-2 rounded-full focus:outline-none ${
+                    track.liked ? "bg-purple-500" : "bg-transparent"
+                  } hover:bg-purple-200`}
+                >
+                  <Flame
+                    color="#E105FB"
+                    fill={`${track.liked ? "#E105FB" : ""}`}
+                    size={24}
+                  />
+                </button>
+                <p className="text-primary">{track.likes}</p>
+              </div>
             </div>
           ))}
         </div>

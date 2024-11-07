@@ -31,7 +31,13 @@ func (h *SetHandler) GetSets(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"sets": sets})
 }
 
-func (h *SetHandler) LikeTrack(c *gin.Context) {
+func (h *SetHandler) ToggleLikeTrack(c *gin.Context) {
+
+	var queryParams models.LikeQueryParams
+	if err := c.ShouldBindQuery(&queryParams); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	// Get the track ID from the URL
 	trackID := c.Param("id")
 	id, err := uuid.Parse(trackID)
@@ -40,7 +46,7 @@ func (h *SetHandler) LikeTrack(c *gin.Context) {
 		return
 	}
 
-	err = h.setService.LikeTrack(c, id)
+	err = h.setService.ToggleLikeTrack(c, id, queryParams)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

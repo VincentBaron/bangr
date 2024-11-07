@@ -66,7 +66,7 @@ func main() {
 	r.GET("/sets", middleware.RequireAuth, setHandler.GetSets)
 	r.POST("/sets", middleware.RequireAuth, setHandler.CreateSet)
 	r.GET("/player", middleware.RequireAuth, playerHandler.Player)
-	r.PUT("/tracks/:id/like", middleware.RequireAuth, setHandler.LikeTrack)
+	r.PUT("/tracks/:id/like", middleware.RequireAuth, setHandler.ToggleLikeTrack)
 
 	// r.GET("/status", handler.handleStatus)
 	// r.POST("/store-token", storeTokenHandler)

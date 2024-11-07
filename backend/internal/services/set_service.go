@@ -74,6 +74,7 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 				Artist: track.Artist,
 				Liked:  liked,
 				Likes:  trackLikesCountMap[track.ID], // Total likes for the track
+				ImgURL: track.ImgURL,
 			})
 		}
 		setsResp = append(setsResp, dto.GetSetResp{
@@ -87,26 +88,39 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 	return setsResp, nil
 }
 
-func (s *SetService) LikeTrack(c *gin.Context, trackID uuid.UUID) error {
+func (s *SetService) ToggleLikeTrack(c *gin.Context, trackID uuid.UUID, params models.LikeQueryParams) error {
 	user := c.MustGet("user").(*models.User)
-	spotifyCLient := c.MustGet("spotifyClient").(*spotify.Client)
+	spotifyClient := c.MustGet("spotifyClient").(*spotify.Client)
 	track, err := s.tracksRepository.FindByFilter(map[string]interface{}{"id": trackID}, "Likes")
 	if err != nil {
 		return err
 	}
 	trackSpotifyID := spotify.ID(strings.Split(track.URI, ":")[2])
-	err = spotifyCLient.AddTracksToLibrary(c, trackSpotifyID)
-	if err != nil {
-		return err
-	}
-	like := models.Like{
-		UserID:  user.ID,
-		TrackID: track.ID,
+
+	if params.Liked {
+		// Add track to Spotify library and save like in the database
+		err = spotifyClient.AddTracksToLibrary(c, trackSpotifyID)
+		if err != nil {
+			return err
+		}
+		like := models.Like{
+			UserID:  user.ID,
+			TrackID: track.ID,
+		}
+		if err := config.DB.Save(&like).Error; err != nil {
+			return err
+		}
+	} else {
+		// Remove track from Spotify library and delete like from the database
+		err = spotifyClient.RemoveTracksFromLibrary(c, trackSpotifyID)
+		if err != nil {
+			return err
+		}
+		if err := config.DB.Where("user_id = ? AND track_id = ?", user.ID, track.ID).Delete(&models.Like{}).Error; err != nil {
+			return err
+		}
 	}
 
-	if err := config.DB.Save(&like).Error; err != nil {
-		return err
-	}
 	return nil
 }
 
