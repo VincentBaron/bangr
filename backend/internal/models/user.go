@@ -11,7 +11,6 @@ type User struct {
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
 	Username            string `json:"username" gorm:"unique"`
-	Email               string `json:"email" gorm:"unique"`
 	Password            string `json:"password"`
 	Sets                []Set  `gorm:"foreignKey:UserID"`
 	SpotifyToken        SpotifyToken

@@ -75,7 +75,7 @@ func (s *AuthService) CallbackService(c *gin.Context) error {
 		return fmt.Errorf("failed to get current user: %w", err)
 	}
 
-	playlist, err := client.CreatePlaylistForUser(context.Background(), spotifyUser.ID, "Bangerz 🔥", "Add your favorite song every 3 days to listen to other people's favorite songs!", false, false)
+	playlist, err := client.CreatePlaylistForUser(context.Background(), spotifyUser.ID, user.Username+"'s Bangr", "Add your favorite song every 3 days to listen to other people's favorite songs!", false, false)
 	if err != nil {
 		log.Println(err)
 		return fmt.Errorf("failed to create playlist: %w", err)
@@ -105,7 +105,6 @@ func (s *AuthService) Signup(c *gin.Context, payload *models.User) (*string, err
 
 	// Create the user
 	user := models.User{
-		Email:    payload.Email,
 		Username: payload.Username,
 		Password: string(hash),
 	}
@@ -143,7 +142,8 @@ func (s *AuthService) Login(c *gin.Context, username, password string) error {
 
 	user, err := s.userRepository.FindByFilter(map[string]interface{}{"username": username}, "SpotifyToken")
 	if err != nil {
-		// handle error
+		log.Println(err)
+		return fmt.Errorf("failed to find user: %w", err)
 	}
 
 	if user.ID == uuid.Nil {

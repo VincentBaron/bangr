@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/VincentBaron/bangr/backend/internal/config"
 	"github.com/VincentBaron/bangr/backend/internal/dto"
@@ -28,14 +29,37 @@ func NewSetService(setRepo *repositories.Repository[models.Set], tracksRepo *rep
 func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 	setsResp := make([]dto.GetSetResp, 0)
 	user := c.MustGet("user").(*models.User)
+
 	// Get all sets
 	sets, err := s.setRepository.FindAllByFilter(map[string]interface{}{}, "Tracks", "User")
+	if err != nil {
+		return nil, err
+	}
+
+	// Get user likes
 	var likes []models.Like
 	config.DB.Model(&models.Like{}).Where("user_id = ?", user.ID).Find(&likes)
 	tracksUserLikesMap := make(map[uuid.UUID]bool)
 	for _, like := range likes {
 		tracksUserLikesMap[like.TrackID] = true
 	}
+
+	// Calculate last Sunday at midnight
+	now := time.Now()
+	offset := int(time.Sunday - now.Weekday())
+	if offset > 0 {
+		offset = -6
+	}
+	lastSunday := time.Date(now.Year(), now.Month(), now.Day()+offset, 0, 0, 0, 0, now.Location())
+
+	// Get likes for each track after last Sunday at midnight
+	var trackLikes []models.Like
+	config.DB.Model(&models.Like{}).Where("created_at >= ?", lastSunday).Find(&trackLikes)
+	trackLikesCountMap := make(map[uuid.UUID]int)
+	for _, like := range trackLikes {
+		trackLikesCountMap[like.TrackID]++
+	}
+
 	for _, set := range sets {
 		tracksResp := make([]dto.GetTrackResp, 0)
 		for _, track := range set.Tracks {
@@ -49,6 +73,7 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 				Name:   track.Name,
 				Artist: track.Artist,
 				Liked:  liked,
+				Likes:  trackLikesCountMap[track.ID], // Total likes for the track
 			})
 		}
 		setsResp = append(setsResp, dto.GetSetResp{
@@ -59,9 +84,6 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 		})
 	}
 
-	if err != nil {
-		return nil, err
-	}
 	return setsResp, nil
 }
 

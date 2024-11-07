@@ -88,54 +88,83 @@ func (h *cronHandler) syncSpotifySets() error {
 	if err != nil {
 		return fmt.Errorf("error fetching users: %w", err)
 	}
+	existingTracks, err := h.trackRepository.FindAllByFilter(map[string]interface{}{})
+	if err != nil {
+		return fmt.Errorf("error fetching existing tracks: %w", err)
+	}
+	existingTracksURIMap := make(map[string]models.Track)
+	for _, track := range existingTracks {
+		existingTracksURIMap[track.URI] = track
+	}
 
 	for _, user := range users {
 		spotifyClient, err := h.initSpotifyClient(user)
 		if err != nil {
 			log.Printf("error initializing Spotify client for user %s: %v", user.ID, err)
-			return err
+			continue
 		}
 		playlist, err := spotifyClient.GetPlaylist(context.Background(), spotify.ID(user.SpotifyPlaylistLink))
 		if err != nil {
 			log.Printf("error fetching playlist %s: %v", user.SpotifyPlaylistLink, err)
-			return err
+			continue
 		}
 		set := models.Set{
 			ID:     uuid.New(),
 			Name:   playlist.Name,
 			Link:   playlist.ExternalURLs["spotify"],
 			UserID: user.ID,
-			User:   user,
 		}
 		err = h.setRepository.Save(&set)
 		if err != nil {
 			log.Printf("error saving set %s: %v", set.ID, err)
-			return err
+			continue
 		}
 
 		playlistItems, err := spotifyClient.GetPlaylistItems(context.Background(), spotify.ID(user.SpotifyPlaylistLink))
 		if err != nil {
 			log.Printf("error fetching tracks for playlist %s: %v", playlist.ID, err)
-			return err
+			continue
 		}
-		tracks := make([]models.Track, 3, len(playlistItems.Items))
+
 		for i, item := range playlistItems.Items {
-			artistNames := make([]string, 0, len(item.Track.Track.Artists))
-			for _, artist := range item.Track.Track.Artists {
-				artistNames = append(artistNames, artist.Name)
-			}
-			track := models.Track{
-				Name:   item.Track.Track.Name,
-				Artist: strings.Join(artistNames, ", "),
-				URI:    string(item.Track.Track.URI),
-				SetID:  set.ID,
-			}
-			tracks[i] = track
-			if i == 2 {
+			if i >= 3 {
 				break
 			}
+			trackURI := string(item.Track.Track.URI)
+			track, exists := existingTracksURIMap[trackURI]
+			if exists {
+				// Track already exists, associate it with the new set
+				err = config.DB.Model(&track).Association("Sets").Append(&set)
+				if err != nil {
+					log.Printf("error associating track %s with set %s: %v", track.URI, set.ID, err)
+					continue
+				}
+			} else {
+				// Track does not exist, create a new track and associate it with the set
+				artistNames := make([]string, 0, len(item.Track.Track.Artists))
+				for _, artist := range item.Track.Track.Artists {
+					artistNames = append(artistNames, artist.Name)
+				}
+				track = models.Track{
+					ID:     uuid.New(),
+					Name:   item.Track.Track.Name,
+					Artist: strings.Join(artistNames, ", "),
+					URI:    trackURI,
+				}
+				err = h.trackRepository.Save(&track)
+				if err != nil {
+					log.Printf("error saving track %s: %v", track.URI, err)
+					continue
+				}
+				// Now associate the new track with the set
+				err = config.DB.Model(&track).Association("Sets").Append(&set)
+				if err != nil {
+					log.Printf("error associating track %s with set %s: %v", track.URI, set.ID, err)
+					continue
+				}
+				existingTracksURIMap[track.URI] = track
+			}
 		}
-		config.DB.Save(&tracks)
 	}
 	return nil
 }

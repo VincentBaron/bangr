@@ -17,4 +17,5 @@ type GetTrackResp struct {
 	Name   string    `json:"name"`
 	Artist string    `json:"artist"`
 	Liked  bool      `json:"liked"`
+	Likes  int       `json:"likes"`
 }

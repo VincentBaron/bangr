@@ -10,6 +10,7 @@ import SignupPage from "./pages/SignupPage";
 import axios from "axios";
 import { PlayerProvider } from "./context/PlayerContext";
 import Sidebar from "./components/Sidebar";
+import SpotifySignup from "./components/ui/SpotifyLogin";
 
 function App() {
   const [isSignedUp, setIsSignedUp] = useState<boolean | null>(null);
@@ -46,6 +47,7 @@ function App() {
     //   </Routes>
     // </Router>
     <PlayerProvider>
+      <SpotifySignup />
       <div className="flex min-h-screen w-full">
         <div className="flex items-center p-4 w-full flex-col relative">
           <div className="flex items-center absolute left-0">

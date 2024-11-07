@@ -4,6 +4,14 @@ import { usePlayer } from "../context/PlayerContext";
 import SpotifyPlaylist from "../components/SpotifyPlaylist";
 import PlayerControls from "../components/PlayerControls";
 
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
 export interface Track {
   id: string;
   uri: string;
@@ -92,20 +100,34 @@ export default function SetsPage() {
 
   return (
     <div className="flex w-full flex-col items-center">
-      <div
-        className={`flex justify-center transition-transform duration-300 items-center ${
-          transitionDirection === "left"
-            ? "animate-slide-left"
-            : transitionDirection === "right"
-            ? "animate-slide-right"
-            : ""
-        }`}
-      >
-        {getVisibleSets().map((set, index) => (
-          <div key={index} className="w-1/3 inline-flex m-4 justify-center">
+      <div className="">
+        {/* {getVisibleSets().map((set, index) => (
+          <div
+            key={index}
+            className="inline-flex m-4 justify-center"
+            data-active={index === 1 ? true : undefined}
+          >
             <SpotifyPlaylist set={set} />
           </div>
-        ))}
+        ))} */}
+        <Carousel
+          opts={{
+            align: "start",
+          }}
+          className="w-full max-["
+        >
+          <CarouselContent>
+            {sets.map((set, index) => {
+              return (
+                <CarouselItem key={index} className="basis-1/3">
+                  <SpotifyPlaylist set={set} />
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
       <PlayerControls
         isPlaying={isPlaying}
