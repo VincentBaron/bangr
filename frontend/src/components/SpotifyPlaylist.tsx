@@ -110,19 +110,28 @@ export default function SpotifyPlaylist({ set }: SpotifyPlaylistProps) {
                   )}
               </div>
               <div>
-                <p className="text-primary">{track.name}</p>
+                <p
+                  className={`text-primary ${
+                    playingTrack && playingTrack.uri === track.uri && isPlaying
+                      ? "text-purple"
+                      : ""
+                  }`}
+                >
+                  {track.name}
+                </p>
                 <p className="text-secondary">{track.artist}</p>
               </div>
               <div className="flex row items-center">
                 <button
                   onClick={toggleLikeSong(track)}
-                  className={`p-2 rounded-full focus:outline-none ${
+                  className={`p-2 rounded-full focus:outline-none transition-transform transform hover:scale-125 active:scale-100 ${
                     track.liked ? "bg-purple-500" : "bg-transparent"
                   } hover:bg-purple-200`}
                 >
                   <Flame
-                    color="#E105FB"
-                    fill={`${track.liked ? "#E105FB" : ""}`}
+                    className={`transition-colors text-purple ${
+                      track.liked ? " fill-purple" : ""
+                    }`}
                     size={24}
                   />
                 </button>

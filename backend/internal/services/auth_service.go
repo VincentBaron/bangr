@@ -174,7 +174,7 @@ func (s *AuthService) Login(c *gin.Context, username, password string) error {
 
 	// Respond
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, false)
 	c.SetCookie("SpotifyAuthorization", user.SpotifyToken.AccessToken, 3600*24*30, "", "", false, false)
 	return nil
 }
