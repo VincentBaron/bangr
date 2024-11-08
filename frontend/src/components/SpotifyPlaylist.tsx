@@ -8,6 +8,7 @@ import Lottie from "react-lottie";
 import { Flame } from "lucide-react";
 import { Avatar } from "@radix-ui/react-avatar";
 import { cn } from "@/lib/utils";
+import { AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface SpotifyPlaylistProps extends React.HTMLAttributes<HTMLDivElement> {
   set: Set;
@@ -101,16 +102,27 @@ export default function SpotifyPlaylist({
       )}
       {...props}
     >
-      <CardHeader className="flex-row gap-5">
-        <Avatar></Avatar>
-        <CardTitle className="">{currentSet.username}</CardTitle>
+      <CardHeader className="flex-row gap-3">
+        <Avatar>
+          <AvatarImage
+            src={currentSet.profilePicURL}
+            alt={currentSet.username}
+            className="rounded-full w-10"
+          />
+          <AvatarFallback className="avatar-fallback text-white flex items-center justify-center">
+            {currentSet.username.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <CardTitle className="flex justify-center align-items">
+          {currentSet.username}
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-4">
+        <div className={`flex flex-col gap-4`}>
           {currentSet.tracks?.map((track) => (
             <div
               key={track.id}
-              className={`grid grid-cols-[60px_270px_70px] rounded-lg transition-all`}
+              className={`grid grid-cols-[60px_270px_70px] rounded-lg transition-all hover:bg-purple-200`}
             >
               <div className="relative flex justify-center items-center">
                 <img
@@ -129,7 +141,7 @@ export default function SpotifyPlaylist({
               <div>
                 <p
                   className={`text-primary ${
-                    playingTrack && playingTrack.uri === track.uri && isPlaying
+                    playingTrack && playingTrack.uri === track.uri
                       ? "text-purple"
                       : ""
                   }`}

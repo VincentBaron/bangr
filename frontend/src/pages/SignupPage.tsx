@@ -90,7 +90,7 @@ export default function SignupPage() {
                     key={genre}
                     type="button"
                     variant={
-                      selectedGenres.includes(genre) ? "primary" : "outline"
+                      selectedGenres.includes(genre) ? "default" : "outline"
                     }
                     onClick={() => handleGenreToggle(genre)}
                     className={`mr-2 mb-2 ${

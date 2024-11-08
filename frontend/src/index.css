@@ -105,3 +105,20 @@ body {
     background-position: 0% 100%;
   }
 }
+
+.avatar-fallback {
+  /* Updated radial gradient for a deeper purple center to soft orange edge */
+  background: radial-gradient(circle, #7200b8 20%, #9b00ff 50%, #ff8c42 100%);
+
+  /* General styling */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff; /* Text color for letter */
+  font-weight: bold; /* Bold text for readability */
+  font-size: 1.5rem; /* Adjust based on avatar size */
+  width: 48px; /* Avatar size (adjust as needed) */
+  height: 48px;
+  border-radius: 50%; /* Makes the avatar circular */
+  text-transform: uppercase; /* Ensures the letter is uppercase */
+}

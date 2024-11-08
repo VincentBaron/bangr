@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/VincentBaron/bangr/backend/internal/config"
+	"github.com/VincentBaron/bangr/backend/internal/dto"
 	"github.com/VincentBaron/bangr/backend/internal/models"
 	"github.com/VincentBaron/bangr/backend/internal/repositories"
 	"github.com/gin-gonic/gin"
@@ -25,12 +26,14 @@ import (
 )
 
 type AuthService struct {
-	userRepository *repositories.Repository[models.User]
+	userRepository  *repositories.Repository[models.User]
+	genreRepository *repositories.Repository[models.Genre]
 }
 
-func NewAuthService(userRepo *repositories.Repository[models.User]) *AuthService {
+func NewAuthService(userRepo *repositories.Repository[models.User], genreRepo *repositories.Repository[models.Genre]) *AuthService {
 	return &AuthService{
-		userRepository: userRepo,
+		userRepository:  userRepo,
+		genreRepository: genreRepo,
 	}
 }
 
@@ -98,7 +101,7 @@ func (s *AuthService) CallbackService(c *gin.Context) error {
 	return nil
 }
 
-func (s *AuthService) Signup(c *gin.Context, payload *models.User) (*string, error) {
+func (s *AuthService) Signup(c *gin.Context, payload *dto.PostUserReq) (*string, error) {
 	// Hash the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 10)
 	if err != nil {
@@ -112,10 +115,29 @@ func (s *AuthService) Signup(c *gin.Context, payload *models.User) (*string, err
 		Password: string(hash),
 	}
 
+	// Save the user
 	err = s.userRepository.Save(&user)
 	if err != nil {
 		log.Println(err.Error())
 		return nil, fmt.Errorf("failed to save user: %w", err)
+	}
+
+	// Find existing genres and associate them with the user
+	var genres []models.Genre
+	for _, genreName := range payload.Genres {
+		var genre *models.Genre
+		genre, err := s.genreRepository.FindByFilter(map[string]interface{}{"name": genreName})
+		if err != nil {
+			log.Println(err)
+			return nil, fmt.Errorf("failed to find genre: %w", err)
+		}
+		genres = append(genres, *genre)
+	}
+
+	// Associate genres with user
+	if err := config.DB.Model(&user).Association("Genres").Replace(genres); err != nil {
+		log.Println(err)
+		return nil, fmt.Errorf("failed to associate genres with user: %w", err)
 	}
 
 	// Generate a unique state
@@ -179,5 +201,39 @@ func (s *AuthService) Login(c *gin.Context, username, password string) error {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, false)
 	c.SetCookie("SpotifyAuthorization", user.SpotifyToken.AccessToken, 3600*24*30, "", "", false, false)
+	c.SetCookie("UserID", user.ID.String(), 3600*24*30, "", "", false, false)
 	return nil
+}
+
+func (s *AuthService) Me(c *gin.Context) (*dto.GetUSerResp, error) {
+
+	userID, err := c.Cookie("UserID")
+	if err != nil {
+		log.Println(err)
+		return nil, fmt.Errorf("failed to get userID: %w", err)
+	}
+
+	user, err := s.userRepository.FindByFilter(map[string]interface{}{"id": userID}, "Genres")
+	if err != nil {
+		log.Println(err)
+		return nil, fmt.Errorf("failed to find user: %w", err)
+	}
+	genres := make([]models.GenreName, 0)
+	for _, genre := range user.Genres {
+		genres = append(genres, genre.Name)
+	}
+
+	if user.ID == uuid.Nil {
+		log.Println("User not found")
+		return nil, fmt.Errorf("user not found")
+	}
+
+	userResp := dto.GetUSerResp{
+		ID:            user.ID,
+		Username:      user.Username,
+		ProfilePicURL: user.ProfilePicURL,
+		Genres:        genres,
+	}
+
+	return &userResp, nil
 }

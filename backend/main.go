@@ -45,9 +45,10 @@ func main() {
 	userRepository := repositories.NewRepository[models.User](config.DB)
 	setRepository := repositories.NewRepository[models.Set](config.DB)
 	trackRepository := repositories.NewRepository[models.Track](config.DB)
+	genreRepository := repositories.NewRepository[models.Genre](config.DB)
 
 	// Initialize services
-	authService := services.NewAuthService(userRepository)
+	authService := services.NewAuthService(userRepository, genreRepository)
 	setService := services.NewSetService(setRepository, trackRepository)
 	playerService := services.NewPlayerService()
 
@@ -67,6 +68,7 @@ func main() {
 	r.POST("/sets", middleware.RequireAuth, setHandler.CreateSet)
 	r.GET("/player", middleware.RequireAuth, playerHandler.Player)
 	r.PUT("/tracks/:id/like", middleware.RequireAuth, setHandler.ToggleLikeTrack)
+	r.GET("/me", middleware.RequireAuth, authHandler.Me)
 
 	// r.GET("/status", handler.handleStatus)
 	// r.POST("/store-token", storeTokenHandler)

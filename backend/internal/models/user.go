@@ -6,25 +6,25 @@ import (
 	"github.com/google/uuid"
 )
 
-type Genre string
+type GenreName string
 
 const (
-	Rock       Genre = "Rock"
-	Pop        Genre = "Pop"
-	HipHop     Genre = "Hip-Hop"
-	Jazz       Genre = "Jazz"
-	Classical  Genre = "Classical"
-	Electronic Genre = "Electronic"
-	RnB        Genre = "R&B"
-	Country    Genre = "Country"
-	Reggae     Genre = "Reggae"
-	Metal      Genre = "Metal"
-	Folk       Genre = "Folk"
-	Blues      Genre = "Blues"
-	Indie      Genre = "Indie"
-	Latin      Genre = "Latin"
-	Punk       Genre = "Punk"
-	Soul       Genre = "Soul"
+	Rock       GenreName = "Rock"
+	Pop        GenreName = "Pop"
+	HipHop     GenreName = "Hip-Hop"
+	Jazz       GenreName = "Jazz"
+	Classical  GenreName = "Classical"
+	Electronic GenreName = "Electronic"
+	RnB        GenreName = "R&B"
+	Country    GenreName = "Country"
+	Reggae     GenreName = "Reggae"
+	Metal      GenreName = "Metal"
+	Folk       GenreName = "Folk"
+	Blues      GenreName = "Blues"
+	Indie      GenreName = "Indie"
+	Latin      GenreName = "Latin"
+	Punk       GenreName = "Punk"
+	Soul       GenreName = "Soul"
 )
 
 type User struct {
@@ -35,8 +35,15 @@ type User struct {
 	Password            string `json:"password"`
 	Sets                []Set  `gorm:"foreignKey:UserID"`
 	SpotifyToken        SpotifyToken
-	SpotifyUserID       string   `json:"spotify_user_id"`
-	SpotifyPlaylistLink string   `json:"spotify_playlist_link"`
-	ProfilePicURL       string   `json:"profilePicURL"`
-	Genres              []string `gorm:"type:text[]" json:"genres"`
+	SpotifyUserID       string  `json:"spotify_user_id"`
+	SpotifyPlaylistLink string  `json:"spotify_playlist_link"`
+	ProfilePicURL       string  `json:"profilePicURL"`
+	Genres              []Genre `gorm:"many2many:user_genres;" json:"genres"`
+}
+
+type Genre struct {
+	Name      GenreName `json:"name" gorm:"primaryKey"`
+	Users     []User    `gorm:"many2many:user_genres;" json:"users"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

@@ -78,7 +78,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
       .post("http://localhost:8080/signup", {
         username: username,
         password,
-        selectedGenres,
+        genres: selectedGenres,
       })
       .then((response) => {
         window.location.href = response.data.url;

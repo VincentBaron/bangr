@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/VincentBaron/bangr/backend/internal/models"
+	"github.com/VincentBaron/bangr/backend/internal/dto"
 	"github.com/VincentBaron/bangr/backend/internal/services"
 	"github.com/gin-gonic/gin"
 )
@@ -66,7 +66,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 func (h *AuthHandler) Signup(c *gin.Context) {
 	// Get the email/pass off req Body
-	var payload models.User
+	var payload dto.PostUserReq
 
 	if c.Bind(&payload) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -84,4 +84,15 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 	}
 	// // Respond
 	c.JSON(http.StatusOK, gin.H{"url": url})
+}
+
+func (h *AuthHandler) Me(c *gin.Context) {
+	user, err := h.authService.Me(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
