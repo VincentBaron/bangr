@@ -57,7 +57,7 @@ const Header: React.FC = () => {
         <h1 className="text-3xl font-bold ml-4 text-primary">Bangr</h1>
       </div>
       <div className="flex items-center gap-4">
-        <div className="flex flex-wrap gap-2 justify-center">
+        <div className="flex gap-2 justify-center">
           {user.genres.map((genre) => (
             <Badge
               key={genre}
@@ -70,10 +70,10 @@ const Header: React.FC = () => {
             </Badge>
           ))}
           <Select onValueChange={handleGenreToggle}>
-            <SelectTrigger className="ml-2 h-8">
-              <SelectValue placeholder="Add Genre" />
+            <SelectTrigger className="bg-purple text-primary">
+              <SelectValue placeholder="Add genre"></SelectValue>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-gray text-primary">
               {musicGenres
                 .filter((genre) => !user.genres.includes(genre))
                 .map((genre) => (
