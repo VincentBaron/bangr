@@ -85,14 +85,3 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 	// // Respond
 	c.JSON(http.StatusOK, gin.H{"url": url})
 }
-
-func (h *AuthHandler) Me(c *gin.Context) {
-	user, err := h.authService.Me(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	c.JSON(http.StatusOK, user)
-}

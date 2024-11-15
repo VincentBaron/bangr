@@ -17,3 +17,8 @@ type GetUSerResp struct {
 	Genres        []models.GenreName `json:"genres"`
 	ProfilePicURL string             `json:"profile_pic_url"`
 }
+
+type PatchUserReq struct {
+	Username string             `json:"username"`
+	Genres   []models.GenreName `json:"genres"`
+}

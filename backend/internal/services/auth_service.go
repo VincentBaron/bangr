@@ -204,36 +204,3 @@ func (s *AuthService) Login(c *gin.Context, username, password string) error {
 	c.SetCookie("UserID", user.ID.String(), 3600*24*30, "", "", false, false)
 	return nil
 }
-
-func (s *AuthService) Me(c *gin.Context) (*dto.GetUSerResp, error) {
-
-	userID, err := c.Cookie("UserID")
-	if err != nil {
-		log.Println(err)
-		return nil, fmt.Errorf("failed to get userID: %w", err)
-	}
-
-	user, err := s.userRepository.FindByFilter(map[string]interface{}{"id": userID}, "Genres")
-	if err != nil {
-		log.Println(err)
-		return nil, fmt.Errorf("failed to find user: %w", err)
-	}
-	genres := make([]models.GenreName, 0)
-	for _, genre := range user.Genres {
-		genres = append(genres, genre.Name)
-	}
-
-	if user.ID == uuid.Nil {
-		log.Println("User not found")
-		return nil, fmt.Errorf("user not found")
-	}
-
-	userResp := dto.GetUSerResp{
-		ID:            user.ID,
-		Username:      user.Username,
-		ProfilePicURL: user.ProfilePicURL,
-		Genres:        genres,
-	}
-
-	return &userResp, nil
-}
