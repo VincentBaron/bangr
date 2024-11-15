@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/VincentBaron/bangr/backend/internal/config"
 	"github.com/VincentBaron/bangr/backend/internal/dto"
 	"github.com/VincentBaron/bangr/backend/internal/models"
 	"github.com/VincentBaron/bangr/backend/internal/repositories"
@@ -71,11 +72,16 @@ func (s *UserService) UpdateMe(c *gin.Context, params dto.PatchUserReq) (*dto.Ge
 
 	user.Username = params.Username
 
-	genres := make([]models.Genre, 0)
-	for _, genre := range params.Genres {
-		genres = append(genres, models.Genre{Name: genre})
+	if len(params.Genres) > 0 {
+		genres := make([]models.Genre, 0)
+		for _, genre := range params.Genres {
+			genres = append(genres, models.Genre{Name: genre})
+		}
+		if err := config.DB.Model(&user).Association("Genres").Replace(genres); err != nil {
+			log.Println(err)
+			return nil, fmt.Errorf("failed to associate genres with user: %w", err)
+		}
 	}
-	user.Genres = genres
 
 	if err := s.userRepository.Save(user); err != nil {
 		log.Println(err)

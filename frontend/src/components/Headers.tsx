@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,28 +10,26 @@ import {
 } from "@/components/ui/select";
 import { useUser } from "@/context/UserContext";
 import { X } from "lucide-react";
-
-const musicGenres = [
-  "Rock",
-  "Pop",
-  "Hip-Hop",
-  "Jazz",
-  "Classical",
-  "Electronic",
-  "R&B",
-  "Country",
-  "Reggae",
-  "Metal",
-  "Folk",
-  "Blues",
-  "Indie",
-  "Latin",
-  "Punk",
-  "Soul",
-];
+import axios from "axios";
 
 const Header: React.FC = () => {
   const { user, setUser } = useUser();
+  const [allGenres, setAllGenres] = useState<string[]>([]);
+
+  useEffect(() => {
+    console.log(user);
+    const fetchGenres = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/genres", {
+          withCredentials: true,
+        });
+        setAllGenres(response.data);
+      } catch (error) {
+        console.error("Failed to fetch genres", error);
+      }
+    };
+    fetchGenres();
+  }, []);
 
   const handleGenreToggle = (genre: string) => {
     if (user) {
@@ -39,6 +37,14 @@ const Header: React.FC = () => {
         ? user.genres.filter((g) => g !== genre)
         : [...(user.genres || []), genre];
       setUser({ ...user, genres: updatedGenres });
+      axios.patch(
+        `http://localhost:8080/me`,
+        {
+          username: user.username,
+          genres: updatedGenres,
+        },
+        { withCredentials: true }
+      );
     }
   };
 
@@ -74,7 +80,7 @@ const Header: React.FC = () => {
               <SelectValue placeholder="Add genre"></SelectValue>
             </SelectTrigger>
             <SelectContent className="bg-gray text-primary">
-              {musicGenres
+              {allGenres
                 .filter((genre) => !user.genres.includes(genre))
                 .map((genre) => (
                   <SelectItem key={genre} value={genre}>
