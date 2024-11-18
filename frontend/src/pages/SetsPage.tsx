@@ -51,9 +51,9 @@ export default function SetsPage() {
   }, []);
 
   useEffect(() => {
-    if (player && deviceId && sets.length > 0) {
+    if (player && deviceId && sets.length > 2) {
       const set = sets[selectedIndex];
-      console.log(set.link);
+      console.log("yihaaa");
       axios.get(
         `http://localhost:8080/player?action=play&device_id=${deviceId}&&link=${set.link}`,
         { withCredentials: true }
