@@ -30,8 +30,41 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 	setsResp := make([]dto.GetSetResp, 0)
 	user := c.MustGet("user").(*models.User)
 
-	// Get all sets
-	sets, err := s.setRepository.FindAllByFilter(map[string]interface{}{}, "Tracks", "User")
+	// Get current user's genres
+	var currentUser models.User
+	if err := config.DB.Preload("Genres").First(&currentUser, user.ID).Error; err != nil {
+		return nil, err
+	}
+	currentUserGenres := make(map[models.GenreName]bool)
+	for _, genre := range currentUser.Genres {
+		currentUserGenres[genre.Name] = true
+	}
+
+	// Get all users and their genres
+	var users []models.User
+	if err := config.DB.Preload("Genres").Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	// Filter users with at least 50% genre match
+	filteredUserIDs := make([]uuid.UUID, 0)
+	for _, u := range users {
+		if u.ID == user.ID {
+			continue
+		}
+		matchingGenres := 0
+		for _, genre := range u.Genres {
+			if currentUserGenres[genre.Name] {
+				matchingGenres++
+			}
+		}
+		if float64(matchingGenres)/float64(len(currentUserGenres)) >= 0.5 {
+			filteredUserIDs = append(filteredUserIDs, u.ID)
+		}
+	}
+
+	// Get sets for filtered users
+	sets, err := s.setRepository.FindAllByFilter(map[string]interface{}{"user_id": filteredUserIDs}, "Tracks", "User")
 	if err != nil {
 		return nil, err
 	}
