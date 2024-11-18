@@ -77,6 +77,7 @@ const Header: React.FC = () => {
     document.cookie = "SpotifyAuthorization=; Max-Age=0; path=/;";
     document.cookie = "UserID=; Max-Age=0; path=/;";
     setUser(null);
+    window.location.reload();
   };
 
   if (!user) {

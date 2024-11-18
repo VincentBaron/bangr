@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"sort"
 	"strings"
 	"time"
 
@@ -46,8 +47,14 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 		return nil, err
 	}
 
-	// Filter users with at least 50% genre match
-	filteredUserIDs := make([]uuid.UUID, 0)
+	// Calculate matching percentage for each user
+	type userMatch struct {
+		User            models.User
+		MatchingGenres  int
+		TotalGenres     int
+		MatchingPercent float64
+	}
+	userMatches := make([]userMatch, 0)
 	for _, u := range users {
 		if u.ID == user.ID {
 			continue
@@ -58,12 +65,26 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 				matchingGenres++
 			}
 		}
-		if float64(matchingGenres)/float64(len(currentUserGenres)) >= 0.5 {
-			filteredUserIDs = append(filteredUserIDs, u.ID)
-		}
+		totalGenres := len(currentUserGenres)
+		matchingPercent := float64(matchingGenres) / float64(totalGenres)
+		userMatches = append(userMatches, userMatch{
+			User:            u,
+			MatchingGenres:  matchingGenres,
+			TotalGenres:     totalGenres,
+			MatchingPercent: matchingPercent,
+		})
 	}
 
-	// Get sets for filtered users
+	// Sort users by matching percentage in descending order
+	sort.Slice(userMatches, func(i, j int) bool {
+		return userMatches[i].MatchingPercent > userMatches[j].MatchingPercent
+	})
+
+	// Get sets for sorted users
+	filteredUserIDs := make([]uuid.UUID, 0)
+	for _, um := range userMatches {
+		filteredUserIDs = append(filteredUserIDs, um.User.ID)
+	}
 	sets, err := s.setRepository.FindAllByFilter(map[string]interface{}{"user_id": filteredUserIDs}, "Tracks", "User")
 	if err != nil {
 		return nil, err
