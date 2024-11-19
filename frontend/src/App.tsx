@@ -5,7 +5,6 @@ import SetsPage from "./pages/SetsPage";
 import { PlayerProvider } from "./context/PlayerContext";
 import AuthDialog from "./components/AuthDialog"; // Import AuthDialog component
 import Header from "./components/Headers";
-import { User } from "lucide-react";
 import { UserProvider } from "./context/UserContext";
 
 export default function App() {
@@ -27,23 +26,23 @@ export default function App() {
   }
 
   return (
-    <PlayerProvider>
-      <UserProvider>
-        <div className="flex min-h-screen w-full flex-col">
-          <Header />
-          <div className="flex justify-center items-center flex-grow w-full">
-            {isSignedUp ? (
+    <div className="flex min-h-screen w-full flex-col">
+      {isSignedUp ? (
+        <UserProvider>
+          <PlayerProvider>
+            <Header />
+            <div className="flex justify-center items-center flex-grow w-full">
               <SetsPage />
-            ) : (
-              <AuthDialog
-                isOpen={!isSignedUp}
-                onClose={() => setIsSignedUp(true)}
-                onSignUp={() => setIsSignedUp(true)}
-              />
-            )}
-          </div>
-        </div>
-      </UserProvider>
-    </PlayerProvider>
+            </div>
+          </PlayerProvider>
+        </UserProvider>
+      ) : (
+        <AuthDialog
+          isOpen={!isSignedUp}
+          onClose={() => setIsSignedUp(true)}
+          onSignUp={() => setIsSignedUp(true)}
+        />
+      )}
+    </div>
   );
 }
