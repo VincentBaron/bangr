@@ -64,6 +64,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
       )
       .then((response) => {
         console.log("response data: ", response.data);
+        window.location.reload();
       })
       .catch((error) => {
         console.log("error response data:", error.response.data);

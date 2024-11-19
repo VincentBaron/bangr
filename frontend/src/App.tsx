@@ -8,26 +8,27 @@ import Header from "./components/Headers";
 import { UserProvider } from "./context/UserContext";
 
 export default function App() {
-  const [isSignedUp, setIsSignedUp] = useState<boolean | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkUserStatus = () => {
+      console.log("document.cookie" + document.cookie);
       const token = document.cookie
         .split("; ")
         .find((row) => row.startsWith("SpotifyAuthorization="));
-      setIsSignedUp(!!token);
+      setIsLoggedIn(!!token);
     };
 
     checkUserStatus();
   }, []);
 
-  if (isSignedUp === null) {
+  if (isLoggedIn === null) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      {isSignedUp ? (
+      {isLoggedIn ? (
         <UserProvider>
           <PlayerProvider>
             <Header />
@@ -38,9 +39,9 @@ export default function App() {
         </UserProvider>
       ) : (
         <AuthDialog
-          isOpen={!isSignedUp}
-          onClose={() => setIsSignedUp(true)}
-          onSignUp={() => setIsSignedUp(true)}
+          isOpen={!isLoggedIn}
+          onClose={() => setIsLoggedIn(true)}
+          onSignUp={() => setIsLoggedIn(true)}
         />
       )}
     </div>

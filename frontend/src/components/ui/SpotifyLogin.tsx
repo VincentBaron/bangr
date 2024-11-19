@@ -27,6 +27,9 @@ const SpotifySignup: FC = () => {
       )
       .then((response) => {
         console.log("response data: ", response.data);
+        console.log("before reload");
+        window.location.reload();
+        console.log("before reload");
       })
       .catch((error) => {
         console.log("error response data:", error.response.data);
