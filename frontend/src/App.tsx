@@ -8,18 +8,18 @@ import Header from "./components/Headers";
 import { UserProvider } from "./context/UserContext";
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(false);
 
   useEffect(() => {
     const checkUserStatus = () => {
       console.log("document.cookie" + document.cookie);
       const token = document.cookie
         .split("; ")
-        .find((row) => row.startsWith("SpotifyAuthorization="));
+        .find((row) => row.startsWith("UserID="));
       setIsLoggedIn(!!token);
     };
-
     checkUserStatus();
+    console.log(isLoggedIn);
   }, []);
 
   if (isLoggedIn === null) {
