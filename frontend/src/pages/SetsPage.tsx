@@ -36,6 +36,7 @@ export default function SetsPage() {
   const [transitionDirection, setTransitionDirection] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [api, setApi] = useState<CarouselApi>();
+  const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
 
   useEffect(() => {
     axios
@@ -53,7 +54,6 @@ export default function SetsPage() {
   useEffect(() => {
     if (player && deviceId && sets.length > 2) {
       const set = sets[selectedIndex];
-      console.log("yihaaa");
       axios.get(
         `http://localhost:8080/player?action=play&device_id=${deviceId}&&link=${set.link}`,
         { withCredentials: true }
@@ -66,6 +66,7 @@ export default function SetsPage() {
     setTransitionDirection("left");
     setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
     setIsPlaying(true);
+    setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
   };
 
   const handleNextPlaylist = () => {
@@ -73,24 +74,37 @@ export default function SetsPage() {
     setTransitionDirection("right");
     setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets.length - 2));
     setIsPlaying(true);
+    setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
   };
 
   const handlePrevTrack = () => {
-    if (player) {
-      player.previousTrack().catch((error: any) => {
-        console.error("Failed to play previous track", error);
-      });
+    if (currentTrackIndex === 0) {
+      handlePrevPlaylist();
+    } else {
+      if (player) {
+        player.previousTrack().catch((error: any) => {
+          console.error("Failed to play previous track", error);
+        });
+        setCurrentTrackIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+      }
+      setIsPlaying(true);
     }
-    setIsPlaying(true);
   };
 
   const handleNextTrack = () => {
-    if (player) {
-      player.nextTrack().catch((error: any) => {
-        console.error("Failed to play next track", error);
-      });
+    if (currentTrackIndex === sets[selectedIndex].tracks.length - 1) {
+      handleNextPlaylist();
+    } else {
+      if (player) {
+        player.nextTrack().catch((error: any) => {
+          console.error("Failed to play next track", error);
+        });
+        setCurrentTrackIndex((prevIndex) =>
+          Math.min(prevIndex + 1, sets[selectedIndex].tracks.length - 1)
+        );
+      }
+      setIsPlaying(true);
     }
-    setIsPlaying(true);
   };
 
   return (
