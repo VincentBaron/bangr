@@ -39,7 +39,14 @@ func (s *PlayerService) HandlePlayer(c *gin.Context, spotifyClient *spotify.Clie
 			return nil, err
 		}
 	case models.PlayerActionPause:
-		err = spotifyClient.Pause(c)
+		var options spotify.PlayOptions
+		if params.Link != "" {
+			options.PlaybackContext = (*spotify.URI)(&params.Link)
+		}
+		if params.DeviceID != "" {
+			options.DeviceID = &params.DeviceID
+		}
+		err = spotifyClient.PauseOpt(c, &options)
 		if err != nil {
 			return nil, err
 		}

@@ -34,7 +34,7 @@ export default function SetsPage() {
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
   const { player, deviceId } = usePlayer();
   const [transitionDirection, setTransitionDirection] = useState<string>("");
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [api, setApi] = useState<CarouselApi>();
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
 
@@ -55,7 +55,7 @@ export default function SetsPage() {
     if (player && deviceId && sets.length > 2) {
       const set = sets[selectedIndex];
       axios.get(
-        `http://localhost:8080/player?action=play&device_id=${deviceId}&&link=${set.link}`,
+        `http://localhost:8080/player?action=pause&device_id=${deviceId}&&link=${set.link}`,
         { withCredentials: true }
       );
     }
@@ -65,7 +65,6 @@ export default function SetsPage() {
     api?.scrollPrev();
     setTransitionDirection("left");
     setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
-    setIsPlaying(true);
     setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
   };
 
@@ -73,7 +72,6 @@ export default function SetsPage() {
     api?.scrollNext();
     setTransitionDirection("right");
     setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets.length - 2));
-    setIsPlaying(true);
     setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
   };
 
@@ -87,7 +85,6 @@ export default function SetsPage() {
         });
         setCurrentTrackIndex((prevIndex) => Math.max(prevIndex - 1, 0));
       }
-      setIsPlaying(true);
     }
   };
 
@@ -103,7 +100,6 @@ export default function SetsPage() {
           Math.min(prevIndex + 1, sets[selectedIndex].tracks.length - 1)
         );
       }
-      setIsPlaying(true);
     }
   };
 
