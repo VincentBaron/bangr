@@ -39,16 +39,27 @@ export default function SetsPage() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/sets", { withCredentials: true })
-      .then((response: AxiosResponse<any>) => {
+    const fetchSets = async () => {
+      try {
+        const response: AxiosResponse<any> = await axios.get(
+          "http://localhost:8080/sets",
+          { withCredentials: true }
+        );
         const fetchedSets = response.data.sets as Set[];
-        setSets([
-          { id: "dummy", username: "", link: "", tracks: [] },
-          ...fetchedSets,
-          { id: "dummy", username: "", link: "", tracks: [] },
-        ]);
-      });
+        const dummySet = { id: "dummy", username: "", link: "", tracks: [] };
+
+        if (window.innerWidth >= 640) {
+          // Tailwind's sm breakpoint is 640px
+          setSets([dummySet, ...fetchedSets, dummySet]);
+        } else {
+          setSets(fetchedSets);
+        }
+      } catch (error) {
+        console.error("Failed to fetch sets", error);
+      }
+    };
+
+    fetchSets();
   }, []);
 
   useEffect(() => {
@@ -118,7 +129,7 @@ export default function SetsPage() {
               return (
                 <CarouselItem
                   key={index}
-                  className="group basis-1/3 "
+                  className="sm:group sm:basis-1/3"
                   data-active={selectedIndex === index}
                 >
                   <SpotifyPlaylist

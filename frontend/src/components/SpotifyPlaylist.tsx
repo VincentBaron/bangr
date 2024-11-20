@@ -122,7 +122,7 @@ export default function SpotifyPlaylist({
           {currentSet.tracks?.map((track) => (
             <div
               key={track.id}
-              className={`grid grid-cols-[60px_270px_70px] rounded-lg transition-all hover:bg-purple-200`}
+              className={`grid grid-cols-[1fr_3fr_1fr] rounded-lg transition-all hover:bg-purple-200`}
             >
               <div className="relative flex justify-center items-center">
                 <img
