@@ -53,6 +53,7 @@ export default function SetsPage() {
           setSets([dummySet, ...fetchedSets, dummySet]);
         } else {
           setSets(fetchedSets);
+          setSelectedIndex(0);
         }
       } catch (error) {
         console.error("Failed to fetch sets", error);
