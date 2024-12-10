@@ -48,21 +48,21 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "ArrowLeft") {
         handlePrevPlaylist();
-        setIsPlaying(true);
+        setIsPlaying(false);
       } else if (event.code === "ArrowRight") {
         handleNextPlaylist();
-        setIsPlaying(true);
+        setIsPlaying(false);
       } else if (event.code === "Space") {
         event.preventDefault();
         handlePlayPause();
       } else if (event.code === "ArrowDown") {
         event.preventDefault();
         handleNextTrack();
-        setIsPlaying(true);
+        setIsPlaying(false);
       } else if (event.code === "ArrowUp") {
         event.preventDefault();
         handlePrevTrack();
-        setIsPlaying(true);
+        setIsPlaying(false);
       }
     };
 

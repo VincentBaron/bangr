@@ -17,6 +17,7 @@ func NewPlayerService() *PlayerService {
 func (s *PlayerService) HandlePlayer(c *gin.Context, spotifyClient *spotify.Client, params models.HandlerPlayerQueryParams) (*spotify.CurrentlyPlaying, error) {
 	var currentlyPlaying *spotify.CurrentlyPlaying
 	var err error
+	fmt.Printf("params: %v\n", params.Link)
 
 	// Handle player actions
 	switch params.Action {
@@ -46,10 +47,11 @@ func (s *PlayerService) HandlePlayer(c *gin.Context, spotifyClient *spotify.Clie
 		if params.DeviceID != "" {
 			options.DeviceID = &params.DeviceID
 		}
-		err = spotifyClient.PauseOpt(c, &options)
+		err = spotifyClient.PlayOpt(c, &options)
 		if err != nil {
 			return nil, err
 		}
+		err = spotifyClient.PauseOpt(c, &options)
 		currentlyPlaying, err = spotifyClient.PlayerCurrentlyPlaying(c)
 		if err != nil {
 			return nil, err
