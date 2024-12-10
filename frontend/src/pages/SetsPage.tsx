@@ -130,7 +130,7 @@ export default function SetsPage() {
               return (
                 <CarouselItem
                   key={index}
-                  className="sm:group sm:basis-1/3"
+                  className="group basis-full sm:basis-1/3 flex justify-center"
                   data-active={selectedIndex === index}
                 >
                   <SpotifyPlaylist
