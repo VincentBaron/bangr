@@ -92,7 +92,9 @@ const Header: React.FC = () => {
           className="h-16 w-16"
           alt="Website Logo"
         />
-        <h1 className="text-3xl font-bold ml-4 text-primary">Bangr</h1>
+        <h1 className="text-3xl font-bold ml-4 text-primary font-custom">
+          Bangr
+        </h1>
       </div>
       <div className="flex items-center gap-4">
         <div className="flex gap-2 justify-center">
@@ -109,9 +111,12 @@ const Header: React.FC = () => {
           ))}
           <Select onValueChange={handleGenreToggle}>
             <SelectTrigger className="bg-purple text-primary">
-              <SelectValue placeholder="Add genre"></SelectValue>
+              <SelectValue
+                placeholder="Add genre"
+                className="font-custom"
+              ></SelectValue>
             </SelectTrigger>
-            <SelectContent className="bg-gray text-primary">
+            <SelectContent className="bg-gray text-primary font-custom">
               {allGenres
                 .filter((genre) => !user.genres.includes(genre))
                 .map((genre) => (
@@ -135,7 +140,9 @@ const Header: React.FC = () => {
                   {user.username.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="ml-2 text-primary text-lg">{user.username}</span>
+              <span className="ml-2 text-primary text-lg font-custom">
+                {user.username}
+              </span>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

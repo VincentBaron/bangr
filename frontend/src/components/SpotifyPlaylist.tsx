@@ -113,7 +113,7 @@ export default function SpotifyPlaylist({
             {currentSet.username.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <CardTitle className="flex justify-center align-items">
+        <CardTitle className="flex justify-center align-items font-custom">
           {currentSet.username}
         </CardTitle>
       </CardHeader>

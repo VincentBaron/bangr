@@ -17,6 +17,9 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        custom: ["CustomFont", "sans-serif"],
+      },
       keyframes: {
         "accordion-down": {
           from: {

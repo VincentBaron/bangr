@@ -34,7 +34,7 @@ export default function SetsPage() {
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
   const { player, deviceId } = usePlayer();
   const [transitionDirection, setTransitionDirection] = useState<string>("");
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [api, setApi] = useState<CarouselApi>();
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
 
@@ -65,9 +65,10 @@ export default function SetsPage() {
 
   useEffect(() => {
     if (player && deviceId && sets.length > 2) {
+      console.log("deviceId: ", deviceId);
       const set = sets[selectedIndex];
       axios.get(
-        `http://localhost:8080/player?action=pause&device_id=${deviceId}&&link=${set.link}`,
+        `http://localhost:8080/player?action=play&device_id=${deviceId}&&link=${set.link}`,
         { withCredentials: true }
       );
     }

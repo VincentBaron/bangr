@@ -6,6 +6,7 @@ import { PlayerProvider } from "./context/PlayerContext";
 import AuthDialog from "./components/AuthDialog"; // Import AuthDialog component
 import Header from "./components/Headers";
 import { UserProvider } from "./context/UserContext";
+import "./styles/fonts.css";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(false);
