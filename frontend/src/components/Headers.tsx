@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -85,7 +86,7 @@ const Header: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center justify-between p-6 w-full bg-gray-900">
+    <Card className="flex items-center justify-between mx-[40rem] mt-8 bg-gray p-2 border-purple">
       <div className="flex items-center">
         <img
           src="../public/assets/logo.svg"
@@ -96,76 +97,71 @@ const Header: React.FC = () => {
           Bangr
         </h1>
       </div>
-      <div className="flex items-center gap-4">
-        <div className="flex gap-2 justify-center">
-          {user.genres.map((genre) => (
-            <Badge
-              key={genre}
-              variant="default"
-              className="cursor-pointer text-primary flex items-center"
-              onClick={() => handleGenreToggle(genre)}
-            >
-              {genre}
-              <X className="ml-1" size={16} />
-            </Badge>
-          ))}
-          <Select onValueChange={handleGenreToggle}>
-            <SelectTrigger className="bg-purple text-primary">
-              <SelectValue
-                placeholder="Add genre"
-                className="font-custom"
-              ></SelectValue>
-            </SelectTrigger>
-            <SelectContent className="bg-gray text-primary font-custom">
-              {allGenres
-                .filter((genre) => !user.genres.includes(genre))
-                .map((genre) => (
-                  <SelectItem key={genre} value={genre}>
-                    {genre}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="flex items-center cursor-pointer">
-              <Avatar className="w-10 h-10 rounded-full">
-                <AvatarImage
-                  src={user.profilePicURL}
-                  alt={user.username}
-                  className="rounded-full"
-                />
-                <AvatarFallback className="bg-orange-500 text-white flex items-center justify-center rounded-full">
-                  {user.username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <span className="ml-2 text-primary text-lg font-custom">
-                {user.username}
-              </span>
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>
-              <input
-                type="text"
-                value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value)}
-                className="bg-gray-800 text-white p-2 rounded"
-                placeholder="New username"
-              />
-              <button
-                onClick={handleUsernameChange}
-                className="ml-2 bg-blue-500 text-white p-2 rounded"
-              >
-                Update
-              </button>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex gap-2 justify-center">
+        {user.genres.map((genre) => (
+          <Badge
+            key={genre}
+            variant="default"
+            className="cursor-pointer text-primary flex items-center font-custom"
+            onClick={() => handleGenreToggle(genre)}
+          >
+            {genre}
+            <X className="ml-1" size={16} />
+          </Badge>
+        ))}
+        <Select onValueChange={handleGenreToggle}>
+          <SelectTrigger className="bg-purple text-primary">
+            <SelectValue className="font-custom"></SelectValue>
+          </SelectTrigger>
+          <SelectContent className="bg-gray text-primary font-custom">
+            {allGenres
+              .filter((genre) => !user.genres.includes(genre))
+              .map((genre) => (
+                <SelectItem key={genre} value={genre}>
+                  {genre}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
       </div>
-    </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <div className="flex items-center cursor-pointer">
+            <Avatar className="w-10 h-10 rounded-full">
+              <AvatarImage
+                src={user.profilePicURL}
+                alt={user.username}
+                className="rounded-full"
+              />
+              <AvatarFallback className="bg-orange-500 text-white flex items-center justify-center rounded-full">
+                {user.username.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="ml-2 text-primary text-lg font-custom">
+              {user.username}
+            </span>
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>
+            <input
+              type="text"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              className="bg-gray-800 text-white p-2 rounded"
+              placeholder="New username"
+            />
+            <button
+              onClick={handleUsernameChange}
+              className="ml-2 bg-blue-500 text-white p-2 rounded"
+            >
+              Update
+            </button>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </Card>
   );
 };
 
