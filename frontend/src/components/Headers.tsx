@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Toggle } from "@/components/ui/toggle";
 import { useUser } from "@/context/UserContext";
-import { X } from "lucide-react";
 import axios from "axios";
 
 const Header: React.FC = () => {
@@ -86,82 +77,68 @@ const Header: React.FC = () => {
   }
 
   return (
-    <Card className="flex items-center justify-between mx-[40rem] mt-8 bg-gray p-2 border-purple">
-      <div className="flex items-center">
+    <div className="flex flex-col items-center justify-between mx-[40rem] mt-[20rem]">
+      <div className="flex items-center mb-10">
         <img
           src="../public/assets/logo.svg"
           className="h-16 w-16"
           alt="Website Logo"
         />
-        <h1 className="text-3xl font-bold ml-4 text-primary font-custom">
+        {/* <h1 className="text-3xl font-bold ml-4 text-primary font-custom">
           Bangr
-        </h1>
+        </h1> */}
       </div>
       <div className="flex gap-2 justify-center">
-        {user.genres.map((genre) => (
-          <Badge
+        {allGenres.map((genre) => (
+          <Toggle
             key={genre}
-            variant="default"
-            className="cursor-pointer text-primary flex items-center font-custom"
-            onClick={() => handleGenreToggle(genre)}
+            pressed={user.genres.includes(genre)}
+            onPressedChange={() => handleGenreToggle(genre)}
+            className={`cursor-pointer text-primary flex items-center font-custom ${
+              user.genres.includes(genre) ? "bg-purple-500" : "bg-gray-300"
+            }`}
           >
             {genre}
-            <X className="ml-1" size={16} />
-          </Badge>
+          </Toggle>
         ))}
-        <Select onValueChange={handleGenreToggle}>
-          <SelectTrigger className="bg-purple text-primary">
-            <SelectValue className="font-custom"></SelectValue>
-          </SelectTrigger>
-          <SelectContent className="bg-gray text-primary font-custom">
-            {allGenres
-              .filter((genre) => !user.genres.includes(genre))
-              .map((genre) => (
-                <SelectItem key={genre} value={genre}>
-                  {genre}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="flex items-center cursor-pointer">
-            <Avatar className="w-10 h-10 rounded-full">
-              <AvatarImage
-                src={user.profilePicURL}
-                alt={user.username}
-                className="rounded-full"
+      <div className="absolute top-4 right-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex items-center cursor-pointer">
+              <Avatar className="w-10 h-10 rounded-full">
+                <AvatarImage
+                  src="https://github.com/shadcn.png"
+                  alt={user.username}
+                  className="rounded-full"
+                />
+                <AvatarFallback className="bg-orange-500 text-white flex items-center justify-center rounded-full">
+                  {user.username.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>
+              <input
+                type="text"
+                value={newUsername}
+                onChange={(e) => setNewUsername(e.target.value)}
+                className="bg-gray-800 text-white p-2 rounded"
+                placeholder="New username"
               />
-              <AvatarFallback className="bg-orange-500 text-white flex items-center justify-center rounded-full">
-                {user.username.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="ml-2 text-primary text-lg font-custom">
-              {user.username}
-            </span>
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem>
-            <input
-              type="text"
-              value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
-              className="bg-gray-800 text-white p-2 rounded"
-              placeholder="New username"
-            />
-            <button
-              onClick={handleUsernameChange}
-              className="ml-2 bg-blue-500 text-white p-2 rounded"
-            >
-              Update
-            </button>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </Card>
+              <button
+                onClick={handleUsernameChange}
+                className="ml-2 bg-blue-500 text-white p-2 rounded"
+              >
+                Update
+              </button>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
   );
 };
 

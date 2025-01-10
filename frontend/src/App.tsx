@@ -33,7 +33,7 @@ export default function App() {
         <UserProvider>
           <PlayerProvider>
             <Header />
-            <div className="flex justify-center items-center flex-grow w-full">
+            <div className="flex justify-center items-center w-full mt-8">
               <SetsPage />
             </div>
           </PlayerProvider>
