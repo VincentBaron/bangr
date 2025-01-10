@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import SetsPage from "./pages/SetsPage";
 import { PlayerProvider } from "./context/PlayerContext";
@@ -7,6 +5,7 @@ import AuthDialog from "./components/AuthDialog"; // Import AuthDialog component
 import Header from "./components/Headers";
 import { UserProvider } from "./context/UserContext";
 import "./styles/fonts.css";
+import "./styles/background-animation.css"; // Import the background animation CSS
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(false);
@@ -29,6 +28,7 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
+      <div className="cosmic-background" />
       {isLoggedIn ? (
         <UserProvider>
           <PlayerProvider>
