@@ -97,7 +97,7 @@ body {
     48vw 9vh 1px 1px #fff, -43vw 30vh 1px 1px #fff, 29vw -12vh 1px 1px #fff,
     -48vw 13vh 1px 0px #fff, -42vw 32vh 1px 1px #fff, 34vw 15vh 1px 1px #fff,
     29vw -37vh 1px 1px #fff, 28vw 2vh 0px 0px #fff;
-  animation: zoom 8s alternate infinite;
+  animation: zoom 10s alternate infinite;
 }
 
 @keyframes zoom {
