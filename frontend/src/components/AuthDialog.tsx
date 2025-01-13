@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const musicGenres = [
   "Rock",
@@ -96,87 +95,104 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Welcome to Bangr</DialogTitle>
-          <DialogDescription>
+    <div className="flex min-h-screen w-full flex-col justify-center items-center">
+      <div className="flex items-center mb-10">
+        <img
+          src="../public/assets/logo.svg"
+          className="h-20 w-20"
+          alt="Website Logo"
+        />
+      </div>
+      <Card className="bg-gray text-primary border-purple w-full max-w-md mx-auto my-4">
+        <CardHeader>
+          <CardTitle>Welcome to Bangr</CardTitle>
+          <CardDescription>
             Login or create your profile to start discovering music.
-          </DialogDescription>
-        </DialogHeader>
-        <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
-          </TabsList>
-          <TabsContent value="login">
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="login-username">Username</Label>
-                <Input
-                  id="login-username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="login-password">Password</Label>
-                <Input
-                  id="login-password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                Login
-              </Button>
-            </form>
-          </TabsContent>
-          <TabsContent value="signup">
-            <form onSubmit={handleSignup} className="space-y-4">
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="signup-username">Username</Label>
-                <Input
-                  id="signup-username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="signup-password">Password</Label>
-                <Input
-                  id="signup-password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <div className="grid w-full gap-1.5">
-                <Label>Favorite Genres</Label>
-                <div className="flex flex-wrap gap-2">
-                  {musicGenres.map((genre) => (
-                    <Badge
-                      key={genre}
-                      variant={
-                        selectedGenres.includes(genre) ? "default" : "outline"
-                      }
-                      className="cursor-pointer"
-                      onClick={() => handleGenreToggle(genre)}
-                    >
-                      {genre}
-                    </Badge>
-                  ))}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="login" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="login">Login</TabsTrigger>
+              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            </TabsList>
+            <TabsContent value="login">
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="login-username">Username</Label>
+                  <Input
+                    id="login-username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="text-black"
+                  />
                 </div>
-              </div>
-              <Button type="submit" className="w-full">
-                Sign Up
-              </Button>
-            </form>
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="login-password">Password</Label>
+                  <Input
+                    id="login-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="text-black"
+                  />
+                </div>
+                <Button type="submit" className="w-full bg-purple">
+                  Login
+                </Button>
+              </form>
+            </TabsContent>
+            <TabsContent value="signup">
+              <form onSubmit={handleSignup} className="space-y-4">
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="signup-username">Username</Label>
+                  <Input
+                    id="signup-username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="text-black"
+                  />
+                </div>
+                <div className="grid w-full items-center gap-1.5">
+                  <Label htmlFor="signup-password">Password</Label>
+                  <Input
+                    id="signup-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="text-black"
+                  />
+                </div>
+                <div className="grid w-full gap-1.5">
+                  <Label>Favorite Genres</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {musicGenres.map((genre) => (
+                      <Badge
+                        key={genre}
+                        variant={
+                          selectedGenres.includes(genre) ? "default" : "outline"
+                        }
+                        className={`cursor-pointer ${
+                          selectedGenres.includes(genre)
+                            ? "bg-purple"
+                            : "border-purple text-primary"
+                        }`}
+                        onClick={() => handleGenreToggle(genre)}
+                      >
+                        {genre}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <Button type="submit" className="w-full bg-purple">
+                  Sign Up
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

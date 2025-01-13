@@ -27,24 +27,30 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <div className="cosmic-background" />
-      {isLoggedIn ? (
-        <UserProvider>
-          <PlayerProvider>
-            <Header />
-            <div className="flex justify-center items-center w-full mt-8">
-              <SetsPage />
-            </div>
-          </PlayerProvider>
-        </UserProvider>
-      ) : (
-        <AuthDialog
-          isOpen={!isLoggedIn}
-          onClose={() => setIsLoggedIn(true)}
-          onSignUp={() => setIsLoggedIn(true)}
-        />
-      )}
+    <div>
+      <div className="absolute w-100%">
+        <div id="stars"></div>
+        <div id="stars2"></div>
+        <div id="stars3"></div>
+      </div>
+      <div className="flex min-h-screen w-full flex-col justify-center items-center">
+        {isLoggedIn ? (
+          <UserProvider>
+            <PlayerProvider>
+              <Header />
+              <div className="flex justify-center items-center w-full mt-8">
+                <SetsPage />
+              </div>
+            </PlayerProvider>
+          </UserProvider>
+        ) : (
+          <AuthDialog
+            isOpen={!isLoggedIn}
+            onClose={() => setIsLoggedIn(true)}
+            onSignUp={() => setIsLoggedIn(true)}
+          />
+        )}
+      </div>
     </div>
   );
 }

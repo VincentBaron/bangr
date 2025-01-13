@@ -4,6 +4,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Toggle } from "@/components/ui/toggle";
@@ -77,11 +79,11 @@ const Header: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-between mx-[40rem] mt-[20rem]">
+    <div className="flex flex-col items-center justify-between mx-[40rem] mt-[10rem]">
       <div className="flex items-center mb-10">
         <img
           src="../public/assets/logo.svg"
-          className="h-16 w-16"
+          className="h-20 w-20"
           alt="Website Logo"
         />
         {/* <h1 className="text-3xl font-bold ml-4 text-primary font-custom">
@@ -118,23 +120,8 @@ const Header: React.FC = () => {
               </Avatar>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>
-              <input
-                type="text"
-                value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value)}
-                className="bg-gray-800 text-white p-2 rounded"
-                placeholder="New username"
-              />
-              <button
-                onClick={handleUsernameChange}
-                className="ml-2 bg-blue-500 text-white p-2 rounded"
-              >
-                Update
-              </button>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+          <DropdownMenuContent className="bg-gray text-primary border-purple mt-4">
+            <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

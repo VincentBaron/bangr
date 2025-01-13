@@ -56,7 +56,7 @@ export default function SignupPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-dark text-primary">
-      <Card className="w-full max-w-md mx-auto my-4 bg-dark text-primary">
+      <Card className="w-full max-w-md mx-auto my-4 text-primary">
         <CardHeader>
           <CardTitle>Sign Up</CardTitle>
         </CardHeader>
