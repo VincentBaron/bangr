@@ -38,14 +38,12 @@ interface AuthDialogProps {
   onSignUp: () => void;
 }
 
-const AuthDialog: React.FC<AuthDialogProps> = ({
-  isOpen,
-  onClose,
-  onSignUp,
-}) => {
+const AuthDialog: React.FC<AuthDialogProps> = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [signupError, setSignupError] = useState<string | null>(null);
 
   const handleGenreToggle = (genre: string) => {
     setSelectedGenres((prev) =>
@@ -55,6 +53,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError(null); // Reset error state before attempting login
     axios
       .post(
         "http://localhost:8080/login",
@@ -67,13 +66,16 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
       })
       .catch((error) => {
         console.log("error response data:", error.response.data);
+        setLoginError(
+          error.response.data.message || "Login failed. Please try again."
+        );
       });
     console.log("Login attempt with:", { username, password });
-    onSignUp();
   };
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
+    setSignupError(null); // Reset error state before attempting signup
     axios
       .post("http://localhost:8080/signup", {
         username: username,
@@ -81,17 +83,20 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
         genres: selectedGenres,
       })
       .then((response) => {
-        window.location.href = response.data.url;
+        console.log("response data: ", response.data);
+        window.location.reload();
       })
       .catch((error) => {
         console.log("error response data:", error.response.data);
+        setSignupError(
+          error.response.data.message || "Failed to signup. Please try again."
+        );
       });
     console.log("Signup attempt with:", {
       username,
       password,
       selectedGenres,
     });
-    onSignUp();
   };
 
   return (
@@ -137,6 +142,9 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
                     className="text-black"
                   />
                 </div>
+                {loginError && (
+                  <div className="text-red-500 text-sm">{loginError}</div>
+                )}
                 <Button type="submit" className="w-full bg-purple">
                   Login
                 </Button>
@@ -184,6 +192,9 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
                     ))}
                   </div>
                 </div>
+                {signupError && (
+                  <div className="text-red text-sm">{signupError}</div>
+                )}
                 <Button type="submit" className="w-full bg-purple">
                   Sign Up
                 </Button>
