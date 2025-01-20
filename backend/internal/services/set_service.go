@@ -83,7 +83,9 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 	// Get sets for sorted users
 	filteredUserIDs := make([]uuid.UUID, 0)
 	for _, um := range userMatches {
-		filteredUserIDs = append(filteredUserIDs, um.User.ID)
+		if um.User.ID != user.ID {
+			filteredUserIDs = append(filteredUserIDs, um.User.ID)
+		}
 	}
 	sets, err := s.setRepository.FindAllByFilter(map[string]interface{}{"user_id": filteredUserIDs}, "Tracks", "User")
 	if err != nil {

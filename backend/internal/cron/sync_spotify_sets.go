@@ -13,7 +13,7 @@ import (
 	"github.com/VincentBaron/bangr/backend/internal/models"
 	"github.com/VincentBaron/bangr/backend/internal/repositories"
 	"github.com/google/uuid"
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 	"github.com/zmb3/spotify/v2"
 	spotifyauth "github.com/zmb3/spotify/v2/auth"
 	"golang.org/x/oauth2"
@@ -52,6 +52,7 @@ func LoadConfig(file string) (models.Config, error) {
 
 func main() {
 	manualTrigger := flag.Bool("manual", false, "Manually trigger the cron job")
+	autoSchedule := flag.String("auto", "", "Automatically trigger the cron job with the given schedule")
 	flag.Parse()
 
 	// Initialize repositories
@@ -70,17 +71,24 @@ func main() {
 		return
 	}
 
-	c := cron.New()
-	c.AddFunc("@weekly", func() {
-		err := cronHandler.syncSpotifySets()
-		if err != nil {
-			log.Printf("Error syncing Spotify sets: %v", err)
-		}
-	})
-	c.Start()
+	fmt.Println(*autoSchedule)
 
-	// Keep the program running
-	select {}
+	if *autoSchedule != "" {
+		c := cron.New(cron.WithLocation(time.FixedZone("UTC+1", 1*60*60)))
+		c.AddFunc(*autoSchedule, func() {
+			fmt.Println("Running cron job")
+			err := cronHandler.syncSpotifySets()
+			if err != nil {
+				log.Printf("Error syncing Spotify sets: %v", err)
+			}
+		})
+		c.Start()
+
+		// Keep the program running
+		select {}
+	} else {
+		log.Println("No schedule provided. Exiting.")
+	}
 }
 
 func (h *cronHandler) syncSpotifySets() error {
