@@ -35,10 +35,6 @@ func (s *PlayerService) HandlePlayer(c *gin.Context, spotifyClient *spotify.Clie
 			c.Error(err)
 			return nil, err
 		}
-		currentlyPlaying, err = spotifyClient.PlayerCurrentlyPlaying(c)
-		if err != nil {
-			return nil, err
-		}
 	case models.PlayerActionPause:
 		var options spotify.PlayOptions
 		if params.Link != "" {
@@ -52,16 +48,8 @@ func (s *PlayerService) HandlePlayer(c *gin.Context, spotifyClient *spotify.Clie
 			return nil, err
 		}
 		err = spotifyClient.PauseOpt(c, &options)
-		currentlyPlaying, err = spotifyClient.PlayerCurrentlyPlaying(c)
-		if err != nil {
-			return nil, err
-		}
 	case models.PlayerActionNext:
 		err = spotifyClient.Next(c)
-		if err != nil {
-			return nil, err
-		}
-		currentlyPlaying, err = spotifyClient.PlayerCurrentlyPlaying(c)
 		if err != nil {
 			return nil, err
 		}
@@ -70,19 +58,10 @@ func (s *PlayerService) HandlePlayer(c *gin.Context, spotifyClient *spotify.Clie
 		if err != nil {
 			return nil, err
 		}
-		currentlyPlaying, err = spotifyClient.PlayerCurrentlyPlaying(c)
-		if err != nil {
-			return nil, err
-		}
 	case models.PLayerActivate:
 		err = spotifyClient.TransferPlayback(c, params.DeviceID, false)
 		if err != nil {
 			fmt.Println("yolo1")
-			return nil, err
-		}
-	default:
-		currentlyPlaying, err = spotifyClient.PlayerCurrentlyPlaying(c)
-		if err != nil {
 			return nil, err
 		}
 	}

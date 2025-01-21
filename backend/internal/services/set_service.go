@@ -56,9 +56,6 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 	}
 	userMatches := make([]userMatch, 0)
 	for _, u := range users {
-		if u.ID == user.ID {
-			continue
-		}
 		matchingGenres := 0
 		for _, genre := range u.Genres {
 			if currentUserGenres[genre.Name] {
@@ -83,9 +80,7 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 	// Get sets for sorted users
 	filteredUserIDs := make([]uuid.UUID, 0)
 	for _, um := range userMatches {
-		if um.User.ID != user.ID {
-			filteredUserIDs = append(filteredUserIDs, um.User.ID)
-		}
+		filteredUserIDs = append(filteredUserIDs, um.User.ID)
 	}
 	sets, err := s.setRepository.FindAllByFilter(map[string]interface{}{"user_id": filteredUserIDs}, "Tracks", "User")
 	if err != nil {
@@ -133,13 +128,25 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 				ImgURL: track.ImgURL,
 			})
 		}
-		setsResp = append(setsResp, dto.GetSetResp{
-			ID:            set.ID,
-			Link:          set.Link,
-			Tracks:        tracksResp,
-			Username:      set.User.Username,
-			ProfilePicURL: set.User.ProfilePicURL,
-		})
+		if set.User.ID == user.ID {
+			setsResp = append([]dto.GetSetResp{
+				{
+					ID:            set.ID,
+					Link:          set.Link,
+					Tracks:        tracksResp,
+					Username:      "Your Bangrs 🔥",
+					ProfilePicURL: set.User.ProfilePicURL,
+				},
+			}, setsResp...)
+		} else {
+			setsResp = append(setsResp, dto.GetSetResp{
+				ID:            set.ID,
+				Link:          set.Link,
+				Tracks:        tracksResp,
+				Username:      set.User.Username,
+				ProfilePicURL: set.User.ProfilePicURL,
+			})
+		}
 	}
 
 	return setsResp, nil

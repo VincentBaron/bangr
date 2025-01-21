@@ -46,15 +46,8 @@ export default function SetsPage() {
           { withCredentials: true }
         );
         const fetchedSets = response.data.sets as Set[];
-        const dummySet = { id: "dummy", username: "", link: "", tracks: [] };
-
-        if (window.innerWidth >= 640) {
-          // Tailwind's sm breakpoint is 640px
-          setSets([dummySet, ...fetchedSets, dummySet]);
-        } else {
-          setSets(fetchedSets);
-          setSelectedIndex(0);
-        }
+        setSets(fetchedSets);
+        setSelectedIndex(1);
       } catch (error) {
         console.error("Failed to fetch sets", error);
       }
@@ -86,6 +79,7 @@ export default function SetsPage() {
     setTransitionDirection("right");
     setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets.length - 2));
     setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
+    debugger;
   };
 
   const handlePrevTrack = () => {

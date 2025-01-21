@@ -120,8 +120,10 @@ const Header: React.FC = () => {
               </Avatar>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-gray text-primary border-purple mt-4">
-            <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+          <DropdownMenuContent className="bg-gray text-primary border-purple mt-4 shadow-lg shadow-purple hover:purple hover:bg-gray">
+            <DropdownMenuItem onClick={handleLogout} className="hover:bg-gray">
+              Log out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

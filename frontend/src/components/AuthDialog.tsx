@@ -145,7 +145,10 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
                 {loginError && (
                   <div className="text-red-500 text-sm">{loginError}</div>
                 )}
-                <Button type="submit" className="w-full bg-purple">
+                <Button
+                  type="submit"
+                  className="w-full bg-purple bg-opacity-100 hover:bg-hoverPurple"
+                >
                   Login
                 </Button>
               </form>
@@ -180,10 +183,8 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
                         variant={
                           selectedGenres.includes(genre) ? "default" : "outline"
                         }
-                        className={`cursor-pointer ${
-                          selectedGenres.includes(genre)
-                            ? "bg-purple"
-                            : "border-purple text-primary"
+                        className={`cursor-pointer border text-primary border-purple hover:bg-purple hover:bg-opacity-30 hover:border-white ${
+                          selectedGenres.includes(genre) ? "bg-purple" : null
                         }`}
                         onClick={() => handleGenreToggle(genre)}
                       >
@@ -195,7 +196,10 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
                 {signupError && (
                   <div className="text-red text-sm">{signupError}</div>
                 )}
-                <Button type="submit" className="w-full bg-purple">
+                <Button
+                  type="submit"
+                  className="w-full bg-purple bg-opacity-100 hover:bg-hoverPurple"
+                >
                   Sign Up
                 </Button>
               </form>

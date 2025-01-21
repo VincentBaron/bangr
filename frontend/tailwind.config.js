@@ -58,14 +58,14 @@ module.exports = {
         primary: "#FFFFFF", // Primary text color (headings, main text)
         secondary: "#B3B3B3", // Secondary text color (subtext, descriptions)
         gray: "#1A1A1A", // Card background color, secondary background sections, or dividers
+        shadow: "#A238FF", // Shadow color for cards, modals, or other elements
 
         // Gradient and highlight colors from logo
-        purple: "#E105FB", // Primary button background, important highlights (replaces pink)
+        purple: "#A238FF", // Primary button background, important highlights (replaces pink)
         softOrange: "#FF8C42", // Secondary button background, accent highlights (faded orange from logo)
 
         // Interaction colors
-        hoverPurple: "#B533FF", // Hover state for primary buttons, links, and icons (slightly lighter purple)
-        hoverSoftOrange: "#FFAA66", // Hover state for secondary buttons, links, and icons (lighter faded orange)
+        hoverPurple: "#7F1ECC", // Hover state for primary buttons, links, and icons (slightly lighter purple)
 
         // Status and alert colors
         green: "#00C851", // Success messages, notifications
