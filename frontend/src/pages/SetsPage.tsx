@@ -29,6 +29,17 @@ export interface Set {
   profilePicURL?: string;
 }
 
+interface PlayerState {
+  track_window: {
+    current_track: {
+      id: string;
+      name: string;
+      artists: { name: string }[];
+    };
+  };
+  paused: boolean;
+}
+
 export default function SetsPage() {
   const [sets, setSets] = useState<Set[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
@@ -37,6 +48,29 @@ export default function SetsPage() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [api, setApi] = useState<CarouselApi>();
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
+  const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
+
+  useEffect(() => {
+    if (player) {
+      (player as any).addListener(
+        "player_state_changed",
+        (state: PlayerState) => {
+          if (state) {
+            setPlayingTrack({
+              id: state.track_window.current_track.id,
+              name: state.track_window.current_track.name,
+              artist: state.track_window.current_track.artists[0].name,
+              uri: "spotify:track:" + state.track_window.current_track.id,
+              liked: false,
+              likes: 0,
+              img_url: "",
+            });
+            setIsPlaying(!state.paused);
+          }
+        }
+      );
+    }
+  }, [player]);
 
   useEffect(() => {
     const fetchSets = async () => {
@@ -130,6 +164,8 @@ export default function SetsPage() {
                 >
                   <SpotifyPlaylist
                     set={set}
+                    playingTrack={playingTrack}
+                    isPlaying={isPlaying}
                     className="group-data-[active=false]:scale-[85%] transition-all duration-300 group-data-[active=false]:opacity-60"
                   />
                 </CarouselItem>
