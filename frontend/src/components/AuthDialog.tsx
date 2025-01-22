@@ -147,7 +147,7 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
                 )}
                 <Button
                   type="submit"
-                  className="w-full bg-purple bg-opacity-100 hover:bg-hoverPurple"
+                  className="w-full bg-purple hover:bg-hoverPurple"
                 >
                   Login
                 </Button>

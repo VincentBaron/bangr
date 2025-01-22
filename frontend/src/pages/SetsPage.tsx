@@ -70,7 +70,7 @@ export default function SetsPage() {
         }
       );
     }
-  }, [player]);
+  }, [player, currentTrackIndex]);
 
   useEffect(() => {
     const fetchSets = async () => {
@@ -109,11 +109,11 @@ export default function SetsPage() {
   };
 
   const handleNextPlaylist = () => {
+    console.log("handleNextPlaylist");
     api?.scrollNext();
     setTransitionDirection("right");
     setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets.length - 2));
     setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
-    debugger;
   };
 
   const handlePrevTrack = () => {

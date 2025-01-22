@@ -86,9 +86,6 @@ const Header: React.FC = () => {
           className="h-20 w-20"
           alt="Website Logo"
         />
-        {/* <h1 className="text-3xl font-bold ml-4 text-primary font-custom">
-          Bangr
-        </h1> */}
       </div>
       <div className="flex gap-2 justify-center">
         {allGenres.map((genre) => (
@@ -97,7 +94,7 @@ const Header: React.FC = () => {
             pressed={user.genres.includes(genre)}
             onPressedChange={() => handleGenreToggle(genre)}
             className={`cursor-pointer text-primary flex items-center font-custom ${
-              user.genres.includes(genre) ? "bg-purple-500" : "bg-gray-300"
+              user.genres.includes(genre) ? "bg-purple" : ""
             }`}
           >
             {genre}

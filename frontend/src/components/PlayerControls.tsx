@@ -9,6 +9,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { usePlayer } from "../context/PlayerContext";
+import { CommandShortcut } from "@/components/ui/command";
 
 interface PlayerControlsProps {
   isPlaying: boolean;
@@ -91,6 +92,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
         className="mx-2"
       >
         <ChevronLeft className="text-purple" size={24} />
+        <CommandShortcut>⬆</CommandShortcut>
       </button>
       <button
         onClick={() => {

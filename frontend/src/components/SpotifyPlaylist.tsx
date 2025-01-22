@@ -51,7 +51,7 @@ export default function SpotifyPlaylist({
   return (
     <Card
       className={cn(
-        "bg-gray text-primary border-purple w-full max-w-md mx-auto my-4 neon-shadow",
+        "bg-black bg-opacity-70 text-primary w-full mx-auto my-4 border-purple",
         className
       )}
       {...props}
