@@ -92,7 +92,6 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
         className="mx-2"
       >
         <ChevronLeft className="text-purple" size={24} />
-        <CommandShortcut>⬆</CommandShortcut>
       </button>
       <button
         onClick={() => {
