@@ -31,11 +31,16 @@ func (h *PlayerHandler) Player(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Manually parse the URIs query parameter
+	if uris, ok := c.GetQueryArray("uris"); ok {
+		queryParams.URIs = uris
+	}
+
 	player, err := h.playerService.HandlePlayer(c, spotifyClient, queryParams)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, player)
-
 }

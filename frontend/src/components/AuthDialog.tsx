@@ -173,6 +173,24 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
                 </div>
               </div>
             )}
+            {tooltipStep === 3 && (
+              <div>
+                <p>
+                  Each monday, you will be able to listen to everyone's bangers
+                  from the past week in a story like format ! 🔥
+                </p>
+                <br />
+                <img
+                  src="../public/assets/bangr1.png"
+                  className="w-300"
+                  alt="Website Logo"
+                />
+                <div className="flex justify-between mt-2">
+                  <Button onClick={handlePrevTooltipStep}>Back</Button>
+                  <Button onClick={() => setIsTooltipOpen(false)}>Close</Button>
+                </div>
+              </div>
+            )}
           </TooltipContent>
         </Tooltip>
         <div className="flex items-center space-x-4">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios, { AxiosResponse } from "axios";
 import { usePlayer } from "../context/PlayerContext";
 import SpotifyPlaylist from "../components/SpotifyPlaylist";
@@ -41,7 +41,7 @@ interface PlayerState {
 }
 
 export default function SetsPage() {
-  const [sets, setSets] = useState<Set[]>([]);
+  const [sets, setSets] = useState<Set[] | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
   const { player, deviceId } = usePlayer();
   const [transitionDirection, setTransitionDirection] = useState<string>("");
@@ -49,6 +49,63 @@ export default function SetsPage() {
   const [api, setApi] = useState<CarouselApi>();
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
+  const isFirstRender = useRef(true);
+  const playerIsSet = useRef(false);
+
+  const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+  useEffect(() => {
+    const fetchSets = async () => {
+      try {
+        const response: AxiosResponse<any> = await axios.get(
+          "http://localhost:8080/sets",
+          { withCredentials: true }
+        );
+        const fetchedSets: Set[] = response.data.sets;
+        setSets(fetchedSets);
+      } catch (error) {
+        console.error("Failed to fetch sets", error);
+      }
+    };
+
+    fetchSets();
+  }, []);
+
+  useEffect(() => {
+    if (!playerIsSet.current && deviceId && sets && sets.length > 2) {
+      console.log("Setting player");
+      const uris: string[] = [];
+      sets.slice(1).forEach((set) => {
+        set.tracks.forEach((track) => {
+          uris.push(track.uri);
+        });
+      });
+      const urisx = Array.from(uris).join("&uris=");
+      const play = async () => {
+        const response: AxiosResponse<any> = await axios.get(
+          `http://localhost:8080/player?action=play&device_id=${deviceId}&uris=${urisx}`,
+          { withCredentials: true }
+        );
+      };
+      play();
+      playerIsSet.current = true;
+    }
+  }),
+    [deviceId, sets];
+
+  // useEffect(() => {
+  //   if (isFirstRender.current && playerIsSet.current && player) {
+  //     console.log("First render playlist switch");
+  //     // for (let i = 0; i < 3; i++) {
+  //     // console.log("next track: ", i);
+  //     player.nextTrack().catch((error: any) => {
+  //       console.error("Failed to play next track", error);
+  //     });
+  //     // }
+  //     setSelectedIndex(1);
+  //     isFirstRender.current = false;
+  //   }
+  // }, [player]);
 
   useEffect(() => {
     if (player) {
@@ -70,38 +127,42 @@ export default function SetsPage() {
         }
       );
     }
-  }, [player, currentTrackIndex]);
+  }, [player]);
 
-  useEffect(() => {
-    const fetchSets = async () => {
-      try {
-        const response: AxiosResponse<any> = await axios.get(
-          "http://localhost:8080/sets",
-          { withCredentials: true }
-        );
-        const fetchedSets = response.data.sets as Set[];
-        setSets(fetchedSets);
-        setSelectedIndex(1);
-      } catch (error) {
-        console.error("Failed to fetch sets", error);
-      }
-    };
-
-    fetchSets();
-  }, []);
-
-  useEffect(() => {
-    if (player && deviceId && sets.length > 2) {
-      console.log("deviceId: ", deviceId);
-      const set = sets[selectedIndex];
-      axios.get(
-        `http://localhost:8080/player?action=play&device_id=${deviceId}&&link=${set.link}`,
-        { withCredentials: true }
-      );
-    }
-  }, [player, deviceId, selectedIndex, sets]);
+  // TO implement automatic playlist switching
+  // useEffect(() => {
+  //   if (player) {
+  //     (player as any).addListener(
+  //       "player_state_changed",
+  //       (state: PlayerState) => {
+  //         if (state) {
+  //           const urisMap = new Map<string, boolean>();
+  //           sets![selectedIndex].tracks.forEach((track) => {
+  //             urisMap.set(track.uri, true);
+  //           });
+  //           if (!urisMap.has(state.track_window.current_track.id)) {
+  //             console.log("Switching playlist");
+  //             api?.scrollNext();
+  //             setTransitionDirection("right");
+  //             setSelectedIndex((prevIndex) =>
+  //               Math.min(prevIndex + 1, sets!.length - 1)
+  //             );
+  //             setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
+  //           }
+  //         }
+  //       }
+  //     );
+  //   }
+  // }, [player]);
 
   const handlePrevPlaylist = () => {
+    if (player) {
+      for (let i = 0; i < currentTrackIndex + 1; i++) {
+        player.previousTrack().catch((error: any) => {
+          console.error("Failed to play previous track", error);
+        });
+      }
+    }
     api?.scrollPrev();
     setTransitionDirection("left");
     setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
@@ -109,14 +170,22 @@ export default function SetsPage() {
   };
 
   const handleNextPlaylist = () => {
-    console.log("handleNextPlaylist");
+    if (player) {
+      for (let i = 0; i < 3 - currentTrackIndex; i++) {
+        player.nextTrack().catch((error: any) => {
+          console.error("Failed to play next track", error);
+        });
+      }
+    }
     api?.scrollNext();
     setTransitionDirection("right");
-    setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets.length - 2));
+    setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets!.length - 1));
     setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
+    console.log("selectedIndex", selectedIndex);
   };
 
   const handlePrevTrack = () => {
+    console.log("currentTrackIndex: ", currentTrackIndex);
     if (currentTrackIndex === 0) {
       handlePrevPlaylist();
     } else {
@@ -130,7 +199,7 @@ export default function SetsPage() {
   };
 
   const handleNextTrack = () => {
-    if (currentTrackIndex === sets[selectedIndex].tracks.length - 1) {
+    if (currentTrackIndex === sets![selectedIndex].tracks.length - 1) {
       handleNextPlaylist();
     } else {
       if (player) {
@@ -138,50 +207,54 @@ export default function SetsPage() {
           console.error("Failed to play next track", error);
         });
         setCurrentTrackIndex((prevIndex) =>
-          Math.min(prevIndex + 1, sets[selectedIndex].tracks.length - 1)
+          Math.min(prevIndex + 1, sets![selectedIndex].tracks.length - 1)
         );
       }
     }
   };
 
   return (
-    <div className="flex w-full flex-col items-center">
-      <div className="">
-        <Carousel
-          setApi={setApi}
-          opts={{
-            align: "start",
-          }}
-          className="w-full max-w-[100vw]"
-        >
-          <CarouselContent>
-            {sets.map((set, index) => {
-              return (
-                <CarouselItem
-                  key={index}
-                  className="group basis-full sm:basis-1/3 flex justify-center"
-                  data-active={selectedIndex === index}
-                >
-                  <SpotifyPlaylist
-                    set={set}
-                    playingTrack={playingTrack}
-                    isPlaying={isPlaying}
-                    className="group-data-[active=false]:scale-[85%] transition-all duration-300 group-data-[active=false]:opacity-60"
-                  />
-                </CarouselItem>
-              );
-            })}
-          </CarouselContent>
-        </Carousel>
-      </div>
-      <PlayerControls
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-        handlePrevPlaylist={handlePrevPlaylist}
-        handleNextPlaylist={handleNextPlaylist}
-        handlePrevTrack={handlePrevTrack}
-        handleNextTrack={handleNextTrack}
-      />
-    </div>
+    <>
+      {sets && sets.length > 0 ? (
+        <div className="flex w-full flex-col items-center">
+          <div className="">
+            <Carousel
+              setApi={setApi}
+              opts={{
+                align: "start",
+              }}
+              className="w-full max-w-[100vw]"
+            >
+              <CarouselContent>
+                {sets.map((set, index) => (
+                  <CarouselItem
+                    key={index}
+                    className="group basis-full sm:basis-1/3 flex justify-center"
+                    data-active={selectedIndex === index}
+                  >
+                    <SpotifyPlaylist
+                      set={set}
+                      playingTrack={playingTrack}
+                      isPlaying={isPlaying}
+                      className="group-data-[active=false]:scale-[85%] transition-all duration-300 group-data-[active=false]:opacity-60"
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          </div>
+          <PlayerControls
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
+            handlePrevPlaylist={handlePrevPlaylist}
+            handleNextPlaylist={handleNextPlaylist}
+            handlePrevTrack={handlePrevTrack}
+            handleNextTrack={handleNextTrack}
+          />
+        </div>
+      ) : (
+        <div>Loading...</div>
+      )}
+    </>
   );
 }

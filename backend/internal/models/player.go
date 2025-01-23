@@ -16,6 +16,7 @@ const (
 type HandlerPlayerQueryParams struct {
 	Action       PlayerAction `form:"action"`
 	Link         string       `form:"link"`
+	URIs         []string     `form:"uris"`
 	PlaylistLink string       `form:"playlist_link"`
 	DeviceID     spotify.ID   `form:"device_id"`
 }
