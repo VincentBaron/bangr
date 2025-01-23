@@ -12,6 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 const musicGenres = [
   "Rock",
@@ -44,6 +50,9 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [signupError, setSignupError] = useState<string | null>(null);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const [signupStep, setSignupStep] = useState(1);
+  const [tooltipStep, setTooltipStep] = useState(1);
 
   const handleGenreToggle = (genre: string) => {
     setSelectedGenres((prev) =>
@@ -99,115 +108,205 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
     });
   };
 
+  const handleSignUpClick = () => {
+    setIsTooltipOpen(true);
+  };
+
+  const handleNextTooltipStep = () => {
+    setTooltipStep((prevStep) => prevStep + 1);
+  };
+
+  const handlePrevTooltipStep = () => {
+    setTooltipStep((prevStep) => prevStep - 1);
+  };
+
   return (
-    <div className="flex min-h-screen w-full flex-col justify-center items-center">
-      <div className="flex items-center mb-10">
-        <img
-          src="../public/assets/logo.svg"
-          className="h-20 w-20"
-          alt="Website Logo"
-        />
-      </div>
-      <Card className="bg-gray text-primary border-purple w-full max-w-md mx-auto my-4">
-        <CardHeader>
-          <CardTitle>Welcome to Bangr</CardTitle>
-          <CardDescription>
-            Login or create your profile to start discovering music.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="login-username">Username</Label>
-                  <Input
-                    id="login-username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="text-black"
-                  />
-                </div>
-                <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="login-password">Password</Label>
-                  <Input
-                    id="login-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="text-black"
-                  />
-                </div>
-                {loginError && (
-                  <div className="text-red-500 text-sm">{loginError}</div>
-                )}
-                <Button
-                  type="submit"
-                  className="w-full bg-purple hover:bg-hoverPurple"
-                >
-                  Login
+    <TooltipProvider>
+      <div className="flex min-h-screen w-full flex-col justify-center items-center">
+        <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen}>
+          <TooltipTrigger asChild>
+            <button className="absolute top-4 left-4 p-2 rounded-full bg-purple-500 text-white">
+              ?
+            </button>
+          </TooltipTrigger>
+          <TooltipContent
+            side="bottom"
+            align="start"
+            className="bg-black text-primary font-custom text-lg p-4"
+          >
+            {tooltipStep === 1 && (
+              <div>
+                <p className="text-primary fonts-custom">Welcome to Bangr !</p>
+                <br />
+                <p>
+                  For all the music lovers, the diggers, the ones who can't stop
+                  searching new emotions throughout music, I created Bangr.
+                </p>
+                <br />
+                <p>
+                  From the relaisation that conventional streaming plateforms
+                  did not give me the opportunity to showcase the bangers I
+                  discovered and be able to listen to other peoples music
+                  discoveries....
+                </p>
+                <Button onClick={handleNextTooltipStep} className="mt-2">
+                  Continue
                 </Button>
-              </form>
-            </TabsContent>
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="signup-username">Username</Label>
-                  <Input
-                    id="signup-username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="text-black"
-                  />
+              </div>
+            )}
+            {tooltipStep === 2 && (
+              <div>
+                <p>
+                  Upon signing up, a playlist will automatically be created on
+                  your spotify account. You can put up to 3 bangers you discover
+                  during the week inside it.
+                </p>
+                <br />
+                <img
+                  src="../public/assets/bangr1.png"
+                  className="w-300"
+                  alt="Website Logo"
+                />
+                <div className="flex justify-between mt-2">
+                  <Button onClick={handlePrevTooltipStep}>Back</Button>
+                  <Button onClick={() => setIsTooltipOpen(false)}>Close</Button>
                 </div>
-                <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="text-black"
-                  />
-                </div>
-                <div className="grid w-full gap-1.5">
-                  <Label>Favorite Genres</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {musicGenres.map((genre) => (
-                      <Badge
-                        key={genre}
-                        variant={
-                          selectedGenres.includes(genre) ? "default" : "outline"
-                        }
-                        className={`cursor-pointer border text-primary border-purple hover:bg-purple hover:bg-opacity-30 hover:border-white ${
-                          selectedGenres.includes(genre) ? "bg-purple" : null
-                        }`}
-                        onClick={() => handleGenreToggle(genre)}
-                      >
-                        {genre}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                {signupError && (
-                  <div className="text-red text-sm">{signupError}</div>
-                )}
-                <Button
-                  type="submit"
-                  className="w-full bg-purple bg-opacity-100 hover:bg-hoverPurple"
-                >
+              </div>
+            )}
+          </TooltipContent>
+        </Tooltip>
+        <div className="flex items-center space-x-4">
+          <img
+            src="../public/assets/logo.svg"
+            className="h-20 w-20"
+            alt="Website Logo"
+          />
+          <h1 className="font-custom text-7xl text-purple">Bangr</h1>
+        </div>
+        <div className="text-center mb-10">
+          <h2 className="text-primary text-left text-3xl font-custom">
+            Banger
+          </h2>
+          <p className="font-custom text-xl mt-2 text-primary text-left">
+            /bang·uh/
+          </p>
+          <p className="font-custom text-xl mt-2 text-primary text-left">
+            A song that makes you feel the need to headbang to the beat.
+          </p>
+        </div>
+        <Card className="bg-gray text-primary border-purple w-full max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle className="font-custom">Welcome to Bangr</CardTitle>
+            <CardDescription className="font-custom">
+              Login or create your profile to start discovering music.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="signup" onClick={handleSignUpClick}>
                   Sign Up
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-    </div>
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="login">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="grid w-full items-center gap-1.5">
+                    <Label htmlFor="login-username" className="font-custom">
+                      Username
+                    </Label>
+                    <Input
+                      id="login-username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="text-black"
+                    />
+                  </div>
+                  <div className="grid w-full items-center gap-1.5">
+                    <Label htmlFor="login-password" className="font-custom">
+                      Password
+                    </Label>
+                    <Input
+                      id="login-password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="text-black"
+                    />
+                  </div>
+                  {loginError && (
+                    <div className="text-red-500 text-sm">{loginError}</div>
+                  )}
+                  <Button
+                    type="submit"
+                    className="w-full bg-purple hover:bg-hoverPurple font-custom"
+                  >
+                    Login
+                  </Button>
+                </form>
+              </TabsContent>
+              <TabsContent value="signup">
+                <form onSubmit={handleSignup} className="space-y-4">
+                  <div className="grid w-full items-center gap-1.5">
+                    <Label htmlFor="signup-username" className="font-custom">
+                      Username
+                    </Label>
+                    <Input
+                      id="signup-username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="text-black font-custom"
+                    />
+                  </div>
+                  <div className="grid w-full items-center gap-1.5">
+                    <Label htmlFor="signup-password" className="font-custom">
+                      Password
+                    </Label>
+                    <Input
+                      id="signup-password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="text-black"
+                    />
+                  </div>
+                  <div className="grid w-full gap-1.5">
+                    <Label>Favorite Genres</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {musicGenres.map((genre) => (
+                        <Badge
+                          key={genre}
+                          variant={
+                            selectedGenres.includes(genre)
+                              ? "default"
+                              : "outline"
+                          }
+                          className={`cursor-pointer border text-primary border-purple hover:bg-purple hover:bg-opacity-30 hover:border-white ${
+                            selectedGenres.includes(genre) ? "bg-purple" : null
+                          }`}
+                          onClick={() => handleGenreToggle(genre)}
+                        >
+                          {genre}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  {signupError && (
+                    <div className="text-red text-sm">{signupError}</div>
+                  )}
+                  <Button
+                    type="submit"
+                    className="w-full bg-purple bg-opacity-100 hover:bg-hoverPurple"
+                  >
+                    Sign Up
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    </TooltipProvider>
   );
 };
 
