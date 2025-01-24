@@ -132,7 +132,6 @@ export default function SetsPage() {
   useEffect(() => {
     const handlePlayerStateChanged = (state: PlayerState) => {
       if (state) {
-        console.log("yolo");
         setSelectedIndex((prevIndex) => {
           const urisMap = new Map<string, boolean>();
           sets![prevIndex].tracks.forEach((track) => {
@@ -173,18 +172,27 @@ export default function SetsPage() {
       player.previousTrack().catch((error: any) => {
         console.error("Failed to play previous track", error);
       });
-      setCurrentTrackIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+      if (currentTrackIndex === 0 && selectedIndex > 1) {
+        setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+        api?.scrollPrev();
+        setTransitionDirection("left");
+        setCurrentTrackIndex(2);
+      } else {
+        setCurrentTrackIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+      }
     }
   };
 
-  const handleNextTrack = async () => {
-    if (player) {
+  const handleNextTrack = () => {
+    if (
+      player &&
+      !(currentTrackIndex === 2 && selectedIndex === sets!.length - 2)
+    ) {
+      console.log("yolo");
       player.nextTrack().catch((error: any) => {
         console.error("Failed to play next track", error);
-        setCurrentTrackIndex((prevIndex) =>
-          Math.min(prevIndex + 1, sets![selectedIndex].tracks.length - 1)
-        );
       });
+      setCurrentTrackIndex((prevIndex) => prevIndex + 1);
     }
   };
 
@@ -197,9 +205,7 @@ export default function SetsPage() {
     setIsPlaying(!isPlaying);
   };
 
-  useEffect(() => {
-    console.log("selectedIndex", selectedIndex);
-  }, [selectedIndex]);
+  useEffect(() => {}, [selectedIndex]);
 
   return (
     <>
