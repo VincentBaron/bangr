@@ -51,6 +51,8 @@ export default function SetsPage() {
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const playerIsSet = useRef(false);
 
+  const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
   useEffect(() => {
     const fetchSets = async () => {
       try {
@@ -127,101 +129,62 @@ export default function SetsPage() {
   }, [player]);
 
   // TO implement automatic playlist switching
-  // useEffect(() => {
-  //   if (!skippingPlaylist.current) {
-  //     const handlePlayerStateChanged = (state: PlayerState) => {
-  //       if (state) {
-  //         console.log("yolo");
-  //         setSelectedIndex((prevIndex) => {
-  //           const urisMap = new Map<string, boolean>();
-  //           sets![prevIndex].tracks.forEach((track) => {
-  //             urisMap.set(track.uri.split(":")[2], true);
-  //           });
-  //           if (!urisMap.has(state.track_window.current_track.id)) {
-  //             api?.scrollNext();
-  //             setTransitionDirection("right");
-  //             setCurrentTrackIndex(0);
-  //             return Math.min(prevIndex + 1, sets!.length - 1);
-  //           } else {
-  //             return prevIndex;
-  //           }
-  //         });
-  //       }
-  //     };
-
-  //     if (player) {
-  //       (player as any).addListener(
-  //         "player_state_changed",
-  //         handlePlayerStateChanged
-  //       );
-  //     }
-
-  //     // Cleanup function to remove the event listener
-  //     return () => {
-  //       if (player) {
-  //         (player as any).removeListener(
-  //           "player_state_changed",
-  //           handlePlayerStateChanged
-  //         );
-  //       }
-  //     };
-  //   }
-  // }, [player]);
-
-  const handlePrevPlaylist = () => {
-    if (player) {
-      for (let i = 0; i < currentTrackIndex + 1; i++) {
-        player.previousTrack().catch((error: any) => {
-          console.error("Failed to play previous track", error);
+  useEffect(() => {
+    const handlePlayerStateChanged = (state: PlayerState) => {
+      if (state) {
+        console.log("yolo");
+        setSelectedIndex((prevIndex) => {
+          const urisMap = new Map<string, boolean>();
+          sets![prevIndex].tracks.forEach((track) => {
+            urisMap.set(track.uri.split(":")[2], true);
+          });
+          if (!urisMap.has(state.track_window.current_track.id)) {
+            api?.scrollNext();
+            setTransitionDirection("right");
+            setCurrentTrackIndex(0);
+            return Math.min(prevIndex + 1, sets!.length - 1);
+          } else {
+            return prevIndex;
+          }
         });
       }
-    }
-    api?.scrollPrev();
-    setTransitionDirection("left");
-    setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
-    setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
-  };
+    };
 
-  const handleNextPlaylist = () => {
     if (player) {
-      for (let i = 0; i < 3 - currentTrackIndex; i++) {
-        player.nextTrack().catch((error: any) => {
-          console.error("Failed to play next track", error);
-        });
-      }
+      (player as any).addListener(
+        "player_state_changed",
+        handlePlayerStateChanged
+      );
     }
-    api?.scrollNext();
-    setTransitionDirection("right");
-    setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets!.length - 1));
-    setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
-    console.log("selectedIndex", selectedIndex);
-  };
+
+    // Cleanup function to remove the event listener
+    return () => {
+      if (player) {
+        (player as any).removeListener(
+          "player_state_changed",
+          handlePlayerStateChanged
+        );
+      }
+    };
+  }, [player]);
 
   const handlePrevTrack = () => {
-    if (currentTrackIndex === 0) {
-      handlePrevPlaylist();
-    } else {
-      if (player) {
-        player.previousTrack().catch((error: any) => {
-          console.error("Failed to play previous track", error);
-        });
-        setCurrentTrackIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-      }
+    if (player) {
+      player.previousTrack().catch((error: any) => {
+        console.error("Failed to play previous track", error);
+      });
+      setCurrentTrackIndex((prevIndex) => Math.max(prevIndex - 1, 0));
     }
   };
 
-  const handleNextTrack = () => {
-    if (currentTrackIndex === sets![selectedIndex].tracks.length - 1) {
-      handleNextPlaylist();
-    } else {
-      if (player) {
-        player.nextTrack().catch((error: any) => {
-          console.error("Failed to play next track", error);
-        });
+  const handleNextTrack = async () => {
+    if (player) {
+      player.nextTrack().catch((error: any) => {
+        console.error("Failed to play next track", error);
         setCurrentTrackIndex((prevIndex) =>
           Math.min(prevIndex + 1, sets![selectedIndex].tracks.length - 1)
         );
-      }
+      });
     }
   };
 
@@ -271,8 +234,6 @@ export default function SetsPage() {
           <PlayerControls
             isPlaying={isPlaying}
             setIsPlaying={setIsPlaying}
-            handlePrevPlaylist={handlePrevPlaylist}
-            handleNextPlaylist={handleNextPlaylist}
             handlePrevTrack={handlePrevTrack}
             handleNextTrack={handleNextTrack}
             handlePlayPause={HandlePlayPause}
