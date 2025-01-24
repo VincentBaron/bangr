@@ -49,10 +49,7 @@ export default function SetsPage() {
   const [api, setApi] = useState<CarouselApi>();
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
-  const isFirstRender = useRef(true);
   const playerIsSet = useRef(false);
-
-  const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
   useEffect(() => {
     const fetchSets = async () => {
@@ -61,8 +58,11 @@ export default function SetsPage() {
           "http://localhost:8080/sets",
           { withCredentials: true }
         );
-        const fetchedSets: Set[] = response.data.sets;
-        setSets(fetchedSets);
+        const fetchedSets = response.data.sets as Set[];
+        const dummySet = { id: "dummy", username: "", link: "", tracks: [] };
+
+        // Tailwind's sm breakpoint is 640px
+        setSets([...fetchedSets, dummySet]);
       } catch (error) {
         console.error("Failed to fetch sets", error);
       }
@@ -73,7 +73,6 @@ export default function SetsPage() {
 
   useEffect(() => {
     if (!playerIsSet.current && deviceId && sets && sets.length > 2) {
-      console.log("Setting player");
       const uris: string[] = [];
       sets.slice(1).forEach((set) => {
         set.tracks.forEach((track) => {
@@ -93,24 +92,9 @@ export default function SetsPage() {
   }),
     [deviceId, sets];
 
-  // useEffect(() => {
-  //   if (isFirstRender.current && playerIsSet.current && player) {
-  //     console.log("First render playlist switch");
-  //     // for (let i = 0; i < 3; i++) {
-  //     // console.log("next track: ", i);
-  //     player.nextTrack().catch((error: any) => {
-  //       console.error("Failed to play next track", error);
-  //     });
-  //     // }
-  //     setSelectedIndex(1);
-  //     isFirstRender.current = false;
-  //   }
-  // }, [player]);
-
   useEffect(() => {
     const handlePlayerStateChanged = (state: PlayerState) => {
       if (state) {
-        console.log("state.current_track: ", state.track_window.current_track);
         setPlayingTrack({
           id: state.track_window.current_track.id,
           name: state.track_window.current_track.name,
@@ -143,46 +127,46 @@ export default function SetsPage() {
   }, [player]);
 
   // TO implement automatic playlist switching
-  useEffect(() => {
-    const handlePlayerStateChanged = (state: PlayerState) => {
-      if (state) {
-        setSelectedIndex((prevIndex) => {
-          console.log("selectedIndex useEffect 1: ", prevIndex);
-          const urisMap = new Map<string, boolean>();
-          sets![prevIndex].tracks.forEach((track) => {
-            urisMap.set(track.uri.split(":")[2], true);
-          });
-          console.log(urisMap);
-          if (!urisMap.has(state.track_window.current_track.id)) {
-            console.log("Switching playlist");
-            api?.scrollNext();
-            setTransitionDirection("right");
-            setCurrentTrackIndex(0);
-            return Math.min(prevIndex + 1, sets!.length - 1);
-          } else {
-            return prevIndex;
-          }
-        });
-      }
-    };
+  // useEffect(() => {
+  //   if (!skippingPlaylist.current) {
+  //     const handlePlayerStateChanged = (state: PlayerState) => {
+  //       if (state) {
+  //         console.log("yolo");
+  //         setSelectedIndex((prevIndex) => {
+  //           const urisMap = new Map<string, boolean>();
+  //           sets![prevIndex].tracks.forEach((track) => {
+  //             urisMap.set(track.uri.split(":")[2], true);
+  //           });
+  //           if (!urisMap.has(state.track_window.current_track.id)) {
+  //             api?.scrollNext();
+  //             setTransitionDirection("right");
+  //             setCurrentTrackIndex(0);
+  //             return Math.min(prevIndex + 1, sets!.length - 1);
+  //           } else {
+  //             return prevIndex;
+  //           }
+  //         });
+  //       }
+  //     };
 
-    if (player) {
-      (player as any).addListener(
-        "player_state_changed",
-        handlePlayerStateChanged
-      );
-    }
+  //     if (player) {
+  //       (player as any).addListener(
+  //         "player_state_changed",
+  //         handlePlayerStateChanged
+  //       );
+  //     }
 
-    // Cleanup function to remove the event listener
-    return () => {
-      if (player) {
-        (player as any).removeListener(
-          "player_state_changed",
-          handlePlayerStateChanged
-        );
-      }
-    };
-  }, [player]);
+  //     // Cleanup function to remove the event listener
+  //     return () => {
+  //       if (player) {
+  //         (player as any).removeListener(
+  //           "player_state_changed",
+  //           handlePlayerStateChanged
+  //         );
+  //       }
+  //     };
+  //   }
+  // }, [player]);
 
   const handlePrevPlaylist = () => {
     if (player) {
@@ -214,7 +198,6 @@ export default function SetsPage() {
   };
 
   const handlePrevTrack = () => {
-    console.log("currentTrackIndex: ", currentTrackIndex);
     if (currentTrackIndex === 0) {
       handlePrevPlaylist();
     } else {
@@ -241,6 +224,19 @@ export default function SetsPage() {
       }
     }
   };
+
+  const HandlePlayPause = () => {
+    if (player) {
+      player.togglePlay().catch((error: any) => {
+        console.error("Failed to pause player", error);
+      });
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  useEffect(() => {
+    console.log("selectedIndex", selectedIndex);
+  }, [selectedIndex]);
 
   return (
     <>
@@ -279,6 +275,7 @@ export default function SetsPage() {
             handleNextPlaylist={handleNextPlaylist}
             handlePrevTrack={handlePrevTrack}
             handleNextTrack={handleNextTrack}
+            handlePlayPause={HandlePlayPause}
           />
         </div>
       ) : (

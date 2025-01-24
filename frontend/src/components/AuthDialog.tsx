@@ -70,7 +70,6 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
         { withCredentials: true }
       )
       .then((response) => {
-        console.log("response data: ", response.data);
         window.location.reload();
       })
       .catch((error) => {

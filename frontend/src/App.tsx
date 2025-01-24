@@ -12,14 +12,12 @@ export default function App() {
 
   useEffect(() => {
     const checkUserStatus = () => {
-      console.log("document.cookie" + document.cookie);
       const token = document.cookie
         .split("; ")
         .find((row) => row.startsWith("UserID="));
       setIsLoggedIn(!!token);
     };
     checkUserStatus();
-    console.log(isLoggedIn);
   }, []);
 
   if (isLoggedIn === null) {

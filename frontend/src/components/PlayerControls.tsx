@@ -18,6 +18,7 @@ interface PlayerControlsProps {
   handleNextPlaylist: () => void;
   handlePrevTrack: () => void;
   handleNextTrack: () => void;
+  handlePlayPause: () => void;
 }
 
 const PlayerControls: React.FC<PlayerControlsProps> = ({
@@ -27,24 +28,8 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
   handleNextPlaylist,
   handlePrevTrack,
   handleNextTrack,
+  handlePlayPause,
 }) => {
-  const { player, deviceId } = usePlayer();
-
-  const handlePlayPause = useCallback(() => {
-    if (isPlaying) {
-      axios.get(
-        `http://localhost:8080/player?action=pause&device_id=${deviceId}`,
-        { withCredentials: true }
-      );
-    } else {
-      axios.get(
-        `http://localhost:8080/player?action=play&device_id=${deviceId}`,
-        { withCredentials: true }
-      );
-    }
-    setIsPlaying(!isPlaying);
-  }, [isPlaying, deviceId, setIsPlaying]);
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "ArrowLeft") {

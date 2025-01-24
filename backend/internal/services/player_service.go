@@ -38,33 +38,6 @@ func (s *PlayerService) HandlePlayer(c *gin.Context, spotifyClient *spotify.Clie
 			c.Error(err)
 			return nil, err
 		}
-	case models.PlayerActionPause:
-		var options spotify.PlayOptions
-		if params.Link != "" {
-			options.PlaybackContext = (*spotify.URI)(&params.Link)
-		}
-		if params.DeviceID != "" {
-			options.DeviceID = &params.DeviceID
-		}
-		err = spotifyClient.PlayOpt(c, &options)
-		if err != nil {
-			return nil, err
-		}
-		err = spotifyClient.PauseOpt(c, &options)
-	case models.PlayerActionNext:
-		var options spotify.PlayOptions
-		if params.DeviceID != "" {
-			options.DeviceID = &params.DeviceID
-		}
-		err = spotifyClient.NextOpt(c, &options)
-		if err != nil {
-			return nil, err
-		}
-	case models.PlayerActionPrev:
-		err = spotifyClient.Previous(c)
-		if err != nil {
-			return nil, err
-		}
 	case models.PLayerActivate:
 		err = spotifyClient.TransferPlayback(c, params.DeviceID, false)
 		if err != nil {
