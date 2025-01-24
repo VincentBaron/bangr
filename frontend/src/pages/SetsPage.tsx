@@ -108,52 +108,81 @@ export default function SetsPage() {
   // }, [player]);
 
   useEffect(() => {
+    const handlePlayerStateChanged = (state: PlayerState) => {
+      if (state) {
+        console.log("state.current_track: ", state.track_window.current_track);
+        setPlayingTrack({
+          id: state.track_window.current_track.id,
+          name: state.track_window.current_track.name,
+          artist: state.track_window.current_track.artists[0].name,
+          uri: "spotify:track:" + state.track_window.current_track.id,
+          liked: false,
+          likes: 0,
+          img_url: "",
+        });
+        setIsPlaying(!state.paused);
+      }
+    };
+
     if (player) {
       (player as any).addListener(
         "player_state_changed",
-        (state: PlayerState) => {
-          if (state) {
-            setPlayingTrack({
-              id: state.track_window.current_track.id,
-              name: state.track_window.current_track.name,
-              artist: state.track_window.current_track.artists[0].name,
-              uri: "spotify:track:" + state.track_window.current_track.id,
-              liked: false,
-              likes: 0,
-              img_url: "",
-            });
-            setIsPlaying(!state.paused);
-          }
-        }
+        handlePlayerStateChanged
       );
     }
+
+    // Cleanup function to remove the event listener
+    return () => {
+      if (player) {
+        (player as any).removeListener(
+          "player_state_changed",
+          handlePlayerStateChanged
+        );
+      }
+    };
   }, [player]);
 
   // TO implement automatic playlist switching
-  // useEffect(() => {
-  //   if (player) {
-  //     (player as any).addListener(
-  //       "player_state_changed",
-  //       (state: PlayerState) => {
-  //         if (state) {
-  //           const urisMap = new Map<string, boolean>();
-  //           sets![selectedIndex].tracks.forEach((track) => {
-  //             urisMap.set(track.uri, true);
-  //           });
-  //           if (!urisMap.has(state.track_window.current_track.id)) {
-  //             console.log("Switching playlist");
-  //             api?.scrollNext();
-  //             setTransitionDirection("right");
-  //             setSelectedIndex((prevIndex) =>
-  //               Math.min(prevIndex + 1, sets!.length - 1)
-  //             );
-  //             setCurrentTrackIndex(0); // Reset track index to the first track of the new playlist
-  //           }
-  //         }
-  //       }
-  //     );
-  //   }
-  // }, [player]);
+  useEffect(() => {
+    const handlePlayerStateChanged = (state: PlayerState) => {
+      if (state) {
+        setSelectedIndex((prevIndex) => {
+          console.log("selectedIndex useEffect 1: ", prevIndex);
+          const urisMap = new Map<string, boolean>();
+          sets![prevIndex].tracks.forEach((track) => {
+            urisMap.set(track.uri.split(":")[2], true);
+          });
+          console.log(urisMap);
+          if (!urisMap.has(state.track_window.current_track.id)) {
+            console.log("Switching playlist");
+            api?.scrollNext();
+            setTransitionDirection("right");
+            setCurrentTrackIndex(0);
+            return Math.min(prevIndex + 1, sets!.length - 1);
+          } else {
+            return prevIndex;
+          }
+        });
+      }
+    };
+
+    if (player) {
+      (player as any).addListener(
+        "player_state_changed",
+        handlePlayerStateChanged
+      );
+    }
+
+    // Cleanup function to remove the event listener
+    return () => {
+      if (player) {
+        (player as any).removeListener(
+          "player_state_changed",
+          handlePlayerStateChanged
+        );
+      }
+    };
+  }, [player]);
 
   const handlePrevPlaylist = () => {
     if (player) {
