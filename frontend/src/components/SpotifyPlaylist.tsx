@@ -14,6 +14,7 @@ interface SpotifyPlaylistProps extends React.HTMLAttributes<HTMLDivElement> {
   set: Set;
   playingTrack: Track | null;
   isPlaying: boolean;
+  index: number;
 }
 
 export default function SpotifyPlaylist({
@@ -21,6 +22,7 @@ export default function SpotifyPlaylist({
   className,
   playingTrack,
   isPlaying,
+  index,
   ...props
 }: SpotifyPlaylistProps) {
   const defaultOptions = {
@@ -52,6 +54,7 @@ export default function SpotifyPlaylist({
     <Card
       className={cn(
         "bg-black bg-opacity-70 text-primary w-full mx-auto my-4 border-purple",
+        index === 0 ? "bg-purple bg-opacity-50" : "",
         className
       )}
       {...props}

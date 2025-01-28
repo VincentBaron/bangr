@@ -54,30 +54,42 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 
       playerRef.current = player;
 
-      player.addListener(
-        "ready",
-        async ({ device_id }: { device_id: string }) => {
-          console.log("Ready with Device ID", device_id);
-          setDeviceId(device_id);
-          try {
-            await axios.get(
-              `http://localhost:8080/player?action=activate&device_id=${device_id}`,
-              { withCredentials: true }
-            );
-          } catch (error) {
-            console.error("Failed to activate player", error);
-          }
+      const handleReady = async ({ device_id }: { device_id: string }) => {
+        console.log("Ready with Device ID", device_id);
+        setDeviceId(device_id);
+        try {
+          await axios.get(
+            `http://localhost:8080/player?action=activate&device_id=${device_id}`,
+            { withCredentials: true }
+          );
+        } catch (error) {
+          console.error("Failed to activate player", error);
         }
-      );
+      };
 
-      player.addListener(
-        "not_ready",
-        ({ device_id }: { device_id: string }) => {
-          console.log("Device ID has gone offline", device_id);
-        }
-      );
+      const handleNotReady = ({ device_id }: { device_id: string }) => {
+        console.log("Device ID has gone offline", device_id);
+      };
+
+      player.addListener("ready", handleReady);
+      player.addListener("not_ready", handleNotReady);
 
       player.connect();
+
+      // Cleanup function to remove the event listeners and disconnect the player
+      return () => {
+        player.removeListener("ready", handleReady);
+        player.removeListener("not_ready", handleNotReady);
+        player.disconnect();
+      };
+    };
+
+    // Cleanup function to remove the script element
+    return () => {
+      const scriptElement = document.getElementById("spotify-player");
+      if (scriptElement) {
+        document.body.removeChild(scriptElement);
+      }
     };
   }, []);
 

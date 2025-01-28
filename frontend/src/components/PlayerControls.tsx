@@ -1,15 +1,14 @@
-import React, { useEffect, useCallback } from "react";
-import axios from "axios";
+import React, { useEffect } from "react";
 import {
   Play,
   Pause,
   SkipBack,
   SkipForward,
-  ChevronLeft,
-  ChevronRight,
+  ChevronUp,
+  ChevronDown,
+  Space,
 } from "lucide-react";
-import { usePlayer } from "../context/PlayerContext";
-import { CommandShortcut } from "@/components/ui/command";
+import ShortcutKey from "./ui/shortcutKeys";
 
 interface PlayerControlsProps {
   isPlaying: boolean;
@@ -50,22 +49,24 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
   }, [handlePlayPause, handleNextTrack, handlePrevTrack, setIsPlaying]);
 
   return (
-    // <Card className="flex justify-center items-center mt-4 bg-gray p-3 neon-shadow-orange border-purple">
-    <div>
+    <div className="flex items-center">
       <button
         onClick={() => {
           handlePrevTrack();
           setIsPlaying(true);
         }}
-        className="mx-2"
+        className="mx-2 flex items-center"
       >
-        <SkipBack className="text-purple" size={24} />
+        <SkipBack className="text-purple fill-purple" size={24} />
       </button>
-      <button onClick={handlePlayPause} className="mx-2">
+      <button
+        onClick={handlePlayPause}
+        className="mx-2 flex items-center justify-center w-12 h-12 rounded-full border-2 border-purple bg-purple"
+      >
         {isPlaying ? (
-          <Pause className="text-purple" size={24} />
+          <Pause className="fill-black" size={24} />
         ) : (
-          <Play className="text-purple" size={24} />
+          <Play className="fill-black" size={24} />
         )}
       </button>
       <button
@@ -73,12 +74,11 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
           handleNextTrack();
           setIsPlaying(true);
         }}
-        className="mx-2"
+        className="mx-2 flex items-center"
       >
-        <SkipForward className="text-purple" size={24} />
+        <SkipForward className="text-purple fill-purple" size={24} />
       </button>
     </div>
-    // </Card>
   );
 };
 

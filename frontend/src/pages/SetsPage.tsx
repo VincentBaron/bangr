@@ -51,9 +51,8 @@ export default function SetsPage() {
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const playerIsSet = useRef(false);
 
-  const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
   useEffect(() => {
+    console.log("useEffect1");
     const fetchSets = async () => {
       try {
         const response: AxiosResponse<any> = await axios.get(
@@ -74,7 +73,9 @@ export default function SetsPage() {
   }, []);
 
   useEffect(() => {
+    console.log("useEffect2 deviceId", deviceId);
     if (!playerIsSet.current && deviceId && sets && sets.length > 2) {
+      console.log("useEffect2 if check");
       const uris: string[] = [];
       sets.slice(1).forEach((set) => {
         set.tracks.forEach((track) => {
@@ -92,9 +93,10 @@ export default function SetsPage() {
       playerIsSet.current = true;
     }
   }),
-    [deviceId, sets];
+    [deviceId];
 
   useEffect(() => {
+    console.log("useEffect3");
     const handlePlayerStateChanged = (state: PlayerState) => {
       if (state) {
         setPlayingTrack({
@@ -130,13 +132,15 @@ export default function SetsPage() {
 
   // TO implement automatic playlist switching
   useEffect(() => {
+    console.log("useEffect4");
     const handlePlayerStateChanged = (state: PlayerState) => {
-      if (state) {
+      if (state && playerIsSet.current) {
         setSelectedIndex((prevIndex) => {
           const urisMap = new Map<string, boolean>();
           sets![prevIndex].tracks.forEach((track) => {
             urisMap.set(track.uri.split(":")[2], true);
           });
+
           if (!urisMap.has(state.track_window.current_track.id)) {
             api?.scrollNext();
             setTransitionDirection("right");
@@ -188,7 +192,6 @@ export default function SetsPage() {
       player &&
       !(currentTrackIndex === 2 && selectedIndex === sets!.length - 2)
     ) {
-      console.log("yolo");
       player.nextTrack().catch((error: any) => {
         console.error("Failed to play next track", error);
       });
@@ -228,6 +231,7 @@ export default function SetsPage() {
                   >
                     <SpotifyPlaylist
                       set={set}
+                      index={index}
                       playingTrack={playingTrack}
                       isPlaying={isPlaying}
                       className="group-data-[active=false]:scale-[85%] transition-all duration-300 group-data-[active=false]:opacity-60"
