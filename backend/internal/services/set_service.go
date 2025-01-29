@@ -97,10 +97,17 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 
 	// Filter sets based on creation date
 	filteredSets := make([]models.Set, 0)
+	dummySets := make([]models.Set, 0)
 	for _, set := range sets {
-		if set.CreatedAt.After(lastMonday) {
+		if set.CreatedAt.After(lastMonday) && set.Dummy == false {
 			filteredSets = append(filteredSets, set)
+		} else if set.Dummy {
+			dummySets = append(dummySets, set)
 		}
+	}
+
+	if len(filteredSets) < 2 {
+		filteredSets = append(filteredSets, dummySets...)
 	}
 
 	// Get user likes
@@ -111,16 +118,9 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 		tracksUserLikesMap[like.TrackID] = true
 	}
 
-	// Calculate last Sunday at midnight
-	offset = int(time.Sunday - now.Weekday())
-	if offset > 0 {
-		offset = -6
-	}
-	lastSunday := time.Date(now.Year(), now.Month(), now.Day()+offset, 0, 0, 0, 0, now.Location())
-
 	// Get likes for each track after last Sunday at midnight
 	var trackLikes []models.Like
-	config.DB.Model(&models.Like{}).Where("created_at >= ?", lastSunday).Find(&trackLikes)
+	config.DB.Model(&models.Like{}).Where("created_at >= ?", lastMonday).Find(&trackLikes)
 	trackLikesCountMap := make(map[uuid.UUID]int)
 	for _, like := range trackLikes {
 		trackLikesCountMap[like.TrackID]++

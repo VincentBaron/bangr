@@ -15,6 +15,7 @@ type Set struct {
 	UserID    uuid.UUID `gorm:"not null" json:"-"`
 	User      User      `json:"user"`
 	Tracks    []Track   `gorm:"many2many:set_tracks;" json:"tracks"`
+	Dummy     bool      `json:"dummy"`
 }
 
 type Track struct {
