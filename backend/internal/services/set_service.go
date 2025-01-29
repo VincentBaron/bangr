@@ -31,6 +31,14 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 	setsResp := make([]dto.GetSetResp, 0)
 	user := c.MustGet("user").(*models.User)
 
+	// Calculate last Monday at 1 AM
+	now := time.Now()
+	offset := int(time.Monday - now.Weekday())
+	if offset > 0 {
+		offset = -6
+	}
+	lastMonday := time.Date(now.Year(), now.Month(), now.Day()+offset, 1, 0, 0, 0, now.Location())
+
 	// Get current user's genres
 	var currentUser models.User
 	if err := config.DB.Preload("Genres").First(&currentUser, user.ID).Error; err != nil {
@@ -87,6 +95,14 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 		return nil, err
 	}
 
+	// Filter sets based on creation date
+	filteredSets := make([]models.Set, 0)
+	for _, set := range sets {
+		if set.CreatedAt.After(lastMonday) {
+			filteredSets = append(filteredSets, set)
+		}
+	}
+
 	// Get user likes
 	var likes []models.Like
 	config.DB.Model(&models.Like{}).Where("user_id = ?", user.ID).Find(&likes)
@@ -96,8 +112,7 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 	}
 
 	// Calculate last Sunday at midnight
-	now := time.Now()
-	offset := int(time.Sunday - now.Weekday())
+	offset = int(time.Sunday - now.Weekday())
 	if offset > 0 {
 		offset = -6
 	}
@@ -111,7 +126,7 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 		trackLikesCountMap[like.TrackID]++
 	}
 
-	for _, set := range sets {
+	for _, set := range filteredSets {
 		tracksResp := make([]dto.GetTrackResp, 0)
 		for _, track := range set.Tracks {
 			liked := false

@@ -220,7 +220,7 @@ export default function SetsPage() {
 
   return (
     <>
-      {sets && sets.length > 0 ? (
+      {sets && sets.length > 1 ? (
         <div className="flex w-full flex-col items-center">
           <div className="">
             <Carousel
@@ -258,7 +258,9 @@ export default function SetsPage() {
           />
         </div>
       ) : (
-        <div>Loading...</div>
+        <div className="text-primary font-custom text-3xl">
+          No one uploaded anything last week... ☹️
+        </div>
       )}
     </>
   );
