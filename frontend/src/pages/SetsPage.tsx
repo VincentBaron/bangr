@@ -50,6 +50,14 @@ export default function SetsPage() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const playerIsSet = useRef(false);
+  const reload = useRef(false);
+
+  // useEffect(() => {
+  //   if (!reload.current) {
+  //     window.location.reload();
+  //     reload.current = true;
+  //   }
+  // }, []);
 
   useEffect(() => {
     console.log("useEffect1");
