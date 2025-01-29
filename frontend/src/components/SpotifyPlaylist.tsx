@@ -33,6 +33,7 @@ export default function SpotifyPlaylist({
       preserveAspectRatio: "xMidYMid slice",
     },
   };
+  const [currentSet, setCurrentSet] = useState(set);
 
   const toggleLikeSong = (track: Track) => async () => {
     try {
@@ -41,12 +42,22 @@ export default function SpotifyPlaylist({
         {},
         { withCredentials: true }
       );
+      const updatedTracks = currentSet.tracks.map((t) =>
+        t.id === track.id
+          ? {
+              ...t,
+              liked: !t.liked,
+              likes: t.liked ? t.likes - 1 : t.likes + 1,
+            }
+          : t
+      );
+      setCurrentSet({ ...currentSet, tracks: updatedTracks });
     } catch (error) {
       console.error("Failed to toggle like", error);
     }
   };
 
-  if (set.tracks.length === 0) {
+  if (currentSet.tracks.length === 0) {
     return <div></div>;
   }
 
@@ -62,21 +73,21 @@ export default function SpotifyPlaylist({
       <CardHeader className="flex-row gap-3">
         <Avatar>
           <AvatarImage
-            src={set.profilePicURL}
-            alt={set.username}
+            src={currentSet.profilePicURL}
+            alt={currentSet.username}
             className="rounded-full w-10"
           />
           <AvatarFallback className="avatar-fallback text-white flex items-center justify-center">
-            {set.username.charAt(0).toUpperCase()}
+            {currentSet.username.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <CardTitle className="flex justify-center align-items font-custom">
-          {set.username}
+          {currentSet.username}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className={`flex flex-col gap-4`}>
-          {set.tracks?.map((track) => (
+          {currentSet.tracks?.map((track) => (
             <div
               key={track.id}
               className={`grid grid-cols-[1fr_3fr_1fr] rounded-lg transition-all hover:bg-purple-200`}
