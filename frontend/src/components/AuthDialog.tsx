@@ -111,7 +111,11 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
   const handleTabChange = (value: string) => {
     if (value === "signup" && !hasOpenedTooltip) {
       setIsTooltipOpen(true);
+      setTooltipStep(1);
       setHasOpenedTooltip(true);
+    } else {
+      setIsTooltipOpen(false);
+      setHasOpenedTooltip(false);
     }
   };
 
@@ -121,6 +125,10 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
 
   const handlePrevTooltipStep = () => {
     setTooltipStep((prevStep) => prevStep - 1);
+  };
+
+  const handleTooltipClose = () => {
+    setIsTooltipOpen(false);
   };
 
   return (
@@ -135,62 +143,87 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
           <TooltipContent
             side="bottom"
             align="start"
-            className="bg-black text-primary font-custom text-lg p-4"
+            className="w-[400px] bg-gray border-2 border-purple text-primary font-custom p-6 rounded-lg shadow-lg"
           >
             {tooltipStep === 1 && (
-              <div>
-                <p className="text-primary fonts-custom">Welcome to Bangr !</p>
-                <br />
-                <p>
+              <div className="space-y-4">
+                <h3 className="text-2xl text-purple font-bold">
+                  Welcome to Bangr !
+                </h3>
+                <p className="text-primary">
                   For all the music lovers, the diggers, the ones who can't stop
                   searching new emotions throughout music, I created Bangr.
                 </p>
-                <br />
-                <p>
+                <p className="text-primary">
                   From the relaisation that conventional streaming plateforms
                   did not give me the opportunity to showcase the bangers I
                   discovered and be able to listen to other peoples music
                   discoveries....
                 </p>
-                <Button onClick={handleNextTooltipStep} className="mt-2">
+                <Button
+                  onClick={handleNextTooltipStep}
+                  className="w-full bg-purple hover:bg-hoverPurple transition-colors"
+                >
                   Continue
                 </Button>
               </div>
             )}
             {tooltipStep === 2 && (
-              <div>
-                <p>
+              <div className="space-y-4">
+                <p className="text-primary">
                   Upon signing up, a playlist will automatically be created on
                   your spotify account. You can put up to 3 bangers you discover
                   during the week inside it.
                 </p>
-                <br />
-                <img
-                  src="../public/assets/bangr1.png"
-                  className="w-300"
-                  alt="Website Logo"
-                />
-                <div className="flex justify-between mt-2">
-                  <Button onClick={handlePrevTooltipStep}>Back</Button>
-                  <Button onClick={() => setIsTooltipOpen(false)}>Close</Button>
+                <div className="rounded-lg overflow-hidden border border-purple">
+                  <img
+                    src="../public/assets/bangr1.png"
+                    className="w-full object-cover"
+                    alt="Website Logo"
+                  />
+                </div>
+                <div className="flex justify-between gap-2">
+                  <Button
+                    onClick={handlePrevTooltipStep}
+                    className="flex-1 bg-gray hover:bg-purple/20 border-2 border-purple text-purple transition-colors"
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    onClick={() => setIsTooltipOpen(false)}
+                    className="flex-1 bg-purple hover:bg-hoverPurple transition-colors"
+                  >
+                    Close
+                  </Button>
                 </div>
               </div>
             )}
             {tooltipStep === 3 && (
-              <div>
-                <p>
+              <div className="space-y-4">
+                <p className="text-primary">
                   Each monday, you will be able to listen to everyone's bangers
                   from the past week in a story like format ! 🔥
                 </p>
-                <br />
-                <img
-                  src="../public/assets/bangr1.png"
-                  className="w-300"
-                  alt="Website Logo"
-                />
-                <div className="flex justify-between mt-2">
-                  <Button onClick={handlePrevTooltipStep}>Back</Button>
-                  <Button onClick={() => setIsTooltipOpen(false)}>Close</Button>
+                <div className="rounded-lg overflow-hidden border border-purple">
+                  <img
+                    src="../public/assets/bangr1.png"
+                    className="w-full object-cover"
+                    alt="Website Logo"
+                  />
+                </div>
+                <div className="flex justify-between gap-2">
+                  <Button
+                    onClick={handlePrevTooltipStep}
+                    className="flex-1 bg-gray hover:bg-purple/20 border-2 border-purple text-purple transition-colors"
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    onClick={() => handleTooltipClose}
+                    className="flex-1 bg-purple hover:bg-hoverPurple transition-colors"
+                  >
+                    Close
+                  </Button>
                 </div>
               </div>
             )}
