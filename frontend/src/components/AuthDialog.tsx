@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {
   Card,
@@ -53,6 +53,7 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [signupStep, setSignupStep] = useState(1);
   const [tooltipStep, setTooltipStep] = useState(1);
+  const [hasOpenedTooltip, setHasOpenedTooltip] = useState(false);
 
   const handleGenreToggle = (genre: string) => {
     setSelectedGenres((prev) =>
@@ -107,8 +108,11 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
     });
   };
 
-  const handleSignUpClick = () => {
-    setIsTooltipOpen(true);
+  const handleTabChange = (value: string) => {
+    if (value === "signup" && !hasOpenedTooltip) {
+      setIsTooltipOpen(true);
+      setHasOpenedTooltip(true);
+    }
   };
 
   const handleNextTooltipStep = () => {
@@ -219,12 +223,14 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="login" className="w-full">
+            <Tabs
+              defaultValue="login"
+              onValueChange={handleTabChange}
+              className="w-full"
+            >
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup" onClick={handleSignUpClick}>
-                  Sign Up
-                </TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
               <TabsContent value="login">
                 <form onSubmit={handleLogin} className="space-y-4">
