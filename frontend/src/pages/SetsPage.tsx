@@ -100,8 +100,7 @@ export default function SetsPage() {
       play();
       playerIsSet.current = true;
     }
-  }),
-    [deviceId];
+  }, [deviceId, sets]); // Corrected dependency array
 
   useEffect(() => {
     console.log("useEffect3");
