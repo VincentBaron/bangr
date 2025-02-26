@@ -627,6 +627,13 @@ body {
   height: 100%;
   overflow: hidden;
   background: black; /* Set background to black */
+  font-family: "Exo 2", sans-serif;
+  font-weight: 400; /* Normal readability */
+}
+
+h1,
+h2 {
+  font-weight: 700; /* Bold for titles */
 }
 
 canvas {

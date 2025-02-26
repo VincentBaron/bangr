@@ -81,7 +81,7 @@ export default function SpotifyPlaylist({
             {currentSet.username.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <CardTitle className="flex justify-center align-items font-custom">
+        <CardTitle className="flex justify-center align-items font-exo2">
           {currentSet.username}
         </CardTitle>
       </CardHeader>
@@ -108,7 +108,7 @@ export default function SpotifyPlaylist({
               </div>
               <div>
                 <p
-                  className={`text-primary font-custom ${
+                  className={`text-primary  ${
                     playingTrack && playingTrack.uri === track.uri
                       ? "text-purple"
                       : ""
@@ -116,7 +116,7 @@ export default function SpotifyPlaylist({
                 >
                   {track.name}
                 </p>
-                <p className="text-secondary font-custom">{track.artist}</p>
+                <p className="text-secondary ">{track.artist}</p>
               </div>
               <div className="flex row items-center">
                 <button
@@ -132,7 +132,7 @@ export default function SpotifyPlaylist({
                     size={24}
                   />
                 </button>
-                <p className="text-primary font-custom">{track.likes}</p>
+                <p className="text-primary ">{track.likes}</p>
               </div>
             </div>
           ))}

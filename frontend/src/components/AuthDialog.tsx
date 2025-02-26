@@ -140,7 +140,7 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
             ?
           </button>
         </DialogTrigger>
-        <DialogContent className="w-[80vw] max-w-[1200px] h-[80vh] overflow-y-auto bg-gray border-2 border-purple text-primary font-custom p-6 rounded-lg shadow-lg">
+        <DialogContent className="w-[80vw] max-w-[1200px] h-[80vh] overflow-y-auto bg-gray border-2 border-purple text-primary  p-6 rounded-lg shadow-lg">
           {tooltipStep === 1 && (
             <div className="space-y-4">
               <h3 className="text-2xl text-purple font-bold">
@@ -268,21 +268,19 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
           className="h-20 w-20"
           alt="Website Logo"
         />
-        <h1 className="font-custom text-7xl text-purple">Bangr</h1>
+        <h1 className=" text-7xl text-purple">Bangr</h1>
       </div>
       <div className="text-center mb-10">
-        <h2 className="text-primary text-left text-3xl font-custom">Banger</h2>
-        <p className="font-custom text-xl mt-2 text-primary text-left">
-          /bang·uh/
-        </p>
-        <p className="font-custom text-xl mt-2 text-primary text-left">
+        <h2 className="text-primary text-left text-3xl ">Banger</h2>
+        <p className=" text-xl mt-2 text-primary text-left">/bang·uh/</p>
+        <p className=" text-xl mt-2 text-primary text-left">
           A song that makes you feel the need to headbang to the beat.
         </p>
       </div>
       <Card className="bg-gray text-primary border-purple w-full max-w-md mx-auto">
         <CardHeader>
-          <CardTitle className="font-custom">Welcome to Bangr</CardTitle>
-          <CardDescription className="font-custom">
+          <CardTitle className="">Welcome to Bangr</CardTitle>
+          <CardDescription className="">
             Login or create your profile to start discovering music.
           </CardDescription>
         </CardHeader>
@@ -299,7 +297,7 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="login-username" className="font-custom">
+                  <Label htmlFor="login-username" className="">
                     Username
                   </Label>
                   <Input
@@ -310,7 +308,7 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
                   />
                 </div>
                 <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="login-password" className="font-custom">
+                  <Label htmlFor="login-password" className="">
                     Password
                   </Label>
                   <Input
@@ -326,7 +324,7 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
                 )}
                 <Button
                   type="submit"
-                  className="w-full bg-purple hover:bg-hoverPurple font-custom"
+                  className="w-full bg-purple hover:bg-hoverPurple "
                 >
                   Login
                 </Button>
@@ -335,18 +333,18 @@ const AuthDialog: React.FC<AuthDialogProps> = () => {
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4">
                 <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="signup-username" className="font-custom">
+                  <Label htmlFor="signup-username" className="">
                     Username
                   </Label>
                   <Input
                     id="signup-username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="text-black font-custom"
+                    className="text-black "
                   />
                 </div>
                 <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="signup-password" className="font-custom">
+                  <Label htmlFor="signup-password" className="">
                     Password
                   </Label>
                   <Input

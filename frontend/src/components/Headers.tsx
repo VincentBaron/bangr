@@ -93,7 +93,7 @@ const Header: React.FC = () => {
             key={genre}
             pressed={user.genres.includes(genre)}
             onPressedChange={() => handleGenreToggle(genre)}
-            className={`cursor-pointer text-primary flex items-center font-custom ${
+            className={`cursor-pointer text-primary flex items-center  ${
               user.genres.includes(genre) ? "bg-purple" : ""
             }`}
           >

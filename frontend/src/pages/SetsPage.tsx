@@ -257,7 +257,7 @@ export default function SetsPage() {
           />
         </div>
       ) : (
-        <div className="text-primary font-custom text-3xl">
+        <div className="text-primary  text-3xl">
           No one uploaded anything last week... ☹️
         </div>
       )}
