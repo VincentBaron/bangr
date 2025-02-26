@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SetsPage from "./pages/SetsPage";
 import { PlayerProvider } from "./context/PlayerContext";
-import AuthDialog from "./components/AuthDialog"; // Import AuthDialog component
+import WelcomePage from "./pages/WelcomePage"; // Import AuthDialog component
 import Header from "./components/Headers";
 import { UserProvider } from "./context/UserContext";
 import "./styles/fonts.css";
@@ -42,12 +42,13 @@ export default function App() {
             </PlayerProvider>
           </UserProvider>
         ) : (
-          <AuthDialog
+          <WelcomePage />
+        )}
+        {/* <AuthDialog
             isOpen={!isLoggedIn}
             onClose={() => setIsLoggedIn(true)}
             onSignUp={() => setIsLoggedIn(true)}
-          />
-        )}
+          /> */}
       </div>
     </div>
   );
