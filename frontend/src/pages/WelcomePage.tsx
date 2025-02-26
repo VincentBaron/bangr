@@ -39,7 +39,7 @@ const WelcomePage: React.FC<AuthDialogProps> = () => {
           className="bg-purple hover:bg-hoverPurple"
           onClick={() => console.log("Sign up")}
         >
-          Quickstart
+          Listen
         </Button>
       </div>
     </div>
