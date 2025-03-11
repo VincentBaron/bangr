@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import SetsPage from "./pages/SetsPage";
 import { PlayerProvider } from "./context/PlayerContext";
-import WelcomePage from "./pages/WelcomePage"; // Import AuthDialog component
 import Header from "./components/Headers";
 import { UserProvider } from "./context/UserContext";
+import WelcomePage from "./pages/WelcomePage";
+import AuthDialog from "./components/AuthDialog";
 import "./styles/fonts.css";
-import "./styles/background-animation.css"; // Import the background animation CSS
+import "./styles/background-animation.css";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(false);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   useEffect(() => {
     const checkUserStatus = () => {
@@ -19,6 +22,33 @@ export default function App() {
     };
     checkUserStatus();
   }, []);
+
+  useEffect(() => {
+    console.log("isAuthDialogOpen", isAuthDialogOpen);
+  }, [isAuthDialogOpen]);
+
+  useEffect(() => {
+    console.log("isLoggedIn", isLoggedIn);
+  }, [isLoggedIn]);
+
+  const handleDiscoverMusicClick = () => {
+    setAuthMode("signup");
+    setIsAuthDialogOpen(true);
+  };
+
+  const handleLoginClick = () => {
+    setAuthMode("login");
+    setIsAuthDialogOpen(true);
+  };
+
+  const handleSignupClick = () => {
+    setAuthMode("login");
+    setIsAuthDialogOpen(true);
+  };
+
+  const handleCloseAuthDialog = () => {
+    setIsAuthDialogOpen(false);
+  };
 
   if (isLoggedIn === null) {
     return <div>Loading...</div>;
@@ -41,14 +71,18 @@ export default function App() {
               </div>
             </PlayerProvider>
           </UserProvider>
+        ) : !isAuthDialogOpen ? (
+          <WelcomePage
+            onDiscoverMusicClick={handleDiscoverMusicClick}
+            onLoginClick={handleLoginClick}
+          />
         ) : (
-          <WelcomePage />
+          <AuthDialog
+            onClose={handleCloseAuthDialog}
+            onSignUp={() => handleSignupClick()}
+            authMode={authMode}
+          />
         )}
-        {/* <AuthDialog
-            isOpen={!isLoggedIn}
-            onClose={() => setIsLoggedIn(true)}
-            onSignUp={() => setIsLoggedIn(true)}
-          /> */}
       </div>
     </div>
   );
