@@ -6,10 +6,8 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -150,11 +148,9 @@ func (s *AuthService) Signup(c *gin.Context, payload *dto.PostUserReq) (*string,
 	stateToUserIDMap.Unlock()
 
 	// Redirect the user to the Spotify authorization page
-	scopes := strings.Join(config.Conf.SpotifyScopes, " ")
-	encodedScopes := url.QueryEscape(scopes)
 	url := "https://accounts.spotify.com/authorize?response_type=code" +
 		"&client_id=" + config.Conf.SpotifyClientID +
-		"&scope=" + encodedScopes +
+		"&scope=" + config.Conf.SpotifyScopes +
 		"&redirect_uri=" + config.Conf.SpotifyRedirectURL +
 		"&state=" + state
 

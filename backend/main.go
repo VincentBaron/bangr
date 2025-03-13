@@ -26,7 +26,19 @@ func LoadConfig(file string) (models.Config, error) {
 	var config models.Config
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return config, err
+		log.Printf("Config file not found, loading from environment variables...")
+		config = models.Config{}
+		config.Database.Host = os.Getenv("DB_HOST")
+		config.Database.Port = os.Getenv("DB_PORT")
+		config.Database.User = os.Getenv("DB_USER")
+		config.Database.Password = os.Getenv("DB_PASSWORD")
+		config.Database.Name = os.Getenv("DB_NAME")
+		config.YoutubeAPIKey = os.Getenv("YOUTUBE_API_KEY")
+		config.SpotifyClientID = os.Getenv("SPOTIFY_CLIENT_ID")
+		config.SpotifyClientSecret = os.Getenv("SPOTIFY_CLIENT_SECRET")
+		config.SpotifyRedirectURL = os.Getenv("SPOTIFY_REDIRECT_URI")
+		config.SpotifyScopes = os.Getenv("SPOTIFY_SCOPES")
+		return config, nil
 	}
 	err = yaml.Unmarshal(data, &config)
 	return config, err
