@@ -64,7 +64,7 @@ export default function SetsPage() {
     const fetchSets = async () => {
       try {
         const response: AxiosResponse<any> = await axios.get(
-          "http://localhost:8080/sets",
+          `${import.meta.env.VITE_BACKEND_URL}/sets`,
           { withCredentials: true }
         );
         const fetchedSets = response.data.sets as Set[];
@@ -93,7 +93,9 @@ export default function SetsPage() {
       const urisx = Array.from(uris).join("&uris=");
       const play = async () => {
         const response: AxiosResponse<any> = await axios.get(
-          `http://localhost:8080/player?action=play&device_id=${deviceId}&uris=${urisx}`,
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/player?action=play&device_id=${deviceId}&uris=${urisx}`,
           { withCredentials: true }
         );
       };

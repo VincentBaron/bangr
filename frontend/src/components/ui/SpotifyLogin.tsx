@@ -8,7 +8,10 @@ const SpotifySignup: FC = () => {
 
   const handleSignup = () => {
     axios
-      .post("http://localhost:8080/signup", { username: username, password })
+      .post(`${import.meta.env.VITE_BACKEND_URL}/signup`, {
+        username: username,
+        password,
+      })
       .then((response) => {
         window.location.href = response.data.url;
         console.log("response data: ", response.data);
@@ -21,7 +24,7 @@ const SpotifySignup: FC = () => {
   const handleLogin = () => {
     axios
       .post(
-        "http://localhost:8080/login",
+        `${import.meta.env.VITE_BACKEND_URL}/login`,
         { username: username, password },
         { withCredentials: true }
       )

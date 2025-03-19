@@ -70,7 +70,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
     setLoginError(null); // Reset error state before attempting login
     axios
       .post(
-        "http://localhost:8080/login",
+        `${import.meta.env.VITE_BACKEND_URL}/login`,
         { username: username, password },
         { withCredentials: true }
       )
@@ -90,7 +90,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
     e.preventDefault();
     setSignupError(null); // Reset error state before attempting signup
     axios
-      .post("http://localhost:8080/signup", {
+      .post(`${import.meta.env.VITE_BACKEND_URL}/signup`, {
         username: username,
         password,
         genres: selectedGenres,
@@ -98,7 +98,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
       .then((response) => {
         axios
           .post(
-            "http://localhost:8080/login",
+            `${import.meta.env.VITE_BACKEND_URL}/login`,
             { username: username, password },
             { withCredentials: true }
           )

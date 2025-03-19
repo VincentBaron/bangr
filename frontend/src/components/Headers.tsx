@@ -20,9 +20,12 @@ const Header: React.FC = () => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/genres", {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/genres`,
+          {
+            withCredentials: true,
+          }
+        );
         setAllGenres(response.data);
       } catch (error) {
         console.error("Failed to fetch genres", error);
@@ -38,7 +41,7 @@ const Header: React.FC = () => {
         : [...(user.genres || []), genre];
       setUser({ ...user, genres: updatedGenres });
       axios.patch(
-        `http://localhost:8080/me`,
+        `${import.meta.env.VITE_BACKEND_URL}/me`,
         {
           genres: updatedGenres,
         },
@@ -51,7 +54,7 @@ const Header: React.FC = () => {
     if (user) {
       try {
         const response = await axios.patch(
-          `http://localhost:8080/me`,
+          `${import.meta.env.VITE_BACKEND_URL}/me`,
           {
             username: newUsername,
             genres: user.genres,

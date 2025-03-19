@@ -59,7 +59,9 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         setDeviceId(device_id);
         try {
           await axios.get(
-            `http://localhost:8080/player?action=activate&device_id=${device_id}`,
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/player?action=activate&device_id=${device_id}`,
             { withCredentials: true }
           );
         } catch (error) {

@@ -38,7 +38,9 @@ export default function SpotifyPlaylist({
   const toggleLikeSong = (track: Track) => async () => {
     try {
       await axios.put(
-        `http://localhost:8080/tracks/${track.id}/like?liked=${!track.liked}`,
+        `${import.meta.env.VITE_BACKEND_URL}/tracks/${
+          track.id
+        }/like?liked=${!track.liked}`,
         {},
         { withCredentials: true }
       );

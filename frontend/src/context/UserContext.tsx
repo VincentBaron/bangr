@@ -23,9 +23,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/me", {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/me`,
+          {
+            withCredentials: true,
+          }
+        );
         setUser(response.data);
       } catch (error) {
         console.error("Failed to fetch user", error);
