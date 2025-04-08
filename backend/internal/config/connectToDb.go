@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -15,24 +14,25 @@ var DB *gorm.DB
 
 func ConnectToDb() {
 	var err error
-	host := Conf.Database.Host
-	port := Conf.Database.Port
-	user := Conf.Database.User
-	password := Conf.Database.Password
-	database := Conf.Database.Name
 
+	// Get the connection string from the environment variable
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		log.Fatalf("DATABASE_URL environment variable is not set")
+	}
+
+	// Configure GORM logger
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold:             time.Second, // Slow SQL threshold
 			LogLevel:                  logger.Info, // Log level
 			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
-			Colorful:                  true,        // Disable color
+			Colorful:                  true,        // Enable color
 		},
 	)
 
-	// Connect to postgres
-	dsn := fmt.Sprintf("host=%s port=%s, user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, database)
+	// Connect to PostgreSQL using the connection string
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: newLogger,
 	})

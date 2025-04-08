@@ -27,6 +27,10 @@ RUN npm ci --include=dev
 # Copy application code
 COPY . .
 
+# Pass the backend URL as a build argument
+ARG VITE_BACKEND_URL
+ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
+
 # Build application
 RUN npm run build
 

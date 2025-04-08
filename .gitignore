@@ -3,3 +3,5 @@ backend/vendor/
 backend/configs.yml
 backend/internal/cron/configs.yml
 .env
+frontend/fly.toml
+backend/fly.toml
