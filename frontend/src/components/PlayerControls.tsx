@@ -1,14 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  ChevronUp,
-  ChevronDown,
-  Space,
-} from "lucide-react";
-import ShortcutKey from "./ui/shortcutKeys";
+import { Play, Pause, SkipBack, SkipForward } from "lucide-react";
 
 interface PlayerControlsProps {
   isPlaying: boolean;

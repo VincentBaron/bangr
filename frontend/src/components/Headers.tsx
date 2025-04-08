@@ -4,8 +4,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Toggle } from "@/components/ui/toggle";
@@ -15,6 +13,7 @@ import axios from "axios";
 const Header: React.FC = () => {
   const { user, setUser } = useUser();
   const [allGenres, setAllGenres] = useState<string[]>([]);
+  // @ts-ignore
   const [newUsername, setNewUsername] = useState(user?.username || "");
 
   useEffect(() => {
@@ -50,24 +49,24 @@ const Header: React.FC = () => {
     }
   };
 
-  const handleUsernameChange = async () => {
-    if (user) {
-      try {
-        const response = await axios.patch(
-          `${import.meta.env.VITE_BACKEND_URL}/me`,
-          {
-            username: newUsername,
-            genres: user.genres,
-          },
-          { withCredentials: true }
-        );
-        setUser({ ...user, username: newUsername });
-        console.log("Username updated successfully", response.data);
-      } catch (error) {
-        console.error("Failed to update username", error);
-      }
-    }
-  };
+  // const handleUsernameChange = async () => {
+  //   if (user) {
+  //     try {
+  //       const response = await axios.patch(
+  //         `${import.meta.env.VITE_BACKEND_URL}/me`,
+  //         {
+  //           username: newUsername,
+  //           genres: user.genres,
+  //         },
+  //         { withCredentials: true }
+  //       );
+  //       setUser({ ...user, username: newUsername });
+  //       console.log("Username updated successfully", response.data);
+  //     } catch (error) {
+  //       console.error("Failed to update username", error);
+  //     }
+  //   }
+  // };
 
   const handleLogout = () => {
     document.cookie = "Authorization=; Max-Age=0; path=/;";

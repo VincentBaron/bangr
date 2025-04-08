@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { usePlayer } from "../context/PlayerContext";
+import React, { useState } from "react";
 import { Set, Track } from "../pages/SetsPage";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

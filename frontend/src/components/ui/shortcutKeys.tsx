@@ -1,4 +1,3 @@
-import React from "react";
 import { Command, ChevronUp, ChevronDown } from "lucide-react"; // Import icons from Lucide
 
 const ShortcutKey = ({ keys }: { keys: string[] }) => {

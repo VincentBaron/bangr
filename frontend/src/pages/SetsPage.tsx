@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios, { AxiosResponse } from "axios";
 import { usePlayer } from "../context/PlayerContext";
 import SpotifyPlaylist from "../components/SpotifyPlaylist";
@@ -44,13 +44,13 @@ export default function SetsPage() {
   const [sets, setSets] = useState<Set[] | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
   const { player, deviceId } = usePlayer();
+  // @ts-ignore
   const [transitionDirection, setTransitionDirection] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [api, setApi] = useState<CarouselApi>();
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const playerIsSet = useRef(false);
-  const reload = useRef(false);
 
   // useEffect(() => {
   //   if (!reload.current) {
@@ -92,6 +92,7 @@ export default function SetsPage() {
       });
       const urisx = Array.from(uris).join("&uris=");
       const play = async () => {
+        // @ts-ignore
         const response: AxiosResponse<any> = await axios.get(
           `${
             import.meta.env.VITE_BACKEND_URL

@@ -12,13 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
 const musicGenres = [
   "Rock",
@@ -45,18 +38,12 @@ interface AuthDialogProps {
   authMode: "login" | "signup";
 }
 
-const AuthDialog: React.FC<AuthDialogProps> = ({
-  onClose,
-  onSignUp,
-  authMode,
-}) => {
+const AuthDialog: React.FC<AuthDialogProps> = ({ authMode }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [signupError, setSignupError] = useState<string | null>(null);
-  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
-  const [tooltipStep, setTooltipStep] = useState(1);
   const [hasOpenedTooltip, setHasOpenedTooltip] = useState(false);
 
   const handleGenreToggle = (genre: string) => {
@@ -74,7 +61,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
         { username: username, password },
         { withCredentials: true }
       )
-      .then((response) => {
+      .then(() => {
         window.location.reload();
       })
       .catch((error) => {
@@ -102,7 +89,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
             { username: username, password },
             { withCredentials: true }
           )
-          .then((response2) => {
+          .then(() => {
             window.location.reload();
             window.location.href = response.data.url;
           })
@@ -128,25 +115,10 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
 
   const handleTabChange = (value: string) => {
     if (value === "signup" && !hasOpenedTooltip) {
-      setIsTooltipOpen(true);
-      setTooltipStep(1);
       setHasOpenedTooltip(true);
     } else {
-      setIsTooltipOpen(false);
       setHasOpenedTooltip(false);
     }
-  };
-
-  const handleNextTooltipStep = () => {
-    setTooltipStep((prevStep) => prevStep + 1);
-  };
-
-  const handlePrevTooltipStep = () => {
-    setTooltipStep((prevStep) => prevStep - 1);
-  };
-
-  const handleTooltipClose = () => {
-    setIsTooltipOpen(false);
   };
 
   return (

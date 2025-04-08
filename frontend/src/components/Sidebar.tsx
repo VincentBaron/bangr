@@ -39,6 +39,7 @@ const Sidebar: React.FC = () => {
     "Pop",
     "Jazz",
   ]);
+  // @ts-ignore
   const [prizePool, setPrizePool] = useState<number>(75); // Example prize pool amount
 
   const toggleGenre = (genre: string) => {

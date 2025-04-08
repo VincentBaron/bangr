@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SetsPage from "./pages/SetsPage";
 import { PlayerProvider } from "./context/PlayerContext";
 import Header from "./components/Headers";
