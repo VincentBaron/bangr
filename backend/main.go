@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -48,6 +49,7 @@ func main() {
 	// Set up the Gin router
 	r := gin.New()
 	corsConfig := cors.DefaultConfig()
+	fmt.Printf("Frontend URL: %s\n", os.Getenv("FRONTEND_URL"))
 	corsConfig.AllowOrigins = []string{os.Getenv("FRONTEND_URL")}
 	corsConfig.AllowCredentials = true
 	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
@@ -93,5 +95,5 @@ func main() {
 
 	// Start the server
 	log.Printf("Server started at http://localhost:8080...")
-	log.Fatal(http.ListenAndServe("localhost:8080", r))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", r))
 }
