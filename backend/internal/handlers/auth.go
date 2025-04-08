@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/VincentBaron/bangr/backend/internal/dto"
 	"github.com/VincentBaron/bangr/backend/internal/services"
@@ -35,7 +36,7 @@ func (h *AuthHandler) CallbackHandler(c *gin.Context) {
 		})
 		return
 	}
-	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:5173")
+	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL"))
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
