@@ -5,6 +5,8 @@ import Header from "./components/Headers";
 import { UserProvider } from "./context/UserContext";
 import WelcomePage from "./pages/WelcomePage";
 import AuthDialog from "./components/AuthDialog";
+import { fetchSets } from "@/api/api";
+import { Set } from "@/types/types";
 import "./styles/fonts.css";
 import "./styles/background-animation.css";
 
@@ -12,6 +14,8 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(false);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const [sets, setSets] = useState<Set[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // Add loading state
 
   useEffect(() => {
     const checkUserStatus = () => {
@@ -25,6 +29,26 @@ export default function App() {
     };
 
     checkUserStatus();
+  }, []);
+
+  useEffect(() => {
+    const fetchSetsx = async () => {
+      try {
+        const response = await fetchSets({
+          withCredentials: true,
+        });
+        const fetchedSets = response.data.sets as Set[];
+        const dummySet = { id: "dummy", username: "", link: "", tracks: [] };
+
+        setSets([...fetchedSets, dummySet]);
+      } catch (error) {
+        console.error("Failed to fetch sets", error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching
+      }
+    };
+
+    fetchSetsx();
   }, []);
 
   useEffect(() => {
@@ -71,7 +95,11 @@ export default function App() {
             <PlayerProvider>
               <Header />
               <div className="flex justify-center items-center w-full mt-8">
-                <SetsPage />
+                {loading ? (
+                  <div className="text-white">Loading...</div>
+                ) : (
+                  <SetsPage sets={sets!} />
+                )}
               </div>
             </PlayerProvider>
           </UserProvider>

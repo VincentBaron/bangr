@@ -3,7 +3,7 @@ import { usePlayer } from "../context/PlayerContext";
 import SpotifyPlaylist from "../components/SpotifyPlaylist";
 import PlayerControls from "../components/PlayerControls";
 import { playTrack } from "@/api/api";
-import { fetchSets } from "@/api/api";
+import { Track, Set, PlayerState } from "@/types/types";
 
 import {
   Carousel,
@@ -12,37 +12,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 
-export interface Track {
-  id: string;
-  uri: string;
-  name: string;
-  artist: string;
-  liked: boolean;
-  likes: number;
-  img_url: string;
-}
-export interface Set {
-  id: string;
-  link: string;
-  tracks: Track[];
-  active?: boolean;
-  username: string;
-  profilePicURL?: string;
-}
-
-interface PlayerState {
-  track_window: {
-    current_track: {
-      id: string;
-      name: string;
-      artists: { name: string }[];
-    };
-  };
-  paused: boolean;
-}
-
-export default function SetsPage() {
-  const [sets, setSets] = useState<Set[] | null>(null);
+export default function SetsPage({ sets }: { sets: Set[] }) {
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
   const { player, deviceId } = usePlayer();
   // @ts-ignore
@@ -52,25 +22,6 @@ export default function SetsPage() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const playerIsSet = useRef(false);
-
-  useEffect(() => {
-    const fetchSetsx = async () => {
-      try {
-        const response = await fetchSets({
-          withCredentials: true,
-        });
-        const fetchedSets = response.data.sets as Set[];
-        const dummySet = { id: "dummy", username: "", link: "", tracks: [] };
-
-        // Tailwind's sm breakpoint is 640px
-        setSets([...fetchedSets, dummySet]);
-      } catch (error) {
-        console.error("Failed to fetch sets", error);
-      }
-    };
-
-    fetchSetsx();
-  }, []);
 
   useEffect(() => {
     if (!playerIsSet.current && deviceId && sets && sets.length > 2) {
@@ -243,7 +194,7 @@ export default function SetsPage() {
           />
         </div>
       ) : (
-        <div className="text-primary  text-3xl">
+        <div className="text-primary text-3xl">
           No one uploaded anything last week... ☹️
         </div>
       )}
