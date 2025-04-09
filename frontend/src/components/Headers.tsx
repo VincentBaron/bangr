@@ -8,7 +8,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Toggle } from "@/components/ui/toggle";
 import { useUser } from "@/context/UserContext";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+import { fetchGenres, updateUserGenres } from "@/api/api";
 
 const Header: React.FC = () => {
   const { user, setUser } = useUser();
@@ -17,20 +18,15 @@ const Header: React.FC = () => {
   const [newUsername, setNewUsername] = useState(user?.username || "");
 
   useEffect(() => {
-    const fetchGenres = async () => {
+    const fetchGenresx = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/genres`,
-          {
-            withCredentials: true,
-          }
-        );
-        setAllGenres(response.data);
+        const genres = await fetchGenres({ withCredentials: true });
+        setAllGenres(genres);
       } catch (error) {
         console.error("Failed to fetch genres", error);
       }
     };
-    fetchGenres();
+    fetchGenresx();
   }, []);
 
   const handleGenreToggle = (genre: string) => {
@@ -39,13 +35,7 @@ const Header: React.FC = () => {
         ? user.genres.filter((g) => g !== genre)
         : [...(user.genres || []), genre];
       setUser({ ...user, genres: updatedGenres });
-      axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/me`,
-        {
-          genres: updatedGenres,
-        },
-        { withCredentials: true }
-      );
+      updateUserGenres(updatedGenres, { withCredentials: true });
     }
   };
 

@@ -3,6 +3,8 @@ import axios, { AxiosResponse } from "axios";
 import { usePlayer } from "../context/PlayerContext";
 import SpotifyPlaylist from "../components/SpotifyPlaylist";
 import PlayerControls from "../components/PlayerControls";
+import { playTrack } from "@/api/api";
+import { fetchSets } from "@/api/api";
 
 import {
   Carousel,
@@ -52,21 +54,12 @@ export default function SetsPage() {
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const playerIsSet = useRef(false);
 
-  // useEffect(() => {
-  //   if (!reload.current) {
-  //     window.location.reload();
-  //     reload.current = true;
-  //   }
-  // }, []);
-
   useEffect(() => {
-    console.log("useEffect1");
-    const fetchSets = async () => {
+    const fetchSetsx = async () => {
       try {
-        const response: AxiosResponse<any> = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/sets`,
-          { withCredentials: true }
-        );
+        const response: AxiosResponse<any> = await fetchSets({
+          withCredentials: true,
+        });
         const fetchedSets = response.data.sets as Set[];
         const dummySet = { id: "dummy", username: "", link: "", tracks: [] };
 
@@ -77,13 +70,11 @@ export default function SetsPage() {
       }
     };
 
-    fetchSets();
+    fetchSetsx();
   }, []);
 
   useEffect(() => {
-    console.log("useEffect2 deviceId", deviceId);
     if (!playerIsSet.current && deviceId && sets && sets.length > 2) {
-      console.log("useEffect2 if check");
       const uris: string[] = [];
       sets.slice(1).forEach((set) => {
         set.tracks.forEach((track) => {
@@ -93,12 +84,7 @@ export default function SetsPage() {
       const urisx = Array.from(uris).join("&uris=");
       const play = async () => {
         // @ts-ignore
-        const response: AxiosResponse<any> = await axios.get(
-          `${
-            import.meta.env.VITE_BACKEND_URL
-          }/player?action=play&device_id=${deviceId}&uris=${urisx}`,
-          { withCredentials: true }
-        );
+        const response: AxiosResponse<any> = await playTrack(deviceId, urisx);
       };
       play();
       playerIsSet.current = true;
@@ -106,7 +92,6 @@ export default function SetsPage() {
   }, [deviceId, sets]); // Corrected dependency array
 
   useEffect(() => {
-    console.log("useEffect3");
     const handlePlayerStateChanged = (state: PlayerState) => {
       if (state) {
         setPlayingTrack({

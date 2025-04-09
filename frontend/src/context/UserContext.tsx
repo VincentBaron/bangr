@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { fetchUser } from "@/api/api";
 
 interface User {
   id: string;
@@ -21,21 +22,16 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserx = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/me`,
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await fetchUser({ withCredentials: true });
         setUser(response.data);
       } catch (error) {
         console.error("Failed to fetch user", error);
       }
     };
 
-    fetchUser();
+    fetchUserx();
   }, []);
 
   return (

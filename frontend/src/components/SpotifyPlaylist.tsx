@@ -8,6 +8,7 @@ import { Flame } from "lucide-react";
 import { Avatar } from "@radix-ui/react-avatar";
 import { cn } from "@/lib/utils";
 import { AvatarFallback, AvatarImage } from "./ui/avatar";
+import { toggleTrackLike } from "@/api/api";
 
 interface SpotifyPlaylistProps extends React.HTMLAttributes<HTMLDivElement> {
   set: Set;
@@ -36,13 +37,7 @@ export default function SpotifyPlaylist({
 
   const toggleLikeSong = (track: Track) => async () => {
     try {
-      await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/tracks/${
-          track.id
-        }/like?liked=${!track.liked}`,
-        {},
-        { withCredentials: true }
-      );
+      await toggleTrackLike(track.id, !track.liked, { withCredentials: true });
       const updatedTracks = currentSet.tracks.map((t) =>
         t.id === track.id
           ? {

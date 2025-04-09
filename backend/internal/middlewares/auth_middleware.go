@@ -109,7 +109,7 @@ func (m *Middleware) RequireAuth(c *gin.Context) {
 
 		httpClient = spotifyauth.New().Client(c, token)
 		client = spotify.New(httpClient)
-		c.SetCookie("SpotifyAuthorization", user.SpotifyToken.AccessToken, 3600*24*30, "", "", false, false)
+		SetTokens(c, tokenString, token.AccessToken, user.ID.String())
 	}
 
 	// Create a new Spotify client with the refreshed token
@@ -121,4 +121,13 @@ func (m *Middleware) RequireAuth(c *gin.Context) {
 
 	// Continue
 	c.Next()
+}
+
+func SetTokens(c *gin.Context, tokenString string, spotifyToken string, userID string) {
+	// Return tokens in the response body
+	c.JSON(http.StatusOK, gin.H{
+		"userID":        userID,
+		"authorization": tokenString,
+		"spotifyToken":  spotifyToken,
+	})
 }

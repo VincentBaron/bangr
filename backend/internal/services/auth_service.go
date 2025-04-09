@@ -193,10 +193,15 @@ func (s *AuthService) Login(c *gin.Context, username, password string) error {
 		return fmt.Errorf("failed to sign token: %w", err)
 	}
 
-	// Respond
-	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, false)
-	c.SetCookie("SpotifyAuthorization", user.SpotifyToken.AccessToken, 3600*24*30, "", "", false, false)
-	c.SetCookie("UserID", user.ID.String(), 3600*24*30, "", "", false, false)
+	SetTokens(c, tokenString, user.SpotifyToken.AccessToken, user.ID.String())
 	return nil
+}
+
+func SetTokens(c *gin.Context, tokenString string, spotifyToken string, userID string) {
+	// Return tokens in the response body
+	c.JSON(http.StatusOK, gin.H{
+		"userID":        userID,
+		"authorization": tokenString,
+		"spotifyToken":  spotifyToken,
+	})
 }

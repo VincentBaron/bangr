@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { activatePlayer } from "@/api/api";
 
 interface PlayerContextProps {
   player: Spotify.Player | null;
@@ -58,12 +59,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log("Ready with Device ID", device_id);
         setDeviceId(device_id);
         try {
-          await axios.get(
-            `${
-              import.meta.env.VITE_BACKEND_URL
-            }/player?action=activate&device_id=${device_id}`,
-            { withCredentials: true }
-          );
+          await activatePlayer(device_id, { withCredentials: true });
         } catch (error) {
           console.error("Failed to activate player", error);
         }

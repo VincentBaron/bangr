@@ -12,7 +12,6 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV="production"
 
-
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
@@ -37,12 +36,14 @@ RUN npm run build
 # Remove development dependencies
 RUN npm prune --omit=dev
 
-
 # Final stage for app image
 FROM nginx
 
 # Copy built application
 COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copy assets directory
+COPY public/assets /usr/share/nginx/html/assets
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 80
