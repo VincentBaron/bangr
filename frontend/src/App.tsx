@@ -15,8 +15,13 @@ export default function App() {
 
   useEffect(() => {
     const checkUserStatus = () => {
-      const userID = localStorage.getItem("UserID"); // Retrieve UserID from localStorage
-      setIsLoggedIn(!!userID); // Set isLoggedIn to true if UserID exists
+      const spotifyAuthorization = localStorage.getItem("SpotifyAuthorization"); // Retrieve UserID from localStorage
+      if (!spotifyAuthorization) {
+        localStorage.removeItem("UserID"); // Remove UserID from localStorage if it doesn't exist
+        localStorage.removeItem("SpotifyAuthorization"); // Remove SpotifyAuthorization from localStorage if it doesn't exist
+        localStorage.removeItem("Authorization"); // Remove Authorization from localStorage if it doesn't exist
+      }
+      setIsLoggedIn(!!spotifyAuthorization); // Set isLoggedIn to true if UserID exists
     };
 
     checkUserStatus();

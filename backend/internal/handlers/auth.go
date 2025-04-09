@@ -27,6 +27,7 @@ func (h *AuthHandler) CallbackHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read query params",
 		})
+		c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL"))
 		return
 	}
 
@@ -34,6 +35,7 @@ func (h *AuthHandler) CallbackHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
+		c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL"))
 		return
 	}
 	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL"))

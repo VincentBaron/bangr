@@ -53,26 +53,52 @@ func (s *AuthService) CallbackService(c *gin.Context) error {
 	}
 
 	// Create a new authenticator
-	auth := spotifyauth.New(spotifyauth.WithRedirectURL(config.Conf.SpotifyRedirectURL), spotifyauth.WithScopes(spotifyauth.ScopeUserReadPrivate), spotifyauth.WithClientID(config.Conf.SpotifyClientID), spotifyauth.WithClientSecret(config.Conf.SpotifyClientSecret))
+	auth := spotifyauth.New(
+		spotifyauth.WithRedirectURL(config.Conf.SpotifyRedirectURL),
+		spotifyauth.WithScopes(spotifyauth.ScopeUserReadPrivate),
+		spotifyauth.WithClientID(config.Conf.SpotifyClientID),
+		spotifyauth.WithClientSecret(config.Conf.SpotifyClientSecret),
+	)
 	token, err := auth.Token(c, state, c.Request)
 	if err != nil {
 		log.Println(err)
 		return fmt.Errorf("failed to get token: %w", err)
 	}
 
-	// Update the user record with the access token and refresh token
-	user, err := s.userRepository.FindByFilter(map[string]interface{}{"id": userID})
-	if err != nil {
-		log.Println(err)
-		return fmt.Errorf("failed to find user: %w", err)
-	}
-
+	// Use the token to get the Spotify user
 	httpClient := spotifyauth.New().Client(c, token)
 	client := spotify.New(httpClient)
 	spotifyUser, err := client.CurrentUser(c)
 	if err != nil {
 		log.Println(err)
 		return fmt.Errorf("failed to get current user: %w", err)
+	}
+
+	// Check if the Spotify account is already linked to another user
+	existingUser, err := s.userRepository.FindByFilter(map[string]interface{}{"spotify_user_id": spotifyUser.ID})
+	if err != nil {
+		log.Println(err)
+		return fmt.Errorf("failed to check existing Spotify account: %w", err)
+	}
+
+	if existingUser.ID != uuid.Nil {
+		log.Println("Spotify account already linked to another user")
+
+		// Delete the user created during signup
+		err := s.userRepository.DeleteByID(userID)
+		if err != nil {
+			log.Println("Failed to delete user created during signup:", err)
+			return fmt.Errorf("Spotify account already linked to another user, and failed to delete created user: %w", err)
+		}
+
+		return fmt.Errorf("Spotify account already linked to another user")
+	}
+
+	// Update the user record with the Spotify details
+	user, err := s.userRepository.FindByFilter(map[string]interface{}{"id": userID})
+	if err != nil {
+		log.Println(err)
+		return fmt.Errorf("failed to find user: %w", err)
 	}
 
 	playlist, err := client.CreatePlaylistForUser(context.Background(), spotifyUser.ID, user.Username+"'s Bangr", "Add your favorite song every 3 days to listen to other people's favorite songs!", false, false)
