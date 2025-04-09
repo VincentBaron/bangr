@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"net/http"
 	"os"
 	"strconv"
 	"sync"
@@ -198,10 +197,8 @@ func (s *AuthService) Login(c *gin.Context, username, password string) error {
 }
 
 func SetTokens(c *gin.Context, tokenString string, spotifyToken string, userID string) {
-	// Return tokens in the response body
-	c.JSON(http.StatusOK, gin.H{
-		"userID":        userID,
-		"authorization": tokenString,
-		"spotifyToken":  spotifyToken,
-	})
+	// Add tokens to the response headers
+	c.Header("Authorization", tokenString)
+	c.Header("SpotifyAuthorization", spotifyToken)
+	c.Header("UserID", userID)
 }

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import axios, { AxiosResponse } from "axios";
 import { usePlayer } from "../context/PlayerContext";
 import SpotifyPlaylist from "../components/SpotifyPlaylist";
 import PlayerControls from "../components/PlayerControls";
@@ -57,7 +56,7 @@ export default function SetsPage() {
   useEffect(() => {
     const fetchSetsx = async () => {
       try {
-        const response: AxiosResponse<any> = await fetchSets({
+        const response = await fetchSets({
           withCredentials: true,
         });
         const fetchedSets = response.data.sets as Set[];

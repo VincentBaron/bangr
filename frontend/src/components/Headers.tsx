@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Toggle } from "@/components/ui/toggle";
 import { useUser } from "@/context/UserContext";
-import axios, { AxiosResponse } from "axios";
 import { fetchGenres, updateUserGenres } from "@/api/api";
 
 const Header: React.FC = () => {
@@ -59,9 +58,9 @@ const Header: React.FC = () => {
   // };
 
   const handleLogout = () => {
-    document.cookie = "Authorization=; Max-Age=0; path=/;";
-    document.cookie = "SpotifyAuthorization=; Max-Age=0; path=/;";
-    document.cookie = "UserID=; Max-Age=0; path=/;";
+    localStorage.removeItem("Authorization");
+    localStorage.removeItem("SpotifyAuthorization");
+    localStorage.removeItem("UserID");
     setUser(null);
     window.location.reload();
   };

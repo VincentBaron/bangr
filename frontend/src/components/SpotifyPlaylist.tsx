@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Set, Track } from "../pages/SetsPage";
-import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import playerAnimation from "../../public/assets/playing_anim.json";
 import Lottie from "react-lottie";

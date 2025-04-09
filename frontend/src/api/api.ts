@@ -14,33 +14,28 @@ api.interceptors.request.use((config) => {
 });
 
 // Response Interceptor: Handle token updates
-api.interceptors.response.use(
-  (response) => {
-    // Check if the backend sent updated tokens
-    const { authorization, spotifyToken, userID } = response.data || {};
-    if (authorization) {
-      localStorage.setItem("Authorization", authorization);
-    }
-    if (spotifyToken) {
-      localStorage.setItem("SpotifyAuthorization", spotifyToken);
-    }
-    if (userID) {
-      localStorage.setItem("UserID", userID);
-    }
-    return response;
-  },
-  (error) => {
-    // Handle errors (e.g., token expiration, unauthorized access)
-    if (error.response?.status === 401) {
-      console.error("Unauthorized! Redirecting to login...");
-      localStorage.removeItem("Authorization");
-      localStorage.removeItem("SpotifyAuthorization");
-      localStorage.removeItem("UserID");
-      window.location.href = "/login"; // Redirect to login page
-    }
-    return Promise.reject(error);
+api.interceptors.response.use((response) => {
+  console.log(
+    "response.headers[Authorization]",
+    response.headers["authorization"]
+  );
+  // Check if the backend sent updated tokens in the headers
+  const authorization = response.headers["authorization"];
+  const spotifyToken = response.headers["spotifyauthorization"];
+  const userID = response.headers["userid"];
+
+  if (authorization) {
+    localStorage.setItem("Authorization", authorization);
   }
-);
+  if (spotifyToken) {
+    localStorage.setItem("SpotifyAuthorization", spotifyToken);
+  }
+  if (userID) {
+    localStorage.setItem("UserID", userID);
+  }
+
+  return response; // Return the response for further processing
+});
 
 // Fetch genres
 export const fetchGenres = async (config = {}) => {
@@ -103,6 +98,28 @@ export const playTrack = async (
     config
   );
   return response.data; // Return the response data
+};
+
+// login
+export const login = async (username: string, password: string) => {
+  const response = await api.post(
+    "/login",
+    { username, password },
+    {
+      withCredentials: true,
+    }
+  );
+  return response.data; // Return the login response data
+};
+
+// signup
+export const signup = async (
+  username: string,
+  password: string,
+  genres: string[]
+) => {
+  const response = await api.post("/signup", { username, password, genres });
+  return response.data; // Return the signup response data
 };
 
 export default api;

@@ -6,3 +6,4 @@ backend/internal/cron/configs.yml
 frontend/fly.toml
 backend/fly.toml
 backend/tmp/*
+launch.json

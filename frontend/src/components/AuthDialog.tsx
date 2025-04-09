@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
 import {
   Card,
   CardHeader,
@@ -12,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { login, signup } from "@/api/api";
 
 const musicGenres = [
   "Rock",
@@ -55,12 +55,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ authMode }) => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(null); // Reset error state before attempting login
-    axios
-      .post(
-        `${import.meta.env.VITE_BACKEND_URL}/login`,
-        { username: username, password },
-        { withCredentials: true }
-      )
+    login(username, password)
       .then(() => {
         window.location.reload();
       })
@@ -76,19 +71,9 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ authMode }) => {
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
     setSignupError(null); // Reset error state before attempting signup
-    axios
-      .post(`${import.meta.env.VITE_BACKEND_URL}/signup`, {
-        username: username,
-        password,
-        genres: selectedGenres,
-      })
+    signup(username, password, selectedGenres)
       .then((response) => {
-        axios
-          .post(
-            `${import.meta.env.VITE_BACKEND_URL}/login`,
-            { username: username, password },
-            { withCredentials: true }
-          )
+        login(username, password)
           .then(() => {
             window.location.reload();
             window.location.href = response.data.url;

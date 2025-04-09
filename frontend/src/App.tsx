@@ -15,11 +15,10 @@ export default function App() {
 
   useEffect(() => {
     const checkUserStatus = () => {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("UserID="));
-      setIsLoggedIn(!!token);
+      const userID = localStorage.getItem("UserID"); // Retrieve UserID from localStorage
+      setIsLoggedIn(!!userID); // Set isLoggedIn to true if UserID exists
     };
+
     checkUserStatus();
   }, []);
 

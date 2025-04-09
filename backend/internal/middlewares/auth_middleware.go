@@ -124,10 +124,8 @@ func (m *Middleware) RequireAuth(c *gin.Context) {
 }
 
 func SetTokens(c *gin.Context, tokenString string, spotifyToken string, userID string) {
-	// Return tokens in the response body
-	c.JSON(http.StatusOK, gin.H{
-		"userID":        userID,
-		"authorization": tokenString,
-		"spotifyToken":  spotifyToken,
-	})
+	// Add tokens to the response headers
+	c.Request.Header.Add("Authorization", tokenString)
+	c.Request.Header.Add("SpotifyAuthorization", spotifyToken)
+	c.Request.Header.Add("UserID", userID)
 }
