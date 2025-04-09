@@ -26,10 +26,10 @@ func NewUserService(userRepo *repositories.Repository[models.User], genreRepo *r
 
 func (s *UserService) Me(c *gin.Context) (*dto.GetUSerResp, error) {
 
-	userID, err := c.Cookie("UserID")
-	if err != nil {
-		log.Println(err)
-		return nil, fmt.Errorf("failed to get userID: %w", err)
+	userID := c.GetHeader("UserID")
+	if userID == "" {
+		log.Println("UserID header not found")
+		return nil, fmt.Errorf("failed to get userID")
 	}
 
 	user, err := s.userRepository.FindByFilter(map[string]interface{}{"id": userID}, "Genres")
@@ -58,10 +58,10 @@ func (s *UserService) Me(c *gin.Context) (*dto.GetUSerResp, error) {
 }
 
 func (s *UserService) UpdateMe(c *gin.Context, params dto.PatchUserReq) (*dto.GetUSerResp, error) {
-	userID, err := c.Cookie("UserID")
-	if err != nil {
-		log.Println(err)
-		return nil, fmt.Errorf("failed to get userID: %w", err)
+	userID := c.GetHeader("UserID")
+	if userID == "" {
+		log.Println("UserID header not found")
+		return nil, fmt.Errorf("failed to get userID")
 	}
 
 	user, err := s.userRepository.FindByFilter(map[string]interface{}{"id": userID}, "Genres")

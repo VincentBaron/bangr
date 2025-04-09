@@ -44,7 +44,7 @@ func main() {
 	corsConfig.AllowOrigins = []string{os.Getenv("FRONTEND_URL")}
 	corsConfig.AllowCredentials = true
 	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
-	corsConfig.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
+	corsConfig.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization", "UserID"}
 	corsConfig.ExposeHeaders = []string{"Authorization", "UserID", "SpotifyAuthorization"}
 
 	r.Use(cors.New(corsConfig))

@@ -19,8 +19,8 @@ const Header: React.FC = () => {
   useEffect(() => {
     const fetchGenresx = async () => {
       try {
-        const genres = await fetchGenres({ withCredentials: true });
-        setAllGenres(genres);
+        const response = await fetchGenres({ withCredentials: true });
+        setAllGenres(response.data);
       } catch (error) {
         console.error("Failed to fetch genres", error);
       }

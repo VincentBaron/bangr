@@ -27,15 +27,23 @@ func NewMiddleware(userRepository *repositories.Repository[models.User]) *Middle
 
 func (m *Middleware) RequireAuth(c *gin.Context) {
 	// Get the cookie off the request
-	tokenString, err := c.Cookie("Authorization")
-	if err != nil {
+	tokenString := c.GetHeader("Authorization")
+	if tokenString == "" {
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
-	// Decode/validate it
+	// Remove "Bearer " prefix
+	if len(tokenString) > 7 && tokenString[:7] == "Bearer " {
+		tokenString = tokenString[7:] // Extract the token part
+	} else {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	// Decode/validate the token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Validate the alg is what you expect
+		// Validate the signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}

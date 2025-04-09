@@ -76,6 +76,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ authMode }) => {
         login(username, password)
           .then(() => {
             window.location.reload();
+            console.log("response data.url:", response.data.url);
             window.location.href = response.data.url;
           })
           .catch((error) => {

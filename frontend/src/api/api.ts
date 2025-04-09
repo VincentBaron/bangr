@@ -7,8 +7,12 @@ const api = axios.create({
 // Request Interceptor: Add Authorization header
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("Authorization");
+  const userID = localStorage.getItem("UserID");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  if (userID) {
+    config.headers.UserID = userID;
   }
   return config;
 });
@@ -39,13 +43,13 @@ api.interceptors.response.use((response) => {
 
 // Fetch genres
 export const fetchGenres = async (config = {}) => {
-  const response = await api.get("/genres", config);
-  return response.data; // Return the genres data
+  const response = api.get("/genres", config);
+  return response; // Return the genres data
 };
 
 // Fetch user details
 export const fetchUser = async (config = {}) => {
-  const response = await api.get("/me", config);
+  const response = api.get("/me", config);
   return response; // Return the user data
 };
 
@@ -54,8 +58,8 @@ export const updateUserGenres = async (
   updatedGenres: string[],
   config = {}
 ) => {
-  const response = await api.patch("/me", { genres: updatedGenres }, config);
-  return response.data; // Return the updated user data
+  const response = api.patch("/me", { genres: updatedGenres }, config);
+  return response; // Return the updated user data
 };
 
 // Toggle track like status
@@ -64,26 +68,26 @@ export const toggleTrackLike = async (
   liked: boolean,
   config = {}
 ) => {
-  const response = await api.put(
+  const response = api.put(
     `/tracks/${trackId}/like?liked=${liked}`,
     {},
     config
   );
-  return response.data; // Return the updated track data
+  return response; // Return the updated track data
 };
 
 // Activate player
 export const activatePlayer = async (deviceId: string, config = {}) => {
-  const response = await api.get(
+  const response = api.get(
     `/player?action=activate&device_id=${deviceId}`,
     config
   );
-  return response.data; // Return the player activation response
+  return response; // Return the player activation response
 };
 
 // Fetch sets
 export const fetchSets = async (config = {}) => {
-  const response = await api.get("/sets", config);
+  const response = api.get("/sets", config);
   return response; // Return the sets data
 };
 
@@ -93,23 +97,23 @@ export const playTrack = async (
   uris: string,
   config = {}
 ) => {
-  const response = await api.get(
+  const response = api.get(
     `/player?action=play&device_id=${deviceId}&uris=${uris}`,
     config
   );
-  return response.data; // Return the response data
+  return response; // Return the response data
 };
 
 // login
 export const login = async (username: string, password: string) => {
-  const response = await api.post(
+  const response = api.post(
     "/login",
     { username, password },
     {
       withCredentials: true,
     }
   );
-  return response.data; // Return the login response data
+  return response; // Return the login response data
 };
 
 // signup
@@ -118,8 +122,8 @@ export const signup = async (
   password: string,
   genres: string[]
 ) => {
-  const response = await api.post("/signup", { username, password, genres });
-  return response.data; // Return the signup response data
+  const response = api.post("/signup", { username, password, genres });
+  return response; // Return the signup response data
 };
 
 export default api;
