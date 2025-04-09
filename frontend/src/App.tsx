@@ -93,14 +93,16 @@ export default function App() {
         {isLoggedIn ? (
           <UserProvider>
             <PlayerProvider>
-              <Header />
-              <div className="flex justify-center items-center w-full mt-8">
-                {loading ? (
-                  <div className="text-white">Loading...</div>
-                ) : (
-                  <SetsPage sets={sets!} />
-                )}
-              </div>
+              {loading ? (
+                <div className="text-white">Loading...</div>
+              ) : (
+                <div>
+                  <Header />
+                  <div className="flex justify-center items-center w-full mt-8">
+                    <SetsPage sets={sets!} />
+                  </div>
+                </div>
+              )}
             </PlayerProvider>
           </UserProvider>
         ) : !isAuthDialogOpen ? (
