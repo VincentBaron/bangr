@@ -136,6 +136,7 @@ export default function SetsPage() {
           });
 
           if (!urisMap.has(state.track_window.current_track.id)) {
+            console.log("switching set");
             api?.scrollNext();
             setTransitionDirection("right");
             setCurrentTrackIndex(0);
@@ -163,7 +164,7 @@ export default function SetsPage() {
         );
       }
     };
-  }, [player]);
+  }, [player, sets, api]);
 
   const handlePrevTrack = () => {
     if (player) {
@@ -201,8 +202,6 @@ export default function SetsPage() {
     }
     setIsPlaying(!isPlaying);
   };
-
-  useEffect(() => {}, [selectedIndex]);
 
   return (
     <>

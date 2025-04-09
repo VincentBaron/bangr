@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -17,7 +16,6 @@ import (
 	"github.com/zmb3/spotify/v2"
 	spotifyauth "github.com/zmb3/spotify/v2/auth"
 	"golang.org/x/oauth2"
-	"gopkg.in/yaml.v2"
 )
 
 type cronHandler struct {
@@ -38,16 +36,6 @@ func init() {
 	config.LoadEnvVariables()
 	config.ConnectToDb()
 	config.SyncDatabase()
-}
-
-func LoadConfig(file string) (models.Config, error) {
-	var config models.Config
-	data, err := os.ReadFile(file)
-	if err != nil {
-		return config, err
-	}
-	err = yaml.Unmarshal(data, &config)
-	return config, err
 }
 
 func main() {

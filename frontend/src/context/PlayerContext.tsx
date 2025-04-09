@@ -42,7 +42,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
-      const access_token: string = Cookies.get(
+      const access_token: string = localStorage.getItem(
         "SpotifyAuthorization"
       ) as string;
       const player = new window.Spotify.Player({
