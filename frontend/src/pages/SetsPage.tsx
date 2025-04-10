@@ -158,7 +158,7 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
     <>
       {sets && sets.length > 1 ? (
         <div className="flex w-full flex-col items-center">
-          <div className="">
+          <div>
             <Carousel
               setApi={setApi}
               opts={{
@@ -170,7 +170,7 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
                 {sets.map((set, index) => (
                   <CarouselItem
                     key={index}
-                    className="group basis-full sm:basis-1/3 flex justify-center"
+                    className="group basis-full md:basis-1/3 flex justify-center"
                     data-active={selectedIndex === index}
                   >
                     <SpotifyPlaylist

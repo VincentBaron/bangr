@@ -40,7 +40,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
   }, [handlePlayPause, handleNextTrack, handlePrevTrack, setIsPlaying]);
 
   return (
-    <div className="flex items-center">
+    <div className="md:flex md:items-center bottom-0 left-0 w-full bg-black bg-opacity-80 p-4 flex justify-center md:justify-between items-center z-50">
       <button
         onClick={() => {
           handlePrevTrack();

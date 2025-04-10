@@ -70,7 +70,7 @@ const Header: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-between mx-[40rem] mt-[10rem]">
+    <div className="flex flex-col items-center justify-between md:mx-[40rem] md:mt-[10rem]">
       <div className="flex items-center mb-10">
         <img
           src="../public/assets/logo.svg"
