@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Toggle } from "@/components/ui/toggle";
 import { useUser } from "@/context/UserContext";
 import { fetchGenres, updateUserGenres } from "@/api/api";
+import { Menu } from "lucide-react";
 
 const Header: React.FC = () => {
   const { user, setUser } = useUser();
   const [allGenres, setAllGenres] = useState<string[]>([]);
   // @ts-ignore
   const [newUsername, setNewUsername] = useState(user?.username || "");
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State to control the drawer
 
   useEffect(() => {
     const fetchGenresx = async () => {
@@ -70,33 +68,47 @@ const Header: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-between md:mx-[40rem] md:mt-[10rem]">
-      <div className="flex items-center mb-10">
-        <img
-          src="../public/assets/logo.svg"
-          className="h-20 w-20"
-          alt="Website Logo"
-        />
-      </div>
-      <div className="flex gap-2 justify-center">
-        {allGenres.map((genre) => (
-          <Toggle
-            key={genre}
-            pressed={user.genres.includes(genre)}
-            onPressedChange={() => handleGenreToggle(genre)}
-            className={`cursor-pointer text-primary flex items-center  ${
-              user.genres.includes(genre) ? "bg-purple" : ""
-            }`}
-          >
-            {genre}
-          </Toggle>
-        ))}
-      </div>
-      <div className="absolute top-4 right-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="flex items-center cursor-pointer">
-              <Avatar className="w-10 h-10 rounded-full">
+    <div className="flex flex-col items-center justify-between">
+      <img
+        src="../public/assets/logo.svg"
+        className="h-24 w-24"
+        alt="Website Logo"
+      />
+      <Drawer
+        open={isDrawerOpen}
+        onOpenChange={setIsDrawerOpen}
+        direction="left"
+      >
+        <DrawerTrigger asChild>
+          <button className="absolute top-4 left-4 flex items-center justify-center rounded-full bg-purple border-2 border-purple p-2">
+            <Menu className="text-black" size={20} />
+          </button>
+        </DrawerTrigger>
+        <DrawerContent className=" h-full max-w-[20vw] w-full bg-black text-white border-purple p-4 shadow-lg">
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-primary mb-4">Genres</h2>
+            <div className="flex flex-wrap gap-2">
+              {allGenres.map((genre) => (
+                <Toggle
+                  key={genre}
+                  pressed={user.genres.includes(genre)}
+                  onPressedChange={() => handleGenreToggle(genre)}
+                  className={`cursor-pointer text-primary flex items-center px-4 py-2 rounded-md ${
+                    user.genres.includes(genre)
+                      ? "bg-purple text-white"
+                      : "bg-gray-200"
+                  }`}
+                >
+                  {genre}
+                </Toggle>
+              ))}
+            </div>
+          </div>
+          {/* Profile Section */}
+          <div className="mt-6">
+            <h2 className="text-lg font-bold text-primary mb-4">Profile</h2>
+            <div className="flex items-center gap-4">
+              <Avatar className="w-12 h-12 rounded-full">
                 <AvatarImage
                   src="https://github.com/shadcn.png"
                   alt={user.username}
@@ -106,15 +118,19 @@ const Header: React.FC = () => {
                   {user.username.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
+              <div>
+                <p className="text-primary font-semibold">{user.username}</p>
+                <Button
+                  onClick={handleLogout}
+                  className="mt-2 bg-red-500 text-white"
+                >
+                  Log out
+                </Button>
+              </div>
             </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-gray text-primary border-purple mt-4 shadow-lg shadow-purple hover:purple hover:bg-gray mr-4">
-            <DropdownMenuItem onClick={handleLogout} className="hover:bg-gray">
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
