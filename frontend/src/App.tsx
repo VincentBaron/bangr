@@ -85,9 +85,9 @@ export default function App() {
   return (
     <div>
       <div className="absolute w-100%">
-        <div id="stars"></div>
-        <div id="stars2"></div>
-        <div id="stars3"></div>
+        <div className="z-5" id="stars"></div>
+        <div className="z-5" id="stars2"></div>
+        <div className="z-5" id="stars3"></div>
       </div>
       <div className="flex min-h-screen w-full flex-col justify-center items-center">
         {isLoggedIn ? (

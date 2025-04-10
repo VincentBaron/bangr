@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import Cookies from "js-cookie";
 import { activatePlayer } from "@/api/api";
 
 interface PlayerContextProps {
