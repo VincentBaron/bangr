@@ -5,7 +5,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Toggle } from "@/components/ui/toggle";
 import { useUser } from "@/context/UserContext";
 import { fetchGenres, updateUserGenres } from "@/api/api";
-import { Menu } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 
 const Header: React.FC = () => {
   const { user, setUser } = useUser();
@@ -84,8 +84,8 @@ const Header: React.FC = () => {
             <Menu className="text-black" size={20} />
           </button>
         </DrawerTrigger>
-        <DrawerContent className=" h-full max-w-[20vw] w-full bg-black text-white border-purple p-4 shadow-lg">
-          <div className="mb-6">
+        <DrawerContent className=" h-full max-w-[20vw] w-full bg-black text-white border-purple p-4 shadow-lg flex flex-col justify-between [&>div:first-child]:hidden">
+          <div>
             <h2 className="text-lg font-bold text-primary mb-4">Genres</h2>
             <div className="flex flex-wrap gap-2">
               {allGenres.map((genre) => (
@@ -107,26 +107,29 @@ const Header: React.FC = () => {
           {/* Profile Section */}
           <div className="mt-6">
             <h2 className="text-lg font-bold text-primary mb-4">Profile</h2>
-            <div className="flex items-center gap-4">
-              <Avatar className="w-12 h-12 rounded-full">
-                <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt={user.username}
-                  className="rounded-full"
-                />
-                <AvatarFallback className="bg-orange-500 text-white flex items-center justify-center rounded-full">
-                  {user.username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-primary font-semibold">{user.username}</p>
-                <Button
-                  onClick={handleLogout}
-                  className="mt-2 bg-red-500 text-white"
-                >
-                  Log out
-                </Button>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Avatar className="w-12 h-12 rounded-full">
+                  <AvatarImage
+                    src="https://github.com/shadcn.png"
+                    alt={user.username}
+                    className="rounded-full"
+                  />
+                  <AvatarFallback className="bg-orange-500 text-white flex items-center justify-center rounded-full">
+                    {user.username.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <p className="text-primary font-semibold text-base">
+                  {user.username}
+                </p>
               </div>
+              <Button
+                variant="ghost"
+                className="text-red-500 hover:text-red-600 p-2"
+                onClick={handleLogout}
+              >
+                <LogOut className="w-5 h-5" />
+              </Button>
             </div>
           </div>
         </DrawerContent>

@@ -70,8 +70,6 @@ func (s *UserService) UpdateMe(c *gin.Context, params dto.PatchUserReq) (*dto.Ge
 		return nil, fmt.Errorf("failed to find user: %w", err)
 	}
 
-	user.Username = params.Username
-
 	if len(params.Genres) > 0 {
 		genres := make([]models.Genre, 0)
 		for _, genre := range params.Genres {
