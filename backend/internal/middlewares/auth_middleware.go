@@ -117,11 +117,12 @@ func (m *Middleware) RequireAuth(c *gin.Context) {
 
 		httpClient = spotifyauth.New().Client(c, token)
 		client = spotify.New(httpClient)
-		SetTokens(c, tokenString, token.AccessToken, user.ID.String())
+		user.SpotifyToken = newSpotifyToken
+		fmt.Printf("Token refreshed for user %s\n", user.ID.String())
 	}
 
 	// Create a new Spotify client with the refreshed token
-
+	SetTokens(c, tokenString, user.SpotifyToken.AccessToken, user.ID.String())
 	c.Set("spotifyClient", client)
 
 	// Attach the request
@@ -133,7 +134,7 @@ func (m *Middleware) RequireAuth(c *gin.Context) {
 
 func SetTokens(c *gin.Context, tokenString string, spotifyToken string, userID string) {
 	// Add tokens to the response headers
-	c.Request.Header.Add("Authorization", tokenString)
-	c.Request.Header.Add("SpotifyAuthorization", spotifyToken)
-	c.Request.Header.Add("UserID", userID)
+	c.Header("Authorization", tokenString)
+	c.Header("SpotifyAuthorization", spotifyToken)
+	c.Header("UserID", userID)
 }
