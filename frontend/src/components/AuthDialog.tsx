@@ -108,7 +108,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ authMode }) => {
   };
 
   return (
-    <Card className="bg-gray text-primary border-purple w-full max-w-md mx-auto">
+    <Card className="bg-transparent border-0 text-primary w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle className="">Welcome to Bangr</CardTitle>
         <CardDescription className="">
