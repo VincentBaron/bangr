@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerOverlay,
+  DrawerTrigger,
+  DrawerClose,
+} from "@/components/ui/drawer";
 import { Toggle } from "@/components/ui/toggle";
 import { useUser } from "@/context/UserContext";
 import { fetchGenres, updateUserGenres } from "@/api/api";
@@ -69,11 +75,11 @@ const Header: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-between">
-      <img
+      {/* <img
         src="../public/assets/logo.svg"
-        className="h-24 w-24"
+        className="h-12 w-12"
         alt="Website Logo"
-      />
+      /> */}
       <Drawer
         open={isDrawerOpen}
         onOpenChange={setIsDrawerOpen}
@@ -84,7 +90,7 @@ const Header: React.FC = () => {
             <Menu className="text-black" size={20} />
           </button>
         </DrawerTrigger>
-        <DrawerContent className=" h-full max-w-[20vw] w-full bg-black text-white border-purple p-4 shadow-lg flex flex-col justify-between [&>div:first-child]:hidden">
+        <DrawerContent className=" h-full max-w-72 w-full bg-black text-white border-transparent p-4 shadow-lg flex flex-col justify-between [&>div:first-child]:hidden">
           <div>
             <h2 className="text-lg font-bold text-primary mb-4">Genres</h2>
             <div className="flex flex-wrap gap-2">

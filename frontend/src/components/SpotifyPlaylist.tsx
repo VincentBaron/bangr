@@ -59,7 +59,7 @@ export default function SpotifyPlaylist({
   return (
     <Card
       className={cn(
-        "bg-black bg-opacity-70 text-primary w-full mx-auto my-4 border-purple",
+        "bg-black bg-opacity-70 text-primary w-full mx-auto my-4 border-opacity-0",
         index === 0 ? "bg-purple bg-opacity-50" : "",
         className
       )}

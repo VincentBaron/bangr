@@ -27,7 +27,7 @@ const WelcomePage: React.FC<WelcomePageProps> = ({
       </header>
 
       {/* Hero Section */}
-      <div className="flex flex-col items-center text-center mt-20 space-y-4">
+      <div className="flex flex-col items-center text-center mt-4 space-y-4">
         <h1 className="text-6xl md:text-8xl font-extrabold text-purple leading-tight">
           Where
           <br />
@@ -47,21 +47,11 @@ const WelcomePage: React.FC<WelcomePageProps> = ({
 
       {/* Video Snippet + Shading */}
       <div className="relative mt-2 flex justify-center">
-        <video
-          className="rounded-xl shadow-2xl w-full max-w-5xl"
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source src="public/assets/bangrCover.png" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
         {/* Overlay SVG shadow effect */}
         <img
           src="public/assets/bangrCover.png"
           alt="Shading Effect"
-          className="absolute bottom-4 pointer-events-none z-4 w-2xl"
+          className="pointer-events-none z-4 w-2xl"
         />
       </div>
     </div>

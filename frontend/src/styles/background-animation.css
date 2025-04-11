@@ -1,4 +1,4 @@
-@keyframes cosmicBackground {
+/* @keyframes cosmicBackground {
   0% {
     transform: scale(1) translate(0, 0);
   }
@@ -24,4 +24,4 @@ body::before {
   opacity: 0.6;
   pointer-events: none;
   z-index: -1;
-}
+} */

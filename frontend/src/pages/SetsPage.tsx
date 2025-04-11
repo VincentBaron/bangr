@@ -24,6 +24,27 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
   const playerIsSet = useRef(false);
 
   useEffect(() => {
+    const handleMediaQuery = () => {
+      const isBelowMd = window.matchMedia("(max-width: 768px)").matches; // Tailwind's `md` breakpoint is 768px
+      if (isBelowMd && api) {
+        api.scrollNext(); // Scroll right once
+      }
+    };
+
+    // Run the check on mount
+    handleMediaQuery();
+
+    // Optionally, listen for screen size changes
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    mediaQuery.addEventListener("change", handleMediaQuery);
+
+    // Cleanup listener on unmount
+    return () => {
+      mediaQuery.removeEventListener("change", handleMediaQuery);
+    };
+  }, [api]); // Dependency on `api`
+
+  useEffect(() => {
     if (!playerIsSet.current && deviceId && sets && sets.length > 2) {
       const uris: string[] = [];
       sets.slice(1).forEach((set) => {
@@ -36,7 +57,7 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
         // @ts-ignore
         const response: AxiosResponse<any> = await playTrack(deviceId, urisx);
       };
-      play();
+      // play();
       playerIsSet.current = true;
     }
   }, [deviceId, sets]); // Corrected dependency array
