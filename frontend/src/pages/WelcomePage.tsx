@@ -49,7 +49,7 @@ const WelcomePage: React.FC<WelcomePageProps> = ({
       <div className="relative mt-2 flex justify-center">
         {/* Overlay SVG shadow effect */}
         <img
-          src="public/assets/bangrCover.png"
+          src="assets/bangrCover.png"
           alt="Shading Effect"
           className="pointer-events-none z-4 w-2xl"
         />
