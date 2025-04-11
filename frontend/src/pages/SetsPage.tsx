@@ -53,6 +53,7 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
         });
       });
       const urisx = Array.from(uris).join("&uris=");
+      // @ts-ignore
       const play = async () => {
         // @ts-ignore
         const response: AxiosResponse<any> = await playTrack(deviceId, urisx);

@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerOverlay,
-  DrawerTrigger,
-  DrawerClose,
-} from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Card } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
 import { fetchGenres, updateUserGenres } from "@/api/api";
