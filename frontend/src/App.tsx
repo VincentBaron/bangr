@@ -94,7 +94,13 @@ export default function App() {
           <UserProvider>
             <PlayerProvider>
               {loading ? (
-                <div className="text-white">Loading...</div>
+                <div className="flex items-center justify-center h-48">
+                  <img
+                    src="public/assets/logo.svg"
+                    alt="Loading..."
+                    className="w-20 h-20 animate-pulse-custom"
+                  />
+                </div>
               ) : (
                 <div>
                   <Header />

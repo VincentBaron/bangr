@@ -123,6 +123,8 @@ const Header: React.FC = () => {
   const handleDonate = () => {
     // redirect to your donate page / modal
     console.log("Redirecting to donation flow...");
+    // redirect
+    window.location.href = "https://buymeacoffee.com/vinnydapinny";
   };
 
   return (
@@ -261,7 +263,10 @@ const Header: React.FC = () => {
                     />
                   ))}
                 </div>
-                <Button className="bg-purple hover:bg-hoverPurple rounded-xl text-1 py-1">
+                <Button
+                  className="bg-purple hover:bg-hoverPurple rounded-xl text-1 py-1"
+                  onClick={handleDonate}
+                >
                   🎉 Win a concert ticket
                 </Button>
               </div>

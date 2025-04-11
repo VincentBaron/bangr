@@ -37,8 +37,13 @@ module.exports = {
             height: "0",
           },
         },
+        pulseCustom: {
+          "0%, 100%": { opacity: 0.3, transform: "scale(0.95)" },
+          "50%": { opacity: 1, transform: "scale(1.05)" },
+        },
       },
       animation: {
+        "pulse-custom": "pulseCustom 1.6s ease-in-out infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
