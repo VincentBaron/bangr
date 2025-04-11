@@ -58,7 +58,7 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
         // @ts-ignore
         const response: AxiosResponse<any> = await playTrack(deviceId, urisx);
       };
-      // play();
+      play();
       playerIsSet.current = true;
     }
   }, [deviceId, sets]); // Corrected dependency array

@@ -7,6 +7,15 @@ import { useUser } from "@/context/UserContext";
 import { fetchGenres, updateUserGenres } from "@/api/api";
 import { Menu, LogOut, CircleX, Check, ChevronDown } from "lucide-react";
 
+const prizeGoal = 30; // Example goal
+const currentPrize = 4; // Dynamic from backend or state
+
+const donators = [
+  { id: 1, name: "Alice", profilePhoto: "/avatars/alice.jpg" },
+  { id: 2, name: "Bob", profilePhoto: "/avatars/bob.jpg" },
+  { id: 3, name: "Charlie", profilePhoto: "/avatars/charlie.jpg" },
+]; // Replace with real data
+
 const leaderboardData = [
   {
     id: 1,
@@ -111,6 +120,11 @@ const Header: React.FC = () => {
     return null;
   }
 
+  const handleDonate = () => {
+    // redirect to your donate page / modal
+    console.log("Redirecting to donation flow...");
+  };
+
   return (
     <div className="flex flex-col items-center justify-between">
       <Drawer
@@ -183,7 +197,7 @@ const Header: React.FC = () => {
               </div>
             </div>
             {/* Leaderboard Section */}
-            <div className="mt-6">
+            <div className="mt-2">
               <h2 className="text-lg font-bold text-primary mb-1">
                 Leaderboard
               </h2>
@@ -215,6 +229,44 @@ const Header: React.FC = () => {
                   </div>
                 ))}
               </div>
+            </div>
+            {/* Prizepool Section */}
+            <div className="mt-2">
+              <h2 className="text-lg font-bold text-primary mb-1">Prizepool</h2>
+              <div className="h-1 bg-gradient-to-r from-purple to-transparent mb-4" />
+
+              {/* Progress Bar */}
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex-grow bg-black rounded-full h-4 overflow-hidden align-center">
+                  <div
+                    className="bg-purple h-4 transition-all duration-300 ease-out"
+                    style={{ width: `${(currentPrize / prizeGoal) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="text-white font-medium">${currentPrize}</span>
+              </div>
+              {/* <span>Goal: ${prizeGoal}</span> */}
+
+              {/* Donators */}
+              <div className="flex items-center gap-1 justify-between">
+                <div className="flex items-center justify-center space-x-[-10px]">
+                  {donators.map((donator, i) => (
+                    <img
+                      key={donator.id}
+                      src="https://github.com/shadcn.png"
+                      alt={donator.name}
+                      title={donator.name}
+                      className="w-5 h-5 rounded-full border-gray-800"
+                      style={{ zIndex: donators.length - i }}
+                    />
+                  ))}
+                </div>
+                <Button className="bg-purple hover:bg-hoverPurple rounded-xl text-1 py-1">
+                  🎉 Win a concert ticket
+                </Button>
+              </div>
+
+              {/* CTA Button */}
             </div>
           </div>
 
