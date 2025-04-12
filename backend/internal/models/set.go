@@ -35,6 +35,7 @@ type Like struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	UserID    uuid.UUID `json:"-" gorm:"uniqueIndex:idx_user_track"`
+	User      User      `json:"user"`
 	TrackID   uuid.UUID `json:"track_id" gorm:"uniqueIndex:idx_user_track"`
 }
 

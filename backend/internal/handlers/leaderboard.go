@@ -27,14 +27,3 @@ func (h *LeaderboardHandler) GetLeaderboard(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, leaderboard)
 }
-
-func (h *LeaderboardHandler) GetTopTracks(c *gin.Context) {
-	topTracks, err := h.leaderboardService.GetTopTracks(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	c.JSON(http.StatusOK, topTracks)
-}

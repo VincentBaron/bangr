@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Card } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
-import { fetchGenres, updateUserGenres } from "@/api/api";
+import { fetchGenres, updateUserGenres, fetchLeaderboard } from "@/api/api";
 import { Menu, LogOut, CircleX, Check, ChevronDown } from "lucide-react";
 
 const prizeGoal = 30; // Example goal
@@ -16,27 +16,6 @@ const donators = [
   { id: 3, name: "Charlie", profilePhoto: "/avatars/charlie.jpg" },
 ]; // Replace with real data
 
-const leaderboardData = [
-  {
-    id: 1,
-    profilePhoto: "https://github.com/shadcn.png",
-    name: "Alice",
-    likes: 120,
-  },
-  {
-    id: 2,
-    profilePhoto: "https://github.com/shadcn.png",
-    name: "Bob",
-    likes: 95,
-  },
-  {
-    id: 3,
-    profilePhoto: "https://github.com/shadcn.png",
-    name: "Charlie",
-    likes: 80,
-  },
-];
-
 const Header: React.FC = () => {
   const { user, setUser } = useUser();
   const [allGenres, setAllGenres] = useState<string[]>([]);
@@ -47,6 +26,7 @@ const Header: React.FC = () => {
   const [selectedGenres, setSelectedGenres] = useState<string[]>(
     user?.genres || []
   ); // Local state for genres
+  const [leaderboardData, setLeaderboardData] = useState<any[]>([]); // Local state for leaderboard data
 
   useEffect(() => {
     const fetchGenresx = async () => {
@@ -58,6 +38,18 @@ const Header: React.FC = () => {
       }
     };
     fetchGenresx();
+  }, []);
+
+  useEffect(() => {
+    const fetchLeaderboardx = async () => {
+      try {
+        const response = await fetchLeaderboard();
+        setLeaderboardData(response.data);
+      } catch (error) {
+        console.error("Failed to fetch leaderboard", error);
+      }
+    };
+    fetchLeaderboardx();
   }, []);
 
   const handleGenreToggle = (genre: string) => {
@@ -215,7 +207,9 @@ const Header: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <span className="text-purple font-bold">{index + 1}</span>
                       <img
-                        src={user.profilePhoto}
+                        src={
+                          user.profilePhoto || "https://github.com/shadcn.png"
+                        }
                         alt={user.name}
                         className="w-7 rounded-full"
                       />

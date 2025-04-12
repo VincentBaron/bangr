@@ -126,4 +126,12 @@ export const signup = async (
   return response; // Return the signup response data
 };
 
+export const fetchLeaderboard = async () => {
+  const response = api.get(
+    "/leaderboard",
+    { withCredentials: true } // Include credentials in the request
+  );
+  return response; // Return the signup response data
+};
+
 export default api;

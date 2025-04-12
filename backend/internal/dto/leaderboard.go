@@ -3,10 +3,10 @@ package dto
 import "github.com/google/uuid"
 
 type LeaderboardEntry struct {
-	TrackID    uuid.UUID `json:"track_id"`
-	TrackName  string    `json:"track_name"`
-	ArtistName string    `json:"artist_name"`
-	Likes      int       `json:"likes"`
+	UserID        uuid.UUID `json:"user_id"`
+	Username      string    `json:"username"`
+	ProfilePicURL string    `json:"profile_pic_url"`
+	Likes         int       `json:"likes"`
 }
 
 type UpdateLeaderboardReq struct {
