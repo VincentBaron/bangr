@@ -54,18 +54,21 @@ func main() {
 	setRepository := repositories.NewRepository[models.Set](config.DB)
 	trackRepository := repositories.NewRepository[models.Track](config.DB)
 	genreRepository := repositories.NewRepository[models.Genre](config.DB)
+	likesRepository := repositories.NewRepository[models.Like](config.DB)
 
 	// Initialize services
 	authService := services.NewAuthService(userRepository, genreRepository)
 	setService := services.NewSetService(setRepository, trackRepository)
 	playerService := services.NewPlayerService()
 	userService := services.NewUserService(userRepository, genreRepository)
+	leaderboardService := services.NewLeaderboardService(trackRepository, likesRepository)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
 	setHandler := handlers.NewSetHandler(setService)
 	playerHandler := handlers.NewPlayerHandler(playerService)
 	userHandler := handlers.NewUserHandler(userService)
+	leaderBoardHandler := handlers.NewLeaderboardHandler(leaderboardService)
 
 	// Initialize middlewares
 	middleware := middlewares.NewMiddleware(userRepository)
@@ -81,6 +84,8 @@ func main() {
 	r.GET("/me", middleware.RequireAuth, userHandler.GetMe)
 	r.PATCH("/me", middleware.RequireAuth, userHandler.UpdateMe)
 	r.GET("/genres", middleware.RequireAuth, userHandler.GetGenres)
+	// Get leaderboard
+	r.GET("/leaderboard", middleware.RequireAuth, leaderBoardHandler.GetLeaderboard)
 
 	// r.GET("/status", handler.handleStatus)
 	// r.POST("/store-token", storeTokenHandler)
