@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { Set, Track } from "@/types/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import playerAnimation from "../../public/assets/playing_anim.json";
 import Lottie from "react-lottie";
-import { Flame } from "lucide-react";
-import { Avatar } from "@radix-ui/react-avatar";
+import { Flame, Music2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { cn } from "@/lib/utils";
-import { AvatarFallback, AvatarImage } from "./ui/avatar";
 import { toggleTrackLike } from "@/api/api";
 
 interface SpotifyPlaylistProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -53,81 +52,95 @@ export default function SpotifyPlaylist({
   };
 
   if (currentSet.tracks.length === 0) {
-    return <div></div>;
+    return null;
   }
 
   return (
     <Card
       className={cn(
-        "bg-black bg-opacity-70 text-primary w-full mx-auto my-4 border-opacity-0",
-        index === 0 ? "bg-purple bg-opacity-50" : "",
+        "bg-black/40 backdrop-blur-sm border-white/5 w-full overflow-hidden p-4",
         className
       )}
       {...props}
     >
-      <CardHeader className="flex-row gap-3">
-        <Avatar>
+      <CardHeader className="px-6 py-3 flex flex-row items-center gap-3 border-b border-white/5">
+        <Avatar className="h-8 w-8">
           <AvatarImage
             src={currentSet.profilePicURL}
             alt={currentSet.username}
-            className="rounded-full w-10"
           />
-          <AvatarFallback className="avatar-fallback text-white flex items-center justify-center">
+          <AvatarFallback className="bg-white/10 text-white/70">
             {currentSet.username.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <CardTitle className="flex justify-center align-items font-exo2">
-          {currentSet.username}
-        </CardTitle>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-medium text-white/90 truncate">
+            {currentSet.username}'s Mix
+          </h3>
+          <p className="text-xs text-white/50">
+            {currentSet.tracks.length} tracks
+          </p>
+        </div>
       </CardHeader>
-      <CardContent>
-        <div className={`flex flex-col gap-4`}>
-          {currentSet.tracks?.map((track) => (
+      <CardContent className="p-4">
+        <div className="space-y-2">
+          {currentSet.tracks?.map((track, idx) => (
             <div
               key={track.id}
-              className={`grid grid-cols-[1fr_3fr_1fr] rounded-lg transition-all hover:bg-purple-200`}
+              className={cn(
+                "group flex items-center gap-3 p-2 rounded-md transition-all"
+              )}
             >
-              <div className="relative flex justify-center items-center">
-                <img
-                  src={track.img_url}
-                  alt={track.name}
-                  className={`w-10 h-10`}
-                />
-                {playingTrack &&
-                  playingTrack.uri === track.uri &&
-                  isPlaying && (
-                    <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
-                      <Lottie options={defaultOptions} height={30} width={30} />
-                    </div>
-                  )}
+              <div className="shrink-0 w-8 h-8 relative rounded overflow-hidden bg-white/5">
+                {track.img_url ? (
+                  <img
+                    src={track.img_url}
+                    alt={track.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Music2 className="w-4 h-4 text-white/30" />
+                  </div>
+                )}
+                {playingTrack?.uri === track.uri && isPlaying && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                    <Lottie options={defaultOptions} height={24} width={24} />
+                  </div>
+                )}
               </div>
-              <div>
+
+              <div className="flex-1 min-w-0">
                 <p
-                  className={`text-primary  ${
-                    playingTrack && playingTrack.uri === track.uri
+                  className={cn(
+                    "text-sm font-medium truncate",
+                    playingTrack?.uri === track.uri
                       ? "text-purple"
-                      : ""
-                  }`}
+                      : "text-white/90"
+                  )}
                 >
                   {track.name}
                 </p>
-                <p className="text-secondary ">{track.artist}</p>
+                <p className="text-xs text-white/50 truncate">{track.artist}</p>
               </div>
-              <div className="flex row items-center">
+
+              <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={toggleLikeSong(track)}
-                  className={`p-2 rounded-full focus:outline-none transition-transform transform hover:scale-125 active:scale-100 ${
-                    track.liked ? "bg-purple-500" : "bg-transparent"
-                  } hover:bg-purple-200`}
+                  className={cn("p-1.5 rounded-full transition-all")}
                 >
                   <Flame
-                    className={`transition-colors text-purple ${
-                      track.liked ? " fill-purple" : ""
-                    }`}
-                    size={24}
+                    className={cn(
+                      "w-4 h-4 transition-colors",
+                      track.liked
+                        ? "text-purple fill-purple"
+                        : "text-white/50 hover:text-white"
+                    )}
                   />
                 </button>
-                <p className="text-primary ">{track.likes}</p>
+                <span className="text-xs text-white/50 w-8 text-right">
+                  {track.likes}
+                </span>
               </div>
             </div>
           ))}
