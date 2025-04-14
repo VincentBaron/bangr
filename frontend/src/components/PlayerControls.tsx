@@ -86,10 +86,10 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
             >
               <div className="absolute inset-0 rounded-full bg-white/10">
                 <div
-                  className="absolute inset-y-0 bg-white/70 rounded-full group-hover:bg-green-500 transition-colors"
+                  className="absolute inset-y-0 bg-purple rounded-full group-hover:bg-green-500 transition-colors"
                   style={{ width: `${(currentTime / duration) * 100}%` }}
                 >
-                  <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg" />
+                  <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-purple rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg" />
                 </div>
               </div>
             </div>
@@ -115,9 +115,12 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
               handlePrevTrack();
               setIsPlaying(true);
             }}
-            className="text-white/70 hover:text-white transition-all duration-200 hover:scale-105"
+            className="hover:text-white transition-all duration-200 hover:scale-105"
           >
-            <SkipBack className="w-5 h-5" strokeWidth={1.5} />
+            <SkipBack
+              className="w-5 h-5 text-white/70 fill-white/70"
+              strokeWidth={1.5}
+            />
           </button>
 
           <button
@@ -125,9 +128,15 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
             className="w-12 h-12 flex items-center justify-center rounded-full bg-white hover:scale-105 transition-all duration-200 hover:bg-white/95"
           >
             {isPlaying ? (
-              <Pause className="text-black w-5 h-5" strokeWidth={2} />
+              <Pause
+                className="text-black w-5 h-5 fill-black"
+                strokeWidth={2}
+              />
             ) : (
-              <Play className="text-black w-5 h-5 ml-0.5" strokeWidth={2} />
+              <Play
+                className="text-black w-5 h-5 ml-0.5 fill-black"
+                strokeWidth={2}
+              />
             )}
           </button>
 
@@ -138,7 +147,10 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
             }}
             className="text-white/70 hover:text-white transition-all duration-200 hover:scale-105"
           >
-            <SkipForward className="w-5 h-5" strokeWidth={1.5} />
+            <SkipForward
+              className="w-5 h-5 text-white/70 fill-white/70"
+              strokeWidth={1.5}
+            />
           </button>
 
           {handleNextPlaylist && (
