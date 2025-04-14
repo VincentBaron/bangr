@@ -92,9 +92,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
                   <div
                     className="absolute inset-y-0 bg-purple rounded-full transition-all duration-200"
                     style={{ width: `${(currentTime / duration) * 100}%` }}
-                  >
-                    <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white ring-2 ring-purple rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg" />
-                  </div>
+                  ></div>
                 </div>
               </div>
               <span className="text-[0.6875rem] text-white/70 tabular-nums w-[40px] text-center shrink-0">
