@@ -73,6 +73,7 @@ export default function SetsPage() {
       const play = async () => {
         const response = await playTrack(deviceId, urisx);
       };
+      play();
       playerIsSet.current = true;
     }
   }, [deviceId, sets]);
@@ -131,7 +132,7 @@ export default function SetsPage() {
       }
     };
 
-    if (player) {
+    if (player && playerIsSet.current) {
       (player as any).addListener(
         "player_state_changed",
         handlePlayerStateChanged
@@ -146,7 +147,7 @@ export default function SetsPage() {
         );
       }
     };
-  }, [player, sets, api]);
+  }, [player, sets, api, playerIsSet.current]);
 
   const handlePrevTrack = () => {
     if (player) {
