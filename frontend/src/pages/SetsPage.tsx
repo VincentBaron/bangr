@@ -181,11 +181,14 @@ export default function SetsPage() {
       player.previousTrack().catch((error: any) => {
         console.error("Failed to play previous track", error);
       });
-      if (currentTrackIndex === 0 && selectedIndex > 1) {
-        setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-        api?.scrollPrev();
-        setTransitionDirection("left");
-        setCurrentTrackIndex(2);
+
+      if (currentTrackIndex === 0) {
+        if (selectedIndex > 1) {
+          setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
+          api?.scrollPrev();
+          setTransitionDirection("left");
+          setCurrentTrackIndex(sets![selectedIndex - 1].tracks.length - 1);
+        }
       } else {
         setCurrentTrackIndex((prevIndex) => Math.max(prevIndex - 1, 0));
       }
@@ -193,14 +196,23 @@ export default function SetsPage() {
   };
 
   const handleNextTrack = () => {
-    if (
-      player &&
-      !(currentTrackIndex === 2 && selectedIndex === sets!.length - 2)
-    ) {
+    if (player) {
       player.nextTrack().catch((error: any) => {
         console.error("Failed to play next track", error);
       });
-      setCurrentTrackIndex((prevIndex) => prevIndex + 1);
+
+      if (currentTrackIndex === sets![selectedIndex].tracks.length - 1) {
+        if (selectedIndex < sets!.length - 2) {
+          setSelectedIndex((prevIndex) =>
+            Math.min(prevIndex + 1, sets!.length - 2)
+          );
+          api?.scrollNext();
+          setTransitionDirection("right");
+          setCurrentTrackIndex(0);
+        }
+      } else {
+        setCurrentTrackIndex((prevIndex) => prevIndex + 1);
+      }
     }
   };
 
