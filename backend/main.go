@@ -62,6 +62,7 @@ func main() {
 	playerService := services.NewPlayerService()
 	userService := services.NewUserService(userRepository, genreRepository)
 	leaderboardService := services.NewLeaderboardService(trackRepository, likesRepository)
+	prizePoolService := services.NewPrizePoolService(userRepository)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
@@ -69,6 +70,7 @@ func main() {
 	playerHandler := handlers.NewPlayerHandler(playerService)
 	userHandler := handlers.NewUserHandler(userService)
 	leaderBoardHandler := handlers.NewLeaderboardHandler(leaderboardService)
+	prizePoolHandler := handlers.NewPrizePoolHandler(prizePoolService)
 
 	// Initialize middlewares
 	middleware := middlewares.NewMiddleware(userRepository)
@@ -87,8 +89,8 @@ func main() {
 	// Get leaderboard
 	r.GET("/leaderboard", middleware.RequireAuth, leaderBoardHandler.GetLeaderboard)
 
-	// r.GET("/status", handler.handleStatus)
-	// r.POST("/store-token", storeTokenHandler)
+	// Prize Pool routes
+	r.GET("/prize-pool", middleware.RequireAuth, prizePoolHandler.GetPrizePool)
 
 	// Start the server
 	log.Printf("Server started at http://localhost:8080...")

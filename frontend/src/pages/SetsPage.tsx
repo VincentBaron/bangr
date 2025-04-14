@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePlayer } from "../context/PlayerContext";
 import SpotifyPlaylist from "../components/SpotifyPlaylist";
 import PlayerControls from "../components/PlayerControls";
-import { playTrack } from "@/api/api";
+import { playTrack, fetchSets } from "@/api/api";
 import { Track, Set, PlayerState } from "@/types/types";
 
 import {
@@ -12,37 +12,54 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 
-export default function SetsPage({ sets }: { sets: Set[] }) {
+export default function SetsPage() {
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
   const { player, deviceId } = usePlayer();
-  // @ts-ignore
   const [transitionDirection, setTransitionDirection] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [api, setApi] = useState<CarouselApi>();
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
+  const [sets, setSets] = useState<Set[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const playerIsSet = useRef(false);
 
   useEffect(() => {
-    const handleMediaQuery = () => {
-      const isBelowMd = window.matchMedia("(max-width: 768px)").matches; // Tailwind's `md` breakpoint is 768px
-      if (isBelowMd && api) {
-        api.scrollNext(); // Scroll right once
+    const fetchSetsx = async () => {
+      try {
+        const response = await fetchSets({
+          withCredentials: true,
+        });
+        const fetchedSets = response.data.sets as Set[];
+        const dummySet = { id: "dummy", username: "", link: "", tracks: [] };
+        setSets([...fetchedSets, dummySet]);
+      } catch (error) {
+        console.error("Failed to fetch sets", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    // Run the check on mount
+    fetchSetsx();
+  }, []);
+
+  useEffect(() => {
+    const handleMediaQuery = () => {
+      const isBelowMd = window.matchMedia("(max-width: 768px)").matches;
+      if (isBelowMd && api) {
+        api.scrollNext();
+      }
+    };
+
     handleMediaQuery();
 
-    // Optionally, listen for screen size changes
     const mediaQuery = window.matchMedia("(max-width: 768px)");
     mediaQuery.addEventListener("change", handleMediaQuery);
 
-    // Cleanup listener on unmount
     return () => {
       mediaQuery.removeEventListener("change", handleMediaQuery);
     };
-  }, [api]); // Dependency on `api`
+  }, [api]);
 
   useEffect(() => {
     if (!playerIsSet.current && deviceId && sets && sets.length > 2) {
@@ -53,15 +70,12 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
         });
       });
       const urisx = Array.from(uris).join("&uris=");
-      // @ts-ignore
       const play = async () => {
-        // @ts-ignore
-        const response: AxiosResponse<any> = await playTrack(deviceId, urisx);
+        const response = await playTrack(deviceId, urisx);
       };
-      // play();
       playerIsSet.current = true;
     }
-  }, [deviceId, sets]); // Corrected dependency array
+  }, [deviceId, sets]);
 
   useEffect(() => {
     const handlePlayerStateChanged = (state: PlayerState) => {
@@ -86,7 +100,6 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
       );
     }
 
-    // Cleanup function to remove the event listener
     return () => {
       if (player) {
         (player as any).removeListener(
@@ -97,9 +110,7 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
     };
   }, [player]);
 
-  // TO implement automatic playlist switching
   useEffect(() => {
-    console.log("useEffect4");
     const handlePlayerStateChanged = (state: PlayerState) => {
       if (state && playerIsSet.current) {
         setSelectedIndex((prevIndex) => {
@@ -109,7 +120,6 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
           });
 
           if (!urisMap.has(state.track_window.current_track.id)) {
-            console.log("switching set");
             api?.scrollNext();
             setTransitionDirection("right");
             setCurrentTrackIndex(0);
@@ -128,7 +138,6 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
       );
     }
 
-    // Cleanup function to remove the event listener
     return () => {
       if (player) {
         (player as any).removeListener(
@@ -175,6 +184,18 @@ export default function SetsPage({ sets }: { sets: Set[] }) {
     }
     setIsPlaying(!isPlaying);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <img
+          src="assets/logo.svg"
+          alt="Loading..."
+          className="w-20 h-20 animate-pulse-custom"
+        />
+      </div>
+    );
+  }
 
   return (
     <>

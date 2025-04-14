@@ -134,4 +134,12 @@ export const fetchLeaderboard = async () => {
   return response; // Return the signup response data
 };
 
+export const fetchPrizePool = async () => {
+  const response = api.get(
+    "/prize-pool",
+    { withCredentials: true } // Include credentials in the request
+  );
+  return response;
+};
+
 export default api;

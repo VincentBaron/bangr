@@ -4,8 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Card } from "@/components/ui/card";
 import { useUser } from "@/context/UserContext";
-import { fetchGenres, updateUserGenres, fetchLeaderboard } from "@/api/api";
+import {
+  fetchGenres,
+  updateUserGenres,
+  fetchLeaderboard,
+  fetchPrizePool,
+} from "@/api/api";
 import { Menu, LogOut, CircleX, Check, ChevronDown } from "lucide-react";
+
+interface PrizePoolData {
+  current_month: number;
+  next_month: number;
+}
+
+interface PrizePoolResponse {
+  data: PrizePoolData;
+}
 
 const prizeGoal = 30; // Example goal
 const currentPrize = 4; // Dynamic from backend or state
@@ -19,37 +33,34 @@ const donators = [
 const Header: React.FC = () => {
   const { user, setUser } = useUser();
   const [allGenres, setAllGenres] = useState<string[]>([]);
-  // @ts-ignore
   const [newUsername, setNewUsername] = useState(user?.username || "");
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State to control the drawer
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to control the dropdown
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<string[]>(
     user?.genres || []
-  ); // Local state for genres
-  const [leaderboardData, setLeaderboardData] = useState<any[]>([]); // Local state for leaderboard data
+  );
+  const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
+  const [prizePoolData, setPrizePoolData] = useState<PrizePoolData>({
+    current_month: 0,
+    next_month: 0,
+  });
 
   useEffect(() => {
-    const fetchGenresx = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetchGenres({ withCredentials: true });
-        setAllGenres(response.data);
+        const [genres, leaderboard, prizePool] = await Promise.all([
+          fetchGenres({ withCredentials: true }),
+          fetchLeaderboard(),
+          fetchPrizePool(),
+        ]);
+        setAllGenres(genres.data);
+        setLeaderboardData(leaderboard.data);
+        setPrizePoolData(prizePool.data);
       } catch (error) {
-        console.error("Failed to fetch genres", error);
+        console.error("Failed to fetch data", error);
       }
     };
-    fetchGenresx();
-  }, []);
-
-  useEffect(() => {
-    const fetchLeaderboardx = async () => {
-      try {
-        const response = await fetchLeaderboard();
-        setLeaderboardData(response.data);
-      } catch (error) {
-        console.error("Failed to fetch leaderboard", error);
-      }
-    };
-    fetchLeaderboardx();
+    fetchData();
   }, []);
 
   const handleGenreToggle = (genre: string) => {
@@ -104,9 +115,7 @@ const Header: React.FC = () => {
     setIsDropdownOpen(false);
   };
 
-  useEffect(() => {
-    console.log("Selected genres:", selectedGenres);
-  }, [selectedGenres]);
+  useEffect(() => {}, [selectedGenres]);
 
   if (!user) {
     return null;
@@ -114,7 +123,6 @@ const Header: React.FC = () => {
 
   const handleDonate = () => {
     // redirect to your donate page / modal
-    console.log("Redirecting to donation flow...");
     // redirect
     window.location.href = "https://buymeacoffee.com/vinnydapinny";
   };
@@ -231,41 +239,58 @@ const Header: React.FC = () => {
               <h2 className="text-lg font-bold text-primary mb-1">Prizepool</h2>
               <div className="h-1 bg-gradient-to-r from-purple to-transparent mb-4" />
 
-              {/* Progress Bar */}
-              <div className="flex items-center gap-2 mb-2">
-                <div className="flex-grow bg-black rounded-full h-4 overflow-hidden align-center">
-                  <div
-                    className="bg-purple h-4 transition-all duration-300 ease-out"
-                    style={{ width: `${(currentPrize / prizeGoal) * 100}%` }}
-                  ></div>
+              {/* Current Month Prize Pool */}
+              <div className="mb-4">
+                <h3 className="text-sm text-gray-400 mb-2">
+                  Current Month Prize Pool
+                </h3>
+                <div className="flex items-center gap-2">
+                  <div className="flex-grow bg-black rounded-full h-4 overflow-hidden">
+                    <div
+                      className="bg-purple h-4 transition-all duration-300 ease-out"
+                      style={{
+                        width: `${
+                          ((prizePoolData?.current_month || 0) / prizeGoal) *
+                          100
+                        }%`,
+                      }}
+                    ></div>
+                  </div>
+                  <span className="text-white font-medium">
+                    ${(prizePoolData?.current_month || 0).toFixed(2)}
+                  </span>
                 </div>
-                <span className="text-white font-medium">${currentPrize}</span>
-              </div>
-              {/* <span>Goal: ${prizeGoal}</span> */}
-
-              {/* Donators */}
-              <div className="flex items-center gap-1 justify-between">
-                <div className="flex items-center justify-center space-x-[-10px]">
-                  {donators.map((donator, i) => (
-                    <img
-                      key={donator.id}
-                      src="https://github.com/shadcn.png"
-                      alt={donator.name}
-                      title={donator.name}
-                      className="w-5 h-5 rounded-full border-gray-800"
-                      style={{ zIndex: donators.length - i }}
-                    />
-                  ))}
-                </div>
-                <Button
-                  className="bg-purple hover:bg-hoverPurple rounded-xl text-1 py-1"
-                  onClick={handleDonate}
-                >
-                  🎉 Win a concert ticket
-                </Button>
               </div>
 
-              {/* CTA Button */}
+              {/* Next Month Prize Pool */}
+              <div className="mb-4">
+                <h3 className="text-sm text-gray-400 mb-2">
+                  Next Month Prize Pool
+                </h3>
+                <div className="flex items-center gap-2">
+                  <div className="flex-grow bg-black rounded-full h-4 overflow-hidden">
+                    <div
+                      className="bg-purple h-4 transition-all duration-300 ease-out"
+                      style={{
+                        width: `${
+                          ((prizePoolData?.next_month || 0) / prizeGoal) * 100
+                        }%`,
+                      }}
+                    ></div>
+                  </div>
+                  <span className="text-white font-medium">
+                    ${(prizePoolData?.next_month || 0).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Donate Button */}
+              <Button
+                className="w-full bg-purple hover:bg-hoverPurple rounded-xl text-1 py-1"
+                onClick={handleDonate}
+              >
+                🎉 Win a concert ticket
+              </Button>
             </div>
           </div>
 

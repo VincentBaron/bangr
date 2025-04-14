@@ -23,6 +23,7 @@ func LoadEnvVariables() {
 		Conf.SpotifyClientSecret = os.Getenv("SPOTIFY_CLIENT_SECRET")
 		Conf.SpotifyRedirectURL = os.Getenv("SPOTIFY_REDIRECT_URL")
 		Conf.SpotifyScopes = os.Getenv("SPOTIFY_SCOPES")
+		Conf.BuyMeACoffeeAPIKey = os.Getenv("BUYMEACOFFEE_API_KEY")
 	} else {
 		// Unmarshal the configsFile data into a Config struct
 		err = yaml.Unmarshal(configsFile, &Conf)

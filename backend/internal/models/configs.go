@@ -15,6 +15,7 @@ type Config struct {
 	SpotifyClientSecret string `yaml:"spotify_client_secret"`
 	SpotifyRedirectURL  string `yaml:"spotify_redirect_url"`
 	SpotifyScopes       string `yaml:"spotify_scopes"`
+	BuyMeACoffeeAPIKey  string `yaml:"buymeacoffee_api_key"`
 }
 
 type HandlerConfig struct {

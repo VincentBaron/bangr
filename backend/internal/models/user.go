@@ -39,6 +39,7 @@ type User struct {
 	SpotifyPlaylistLink string  `json:"spotify_playlist_link"`
 	ProfilePicURL       string  `json:"profilePicURL"`
 	Genres              []Genre `gorm:"many2many:user_genres;" json:"genres"`
+	HasPaid             bool    `json:"has_paid" gorm:"default:false"`
 }
 
 type Genre struct {
