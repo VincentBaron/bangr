@@ -72,95 +72,106 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-black/95 backdrop-blur-md border-t border-white/5 p-4">
-      <div className="max-w-screen-xl mx-auto">
-        {/* Progress Bar */}
-        <div className="mb-4 px-4">
-          <div className="flex items-center">
-            <span className="text-[0.6875rem] text-white/70 tabular-nums w-[40px] text-center shrink-0">
-              {formatTime(currentTime)}
-            </span>
-            <div
-              className="relative flex-grow h-1 group cursor-pointer mx-2"
-              onClick={handleProgressClick}
-            >
-              <div className="absolute inset-0 rounded-full bg-white/10">
-                <div
-                  className="absolute inset-y-0 bg-purple rounded-full group-hover:bg-green-500 transition-colors"
-                  style={{ width: `${(currentTime / duration) * 100}%` }}
-                >
-                  <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-purple rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg" />
+    <div className="fixed bottom-0 left-0 w-full">
+      <div className="relative bg-black/95 backdrop-blur-md border-t border-white/5">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple/5 via-transparent to-purple/5" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple/20 to-transparent" />
+
+        <div className="relative z-10 max-w-screen-xl mx-auto p-4">
+          {/* Progress Bar */}
+          <div className="mb-4 px-4">
+            <div className="flex items-center">
+              <span className="text-[0.6875rem] text-white/70 tabular-nums w-[40px] text-center shrink-0">
+                {formatTime(currentTime)}
+              </span>
+              <div
+                className="relative flex-grow h-1 group cursor-pointer mx-2"
+                onClick={handleProgressClick}
+              >
+                <div className="absolute inset-0 rounded-full bg-white/10">
+                  <div
+                    className="absolute inset-y-0 bg-purple rounded-full transition-all duration-200"
+                    style={{ width: `${(currentTime / duration) * 100}%` }}
+                  >
+                    <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white ring-2 ring-purple rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg" />
+                  </div>
                 </div>
               </div>
+              <span className="text-[0.6875rem] text-white/70 tabular-nums w-[40px] text-center shrink-0">
+                {formatTime(duration)}
+              </span>
             </div>
-            <span className="text-[0.6875rem] text-white/70 tabular-nums w-[40px] text-center shrink-0">
-              {formatTime(duration)}
-            </span>
           </div>
-        </div>
 
-        {/* Player Controls */}
-        <div className="flex justify-center items-center gap-6">
-          {handlePrevPlaylist && (
-            <button
-              onClick={handlePrevPlaylist}
-              className="text-white/50 hover:text-white transition-all duration-200 hover:scale-105"
-            >
-              <RotateCcw className="w-4 h-4" strokeWidth={1.5} />
-            </button>
-          )}
-
-          <button
-            onClick={() => {
-              handlePrevTrack();
-              setIsPlaying(true);
-            }}
-            className="hover:text-white transition-all duration-200 hover:scale-105"
-          >
-            <SkipBack
-              className="w-5 h-5 text-white/70 fill-white/70"
-              strokeWidth={1.5}
-            />
-          </button>
-
-          <button
-            onClick={handlePlayPause}
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-white hover:scale-105 transition-all duration-200 hover:bg-white/95"
-          >
-            {isPlaying ? (
-              <Pause
-                className="text-black w-5 h-5 fill-black"
-                strokeWidth={2}
-              />
-            ) : (
-              <Play
-                className="text-black w-5 h-5 ml-0.5 fill-black"
-                strokeWidth={2}
-              />
+          {/* Player Controls */}
+          <div className="flex justify-center items-center gap-6">
+            {handlePrevPlaylist && (
+              <button
+                onClick={handlePrevPlaylist}
+                className="text-white/50 hover:text-white transition-all duration-200 hover:scale-105"
+              >
+                <RotateCcw
+                  className="w-4 h-4 fill-transparent"
+                  strokeWidth={1.5}
+                />
+              </button>
             )}
-          </button>
 
-          <button
-            onClick={() => {
-              handleNextTrack();
-              setIsPlaying(true);
-            }}
-            className="text-white/70 hover:text-white transition-all duration-200 hover:scale-105"
-          >
-            <SkipForward
-              className="w-5 h-5 text-white/70 fill-white/70"
-              strokeWidth={1.5}
-            />
-          </button>
-
-          {handleNextPlaylist && (
             <button
-              onClick={handleNextPlaylist}
-              className="text-white/50 hover:text-white transition-all duration-200 hover:scale-105"
+              onClick={() => {
+                handlePrevTrack();
+                setIsPlaying(true);
+              }}
+              className="text-white/70 hover:text-white transition-all duration-200 hover:scale-105"
             >
-              <RotateCw className="w-4 h-4" strokeWidth={1.5} />
+              <SkipBack
+                className="w-5 h-5 fill-transparent"
+                strokeWidth={1.5}
+              />
             </button>
-          )}
+
+            <button
+              onClick={handlePlayPause}
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-transparent border border-white/20 hover:bg-purple/20 hover:border-purple transition-all duration-200 hover:scale-105"
+            >
+              {isPlaying ? (
+                <Pause
+                  className="text-white w-5 h-5 fill-transparent"
+                  strokeWidth={2}
+                />
+              ) : (
+                <Play
+                  className="text-white w-5 h-5 ml-0.5 fill-transparent"
+                  strokeWidth={2}
+                />
+              )}
+            </button>
+
+            <button
+              onClick={() => {
+                handleNextTrack();
+                setIsPlaying(true);
+              }}
+              className="text-white/70 hover:text-white transition-all duration-200 hover:scale-105"
+            >
+              <SkipForward
+                className="w-5 h-5 fill-transparent"
+                strokeWidth={1.5}
+              />
+            </button>
+
+            {handleNextPlaylist && (
+              <button
+                onClick={handleNextPlaylist}
+                className="text-white/50 hover:text-white transition-all duration-200 hover:scale-105"
+              >
+                <RotateCw
+                  className="w-4 h-4 fill-transparent"
+                  strokeWidth={1.5}
+                />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -139,38 +139,38 @@ const Header: React.FC = () => {
             <Menu className="text-white/70 hover:text-white/90" size={20} />
           </button>
         </DrawerTrigger>
-        <DrawerContent className="h-full max-w-72 w-full bg-black/95 backdrop-blur-md text-white border-r border-white/5 p-3 shadow-lg flex flex-col justify-between [&>div:first-child]:hidden">
-          <div className="space-y-6">
-            {/* Filters Section */}
-            <div>
-              <h2 className="text-sm font-medium text-white/70 mb-3">
-                Filters
-              </h2>
+        <DrawerContent className="h-full max-w-72 w-full bg-gray text-white border-transparent p-4 shadow-lg flex flex-col justify-between [&>div:first-child]:hidden">
+          <div>
+            <h2 className="text-lg font-bold text-primary mb-1">Filters</h2>
+            <div className="h-1 bg-gradient-to-r from-purple to-transparent mb-4"></div>
 
-              <div className="space-y-2">
+            <div>
+              {/* Genres Section */}
+              <div className="relative">
                 {/* Genres Button */}
                 <button
-                  className="flex items-center bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-sm transition-colors w-full"
+                  className="flex items-center bg-purple px-2 py-2 rounded-3xl text-white"
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
                 >
-                  <span className="text-white/90">Genres</span>
-                  <div className="flex items-center justify-center ml-2 bg-purple/20 text-purple border border-purple/20 rounded-md px-1.5 text-xs">
+                  <span>Genres</span>
+                  <div className="flex items-center justify-center ml-2 bg-white text-purple border-2 border-gray-300 rounded-full w-6 h-6 text-xs font-bold">
                     {selectedGenres.length}
                   </div>
-                  <ChevronDown className="ml-auto text-white/50" size={16} />
+                  <ChevronDown className="ml-1 text-white" size={18} />
                 </button>
 
                 {/* Dropdown Menu */}
                 {isDropdownOpen && (
-                  <Card className="absolute z-10 mt-1 left-3 right-3 bg-black/95 border border-white/10 text-white p-3 shadow-lg rounded-lg">
-                    <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto">
+                  <Card className="absolute z-10 mt-2 left-0 bg-black border-purple text-white p-4 shadow-lg">
+                    <div className="flex flex-col gap-2 max-h-80 overflow-y-auto">
+                      {/* All Genres */}
                       {allGenres.map((genre) => (
                         <button
                           key={genre}
-                          className={`py-1.5 px-3 rounded-md text-xs transition-colors ${
+                          className={` py-1 px-0 rounded-md ${
                             selectedGenres.includes(genre)
-                              ? "bg-purple/20 text-purple border border-purple/20"
-                              : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white/90"
+                              ? "bg-purple text-white text-xs hover:bg-hoverPurple"
+                              : "bg-gray-700 text-white text-xs hover:bg-purple"
                           }`}
                           onClick={() => handleGenreToggle(genre)}
                         >
@@ -179,140 +179,147 @@ const Header: React.FC = () => {
                       ))}
                     </div>
 
-                    <div className="flex justify-end gap-2 mt-3 border-t border-white/5 pt-3">
+                    {/* Save/Cancel Buttons */}
+                    <div className="flex justify-end mt-4">
                       <button
-                        className="p-1.5 rounded-md hover:bg-white/5 text-white/70 hover:text-white/90 transition-colors"
+                        className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600"
                         onClick={handleCancelGenres}
                       >
-                        <CircleX className="w-4 h-4" />
+                        <CircleX className="w-4 h-4 mr-1" />
                       </button>
                       <button
-                        className="p-1.5 rounded-md bg-purple/20 text-purple hover:bg-purple/30 transition-colors"
+                        className="bg-purple text-white px-4 py-2 rounded-md hover:bg-hoverPurple"
                         onClick={handleSaveGenres}
                       >
-                        <Check className="w-4 h-4" />
+                        <Check className="w-4 h-4 mr-1" />
                       </button>
                     </div>
                   </Card>
                 )}
               </div>
             </div>
-
             {/* Leaderboard Section */}
-            <div>
-              <h2 className="text-sm font-medium text-white/70 mb-3">
+            <div className="mt-2">
+              <h2 className="text-lg font-bold text-primary mb-1">
                 Leaderboard
               </h2>
-              <div className="space-y-1.5">
+              <div className="h-1 bg-gradient-to-r from-purple to-transparent mb-4" />
+
+              <div className="flex flex-col">
                 {leaderboardData.map((user, index) => (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between bg-white/5 px-3 py-2 rounded-lg"
+                    className="flex items-center justify-between bg-gray-800 px-1 py-1 rounded-lg shadow-sm"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-purple text-xs font-medium w-4">
-                        {index + 1}
-                      </span>
+                    {/* Left side: Rank, Avatar, Name */}
+                    <div className="flex items-center gap-3">
+                      <span className="text-purple font-bold">{index + 1}</span>
                       <img
                         src={
                           user.profilePhoto || "https://github.com/shadcn.png"
                         }
                         alt={user.name}
-                        className="w-6 h-6 rounded-full"
+                        className="w-7 rounded-full"
                       />
-                      <span className="text-white/90 text-sm font-medium truncate max-w-[120px]">
+                      <span className="text-white font-medium truncate max-w-[120px] sm:max-w-[200px]">
                         {user.name}
                       </span>
                     </div>
-                    <span className="text-xs text-white/50">
+
+                    {/* Right side: Likes */}
+                    <div className="text-sm text-gray-300">
                       {user.likes} {user.likes === 1 ? "like" : "likes"}
-                    </span>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-
             {/* Prizepool Section */}
-            <div>
-              <h2 className="text-sm font-medium text-white/70 mb-3">
-                Prize Pool
-              </h2>
+            <div className="mt-2">
+              <h2 className="text-lg font-bold text-primary mb-1">Prizepool</h2>
+              <div className="h-1 bg-gradient-to-r from-purple to-transparent mb-4" />
 
-              <div className="space-y-4">
-                {/* Current Month */}
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs text-white/50">Current Month</span>
-                    <span className="text-sm font-medium text-white/90">
-                      ${(prizePoolData?.current_month || 0).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+              {/* Current Month Prize Pool */}
+              <div className="mb-4">
+                <h3 className="text-sm text-gray-400 mb-2">
+                  Current Month Prize Pool
+                </h3>
+                <div className="flex items-center gap-2">
+                  <div className="flex-grow bg-black rounded-full h-4 overflow-hidden">
                     <div
-                      className="h-full bg-purple rounded-full transition-all duration-300"
+                      className="bg-purple h-4 transition-all duration-300 ease-out"
                       style={{
                         width: `${
                           ((prizePoolData?.current_month || 0) / prizeGoal) *
                           100
                         }%`,
                       }}
-                    />
+                    ></div>
                   </div>
+                  <span className="text-white font-medium">
+                    ${(prizePoolData?.current_month || 0).toFixed(2)}
+                  </span>
                 </div>
+              </div>
 
-                {/* Next Month */}
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs text-white/50">Next Month</span>
-                    <span className="text-sm font-medium text-white/90">
-                      ${(prizePoolData?.next_month || 0).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+              {/* Next Month Prize Pool */}
+              <div className="mb-4">
+                <h3 className="text-sm text-gray-400 mb-2">
+                  Next Month Prize Pool
+                </h3>
+                <div className="flex items-center gap-2">
+                  <div className="flex-grow bg-black rounded-full h-4 overflow-hidden">
                     <div
-                      className="h-full bg-purple rounded-full transition-all duration-300"
+                      className="bg-purple h-4 transition-all duration-300 ease-out"
                       style={{
                         width: `${
                           ((prizePoolData?.next_month || 0) / prizeGoal) * 100
                         }%`,
                       }}
-                    />
+                    ></div>
                   </div>
+                  <span className="text-white font-medium">
+                    ${(prizePoolData?.next_month || 0).toFixed(2)}
+                  </span>
                 </div>
-
-                <Button
-                  className="w-full bg-purple hover:bg-purple/90 text-white text-sm font-medium rounded-lg py-2"
-                  onClick={handleDonate}
-                >
-                  🎉 Win a concert ticket
-                </Button>
               </div>
+
+              {/* Donate Button */}
+              <Button
+                className="w-full bg-purple hover:bg-hoverPurple rounded-xl text-1 py-1"
+                onClick={handleDonate}
+              >
+                🎉 Win a concert ticket
+              </Button>
             </div>
           </div>
 
           {/* Profile Section */}
-          <div className="border-t border-white/5 pt-3 mt-6">
+          <div className="mt-6">
+            <h2 className="text-lg font-bold text-primary mb-1">Profile</h2>
+            <div className="h-1 bg-gradient-to-r from-purple to-transparent mb-4"></div>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="w-8 h-8">
+              <div className="flex items-center gap-4">
+                <Avatar className="w-12 h-12 rounded-full">
                   <AvatarImage
                     src="https://github.com/shadcn.png"
                     alt={user.username}
+                    className="rounded-full"
                   />
-                  <AvatarFallback className="bg-purple/20 text-purple">
+                  <AvatarFallback className="bg-orange-500 text-white flex items-center justify-center rounded-full">
                     {user.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium text-white/90">
+                <p className="text-primary font-semibold text-base">
                   {user.username}
-                </span>
+                </p>
               </div>
               <Button
                 variant="ghost"
-                className="text-white/50 hover:text-white/70 p-1.5 hover:bg-white/5 rounded-md"
+                className="text-red-500 hover:text-red-600 p-2"
                 onClick={handleLogout}
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-5 h-5" />
               </Button>
             </div>
           </div>
