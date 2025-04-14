@@ -16,6 +16,11 @@ const WelcomePage: React.FC<WelcomePageProps> = ({
       <div className="absolute inset-0 bg-gradient-to-tr from-purple/5 via-transparent to-purple/10" />
       <div className="absolute inset-0 bg-gradient-to-bl from-purple/10 via-transparent to-purple/5" />
 
+      {/* Stars Animation */}
+      <div id="stars" className="absolute inset-0" />
+      <div id="stars2" className="absolute inset-0" />
+      <div id="stars3" className="absolute inset-0" />
+
       {/* Content Container */}
       <div className="relative">
         {/* Header */}
