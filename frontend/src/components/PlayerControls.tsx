@@ -132,7 +132,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
 
             <button
               onClick={handlePlayPause}
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-transparent border border-white/20 hover:bg-purple/20 hover:border-purple transition-all duration-200 hover:scale-105"
+              className="w-12 h-12 flex items-center justify-center rounded-full border border-purple/20 bg-purple/20 transition-all duration-200 hover:scale-105"
             >
               {isPlaying ? (
                 <Pause

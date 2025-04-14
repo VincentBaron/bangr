@@ -62,15 +62,6 @@ const WelcomePage: React.FC<WelcomePageProps> = ({
             <span className="relative">Discover music</span>
           </Button>
         </div>
-        <div className="relative mt-12 md:mt-16">
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/95 to-transparent" />
-          <img
-            src="assets/bangrCover.png"
-            alt="Bangr Cover"
-            className="w-full max-w-5xl mx-auto"
-          />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/95 to-transparent" />
-        </div>
       </div>
     </div>
   );
