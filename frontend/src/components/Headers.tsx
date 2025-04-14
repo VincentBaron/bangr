@@ -135,42 +135,45 @@ const Header: React.FC = () => {
         direction="left"
       >
         <DrawerTrigger asChild>
-          <button className="absolute top-4 left-4 flex items-center justify-center rounded-full bg-gray hover:bg-gray-500/30 border border-white/10 p-2 transition-colors backdrop-blur-sm">
-            <Menu className="text-white/70 hover:text-white/90" size={20} />
+          <button className="absolute top-4 left-4 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 p-2 transition-all hover:bg-purple/10 hover:border-purple/20">
+            <Menu className="text-white/70 hover:text-white" size={18} />
           </button>
         </DrawerTrigger>
-        <DrawerContent className="h-full max-w-72 w-full bg-gray text-white border-transparent p-4 shadow-lg flex flex-col justify-between [&>div:first-child]:hidden">
-          <div>
-            <h2 className="text-lg font-bold text-primary mb-1">Filters</h2>
-            <div className="h-1 bg-gradient-to-r from-purple to-transparent mb-4"></div>
-
+        <DrawerContent className="h-full max-w-72 w-full bg-black/95 backdrop-blur-md text-white border-r border-white/5 p-3 shadow-lg flex flex-col justify-between [&>div:first-child]:hidden">
+          <div className="space-y-6">
+            {/* Filters Section */}
             <div>
-              {/* Genres Section */}
-              <div className="relative">
+              <h2 className="text-sm font-medium text-white/70 mb-3">
+                Filters
+              </h2>
+
+              <div className="space-y-2">
                 {/* Genres Button */}
                 <button
-                  className="flex items-center bg-purple px-2 py-2 rounded-3xl text-white"
+                  className="flex items-center bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-sm transition-colors w-full group"
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
                 >
-                  <span>Genres</span>
-                  <div className="flex items-center justify-center ml-2 bg-white text-purple border-2 border-gray-300 rounded-full w-6 h-6 text-xs font-bold">
+                  <span className="text-white/90">Genres</span>
+                  <div className="flex items-center justify-center ml-2 bg-purple/20 text-purple border border-purple/20 rounded-md px-1.5 text-xs">
                     {selectedGenres.length}
                   </div>
-                  <ChevronDown className="ml-1 text-white" size={18} />
+                  <ChevronDown
+                    className="ml-auto text-white/50 group-hover:text-white/70"
+                    size={16}
+                  />
                 </button>
 
                 {/* Dropdown Menu */}
                 {isDropdownOpen && (
-                  <Card className="absolute z-10 mt-2 left-0 bg-black border-purple text-white p-4 shadow-lg">
-                    <div className="flex flex-col gap-2 max-h-80 overflow-y-auto">
-                      {/* All Genres */}
+                  <Card className="absolute z-10 mt-1 left-3 right-3 bg-black/95 backdrop-blur-md border border-white/10 text-white p-3 shadow-lg rounded-lg">
+                    <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto">
                       {allGenres.map((genre) => (
                         <button
                           key={genre}
-                          className={` py-1 px-0 rounded-md ${
+                          className={`py-1.5 px-3 rounded-md text-xs transition-colors ${
                             selectedGenres.includes(genre)
-                              ? "bg-purple text-white text-xs hover:bg-hoverPurple"
-                              : "bg-gray-700 text-white text-xs hover:bg-purple"
+                              ? "bg-purple/20 text-purple border border-purple/20"
+                              : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white/90"
                           }`}
                           onClick={() => handleGenreToggle(genre)}
                         >
@@ -179,147 +182,140 @@ const Header: React.FC = () => {
                       ))}
                     </div>
 
-                    {/* Save/Cancel Buttons */}
-                    <div className="flex justify-end mt-4">
+                    <div className="flex justify-end gap-2 mt-3 border-t border-white/5 pt-3">
                       <button
-                        className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                        className="p-1.5 rounded-md hover:bg-white/5 text-white/70 hover:text-white/90 transition-colors"
                         onClick={handleCancelGenres}
                       >
-                        <CircleX className="w-4 h-4 mr-1" />
+                        <CircleX className="w-4 h-4" />
                       </button>
                       <button
-                        className="bg-purple text-white px-4 py-2 rounded-md hover:bg-hoverPurple"
+                        className="p-1.5 rounded-md bg-purple/20 text-purple hover:bg-purple/30 transition-colors"
                         onClick={handleSaveGenres}
                       >
-                        <Check className="w-4 h-4 mr-1" />
+                        <Check className="w-4 h-4" />
                       </button>
                     </div>
                   </Card>
                 )}
               </div>
             </div>
+
             {/* Leaderboard Section */}
-            <div className="mt-2">
-              <h2 className="text-lg font-bold text-primary mb-1">
+            <div>
+              <h2 className="text-sm font-medium text-white/70 mb-3">
                 Leaderboard
               </h2>
-              <div className="h-1 bg-gradient-to-r from-purple to-transparent mb-4" />
-
-              <div className="flex flex-col">
+              <div className="space-y-1.5">
                 {leaderboardData.map((user, index) => (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between bg-gray-800 px-1 py-1 rounded-lg shadow-sm"
+                    className="flex items-center justify-between bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg transition-colors"
                   >
-                    {/* Left side: Rank, Avatar, Name */}
-                    <div className="flex items-center gap-3">
-                      <span className="text-purple font-bold">{index + 1}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-purple text-xs font-medium w-4">
+                        {index + 1}
+                      </span>
                       <img
                         src={
                           user.profilePhoto || "https://github.com/shadcn.png"
                         }
                         alt={user.name}
-                        className="w-7 rounded-full"
+                        className="w-6 h-6 rounded-full ring-1 ring-white/10"
                       />
-                      <span className="text-white font-medium truncate max-w-[120px] sm:max-w-[200px]">
+                      <span className="text-white/90 text-sm font-medium truncate max-w-[120px]">
                         {user.name}
                       </span>
                     </div>
-
-                    {/* Right side: Likes */}
-                    <div className="text-sm text-gray-300">
+                    <span className="text-xs text-white/50">
                       {user.likes} {user.likes === 1 ? "like" : "likes"}
-                    </div>
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
-            {/* Prizepool Section */}
-            <div className="mt-2">
-              <h2 className="text-lg font-bold text-primary mb-1">Prizepool</h2>
-              <div className="h-1 bg-gradient-to-r from-purple to-transparent mb-4" />
 
-              {/* Current Month Prize Pool */}
-              <div className="mb-4">
-                <h3 className="text-sm text-gray-400 mb-2">
-                  Current Month Prize Pool
-                </h3>
-                <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-black rounded-full h-4 overflow-hidden">
+            {/* Prizepool Section */}
+            <div>
+              <h2 className="text-sm font-medium text-white/70 mb-3">
+                Prize Pool
+              </h2>
+
+              <div className="space-y-4">
+                {/* Current Month */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs text-white/50">Current Month</span>
+                    <span className="text-sm font-medium text-white/90">
+                      ${(prizePoolData?.current_month || 0).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                     <div
-                      className="bg-purple h-4 transition-all duration-300 ease-out"
+                      className="h-full bg-purple rounded-full transition-all duration-300"
                       style={{
                         width: `${
                           ((prizePoolData?.current_month || 0) / prizeGoal) *
                           100
                         }%`,
                       }}
-                    ></div>
+                    />
                   </div>
-                  <span className="text-white font-medium">
-                    ${(prizePoolData?.current_month || 0).toFixed(2)}
-                  </span>
                 </div>
-              </div>
 
-              {/* Next Month Prize Pool */}
-              <div className="mb-4">
-                <h3 className="text-sm text-gray-400 mb-2">
-                  Next Month Prize Pool
-                </h3>
-                <div className="flex items-center gap-2">
-                  <div className="flex-grow bg-black rounded-full h-4 overflow-hidden">
+                {/* Next Month */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs text-white/50">Next Month</span>
+                    <span className="text-sm font-medium text-white/90">
+                      ${(prizePoolData?.next_month || 0).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                     <div
-                      className="bg-purple h-4 transition-all duration-300 ease-out"
+                      className="h-full bg-purple rounded-full transition-all duration-300"
                       style={{
                         width: `${
                           ((prizePoolData?.next_month || 0) / prizeGoal) * 100
                         }%`,
                       }}
-                    ></div>
+                    />
                   </div>
-                  <span className="text-white font-medium">
-                    ${(prizePoolData?.next_month || 0).toFixed(2)}
-                  </span>
                 </div>
-              </div>
 
-              {/* Donate Button */}
-              <Button
-                className="w-full bg-purple hover:bg-hoverPurple rounded-xl text-1 py-1"
-                onClick={handleDonate}
-              >
-                🎉 Win a concert ticket
-              </Button>
+                <Button
+                  className="w-full bg-purple/20 hover:bg-purple/30 text-purple text-sm font-medium rounded-lg py-2 transition-colors border border-purple/20"
+                  onClick={handleDonate}
+                >
+                  🎉 Win a concert ticket
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Profile Section */}
-          <div className="mt-6">
-            <h2 className="text-lg font-bold text-primary mb-1">Profile</h2>
-            <div className="h-1 bg-gradient-to-r from-purple to-transparent mb-4"></div>
+          <div className="border-t border-white/5 pt-3 mt-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Avatar className="w-12 h-12 rounded-full">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-8 h-8 ring-2 ring-purple/20">
                   <AvatarImage
                     src="https://github.com/shadcn.png"
                     alt={user.username}
-                    className="rounded-full"
                   />
-                  <AvatarFallback className="bg-orange-500 text-white flex items-center justify-center rounded-full">
+                  <AvatarFallback className="bg-purple/10 text-purple">
                     {user.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <p className="text-primary font-semibold text-base">
+                <span className="text-sm font-medium text-white/90">
                   {user.username}
-                </p>
+                </span>
               </div>
               <Button
                 variant="ghost"
-                className="text-red-500 hover:text-red-600 p-2"
+                className="text-white/50 hover:text-white/70 p-1.5 hover:bg-white/5 rounded-md transition-colors"
                 onClick={handleLogout}
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4" />
               </Button>
             </div>
           </div>
