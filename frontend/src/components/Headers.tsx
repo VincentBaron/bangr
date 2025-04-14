@@ -135,8 +135,14 @@ const Header: React.FC = () => {
         direction="left"
       >
         <DrawerTrigger asChild>
-          <button className="absolute top-4 left-4 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 p-2 transition-all hover:bg-purple/10 hover:border-purple/20">
-            <Menu className="text-white/70 hover:text-white" size={18} />
+          <button className="absolute top-4 left-4 group">
+            <div className="relative flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-tr from-purple/30 via-purple/20 to-transparent rounded-full blur-[2px]" />
+              <div className="absolute inset-0 bg-gradient-to-bl from-purple/20 via-transparent to-purple/10 rounded-full blur-[2px]" />
+              <div className="relative flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-purple/20 p-2 transition-all hover:bg-purple/20">
+                <Menu className="w-5 h-5 text-purple" />
+              </div>
+            </div>
           </button>
         </DrawerTrigger>
         <DrawerContent className="h-full max-w-72 w-full bg-black/95 backdrop-blur-md text-white border-r border-white/5 p-3 shadow-lg flex flex-col justify-between [&>div:first-child]:hidden">
