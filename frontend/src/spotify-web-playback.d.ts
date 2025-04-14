@@ -43,5 +43,6 @@ declare namespace Spotify {
     togglePlay(): Promise<void>;
     nextTrack(): Promise<void>;
     previousTrack(): Promise<void>;
+    seek(position_ms: number): Promise<void>;
   }
 }

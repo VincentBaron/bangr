@@ -224,6 +224,56 @@ export default function SetsPage() {
     }
   };
 
+  const handlePrevPlaylist = () => {
+    if (api && selectedIndex > 1) {
+      api.scrollPrev();
+      setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
+      setTransitionDirection("left");
+
+      // Reset track index when changing playlist
+      setCurrentTrackIndex(0);
+
+      // Play the first track of the previous playlist
+      if (
+        sets &&
+        sets[selectedIndex - 1] &&
+        sets[selectedIndex - 1].tracks.length > 0
+      ) {
+        const track = sets[selectedIndex - 1].tracks[0];
+        if (player && deviceId) {
+          playTrack(deviceId, track.uri).catch((error) => {
+            console.error("Failed to play track", error);
+          });
+        }
+      }
+    }
+  };
+
+  const handleNextPlaylist = () => {
+    if (api && sets && selectedIndex < sets.length - 2) {
+      api.scrollNext();
+      setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets.length - 2));
+      setTransitionDirection("right");
+
+      // Reset track index when changing playlist
+      setCurrentTrackIndex(0);
+
+      // Play the first track of the next playlist
+      if (
+        sets &&
+        sets[selectedIndex + 1] &&
+        sets[selectedIndex + 1].tracks.length > 0
+      ) {
+        const track = sets[selectedIndex + 1].tracks[0];
+        if (player && deviceId) {
+          playTrack(deviceId, track.uri).catch((error) => {
+            console.error("Failed to play track", error);
+          });
+        }
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-48">
@@ -276,6 +326,8 @@ export default function SetsPage() {
             currentTime={currentTime}
             duration={duration}
             onSeek={handleSeek}
+            handlePrevPlaylist={handlePrevPlaylist}
+            handleNextPlaylist={handleNextPlaylist}
           />
         </div>
       ) : (
