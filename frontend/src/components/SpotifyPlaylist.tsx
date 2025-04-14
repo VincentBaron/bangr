@@ -75,11 +75,8 @@ export default function SpotifyPlaylist({
         </Avatar>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-medium text-white/90 truncate">
-            {currentSet.username}'s Mix
+            {currentSet.username}'s Bangers
           </h3>
-          <p className="text-xs text-white/50">
-            {currentSet.tracks.length} tracks
-          </p>
         </div>
       </CardHeader>
       <CardContent className="p-4">
