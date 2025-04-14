@@ -40,7 +40,6 @@ const WelcomePage: React.FC<WelcomePageProps> = ({
             Log in
           </Button>
         </header>
-
         {/* Hero Section */}
         <div className="flex flex-col items-center text-center mt-16 md:mt-24 space-y-8 px-4">
           <h1 className="relative">
@@ -63,8 +62,6 @@ const WelcomePage: React.FC<WelcomePageProps> = ({
             <span className="relative">Discover music</span>
           </Button>
         </div>
-
-        {/* Video/Image Section */}
         <div className="relative mt-12 md:mt-16">
           <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/95 to-transparent" />
           <img
