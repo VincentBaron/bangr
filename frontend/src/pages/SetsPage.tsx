@@ -23,6 +23,8 @@ export default function SetsPage() {
   const [sets, setSets] = useState<Set[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const playerIsSet = useRef(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     const fetchSetsx = async () => {
@@ -91,6 +93,8 @@ export default function SetsPage() {
           img_url: "",
         });
         setIsPlaying(!state.paused);
+        setCurrentTime(state.position / 1000); // Convert milliseconds to seconds
+        setDuration(state.duration / 1000); // Convert milliseconds to seconds
       }
     };
 
@@ -110,6 +114,29 @@ export default function SetsPage() {
       }
     };
   }, [player]);
+
+  // Add progress update interval
+  useEffect(() => {
+    let progressInterval: NodeJS.Timeout;
+
+    if (isPlaying) {
+      progressInterval = setInterval(() => {
+        setCurrentTime((prevTime) => {
+          if (prevTime >= duration) {
+            clearInterval(progressInterval);
+            return duration;
+          }
+          return prevTime + 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
+    };
+  }, [isPlaying, duration]);
 
   useEffect(() => {
     const handlePlayerStateChanged = (state: PlayerState) => {
@@ -186,6 +213,17 @@ export default function SetsPage() {
     setIsPlaying(!isPlaying);
   };
 
+  const handleSeek = async (time: number) => {
+    if (player) {
+      try {
+        await player.seek(time * 1000); // Convert seconds to milliseconds
+        setCurrentTime(time);
+      } catch (error) {
+        console.error("Failed to seek", error);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-48">
@@ -235,6 +273,9 @@ export default function SetsPage() {
             handlePrevTrack={handlePrevTrack}
             handleNextTrack={handleNextTrack}
             handlePlayPause={HandlePlayPause}
+            currentTime={currentTime}
+            duration={duration}
+            onSeek={handleSeek}
           />
         </div>
       ) : (

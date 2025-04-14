@@ -25,4 +25,6 @@ export interface PlayerState {
     };
   };
   paused: boolean;
+  position: number;
+  duration: number;
 }
