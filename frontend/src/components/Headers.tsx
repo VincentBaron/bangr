@@ -135,8 +135,8 @@ const Header: React.FC = () => {
         direction="left"
       >
         <DrawerTrigger asChild>
-          <button className="absolute top-4 left-4 flex items-center justify-center rounded-full bg-purple border-2 border-purple p-2">
-            <Menu className="text-black" size={20} />
+          <button className="absolute top-4 left-4 flex items-center justify-center rounded-full bg-gray hover:bg-gray-500/30 border border-white/10 p-2 transition-colors backdrop-blur-sm">
+            <Menu className="text-white/70 hover:text-white/90" size={20} />
           </button>
         </DrawerTrigger>
         <DrawerContent className="h-full max-w-72 w-full bg-gray text-white border-transparent p-4 shadow-lg flex flex-col justify-between [&>div:first-child]:hidden">
