@@ -6,16 +6,17 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/context/UserContext";
 
 export function FeedbackDialog() {
   const [feedback, setFeedback] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useUser();
 
   const handleSubmit = async () => {
     if (!feedback.trim()) {
@@ -32,11 +33,11 @@ export function FeedbackDialog() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            service_id: "YOUR_SERVICE_ID",
-            template_id: "YOUR_TEMPLATE_ID",
-            user_id: "YOUR_USER_ID",
+            service_id: import.meta.env.VITE_SERVICE_ID,
+            template_id: import.meta.env.VITE_TEMPLATE_ID,
+            user_id: import.meta.env.VITE_USER_ID,
             template_params: {
-              subject: `Bangr | Feedback`,
+              subject: `Bangr | Feedback from ${user?.username || "Anonymous"}`,
               message: feedback,
             },
           }),
