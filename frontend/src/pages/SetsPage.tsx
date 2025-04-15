@@ -15,6 +15,7 @@ import {
 export default function SetsPage() {
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
   const { player, deviceId } = usePlayer();
+  // @ts-ignore
   const [transitionDirection, setTransitionDirection] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [api, setApi] = useState<CarouselApi>();
@@ -73,6 +74,7 @@ export default function SetsPage() {
       });
       const urisx = Array.from(uris).join("&uris=");
       const play = async () => {
+        // @ts-ignore
         const response = await playTrack(deviceId, urisx);
       };
       play();

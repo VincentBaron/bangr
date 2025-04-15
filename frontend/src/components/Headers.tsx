@@ -17,23 +17,11 @@ interface PrizePoolData {
   next_month: number;
 }
 
-interface PrizePoolResponse {
-  data: PrizePoolData;
-}
-
-const prizeGoal = 30; // Example goal
-const currentPrize = 4; // Dynamic from backend or state
-
-const donators = [
-  { id: 1, name: "Alice", profilePhoto: "/avatars/alice.jpg" },
-  { id: 2, name: "Bob", profilePhoto: "/avatars/bob.jpg" },
-  { id: 3, name: "Charlie", profilePhoto: "/avatars/charlie.jpg" },
-]; // Replace with real data
+const prizeGoal = 30; // Example goal Replace with real data
 
 const Header: React.FC = () => {
   const { user, setUser } = useUser();
   const [allGenres, setAllGenres] = useState<string[]>([]);
-  const [newUsername, setNewUsername] = useState(user?.username || "");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<string[]>(

@@ -87,7 +87,7 @@ export default function SpotifyPlaylist({
           </CardHeader>
           <CardContent className="p-4 space-y-1">
             <div className="space-y-1">
-              {currentSet.tracks?.map((track, idx) => (
+              {currentSet.tracks?.map((track, _) => (
                 <div
                   key={track.id}
                   className={cn(
@@ -133,23 +133,26 @@ export default function SpotifyPlaylist({
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center shrink-0">
                     <button
                       onClick={toggleLikeSong(track)}
-                      className={cn("p-1.5 rounded-full transition-all")}
+                      className={cn(
+                        "p-1.5 rounded-full transition-all flex items-center gap-1",
+                        track.liked
+                          ? "text-purple"
+                          : "text-white/50 hover:text-white"
+                      )}
                     >
                       <Flame
                         className={cn(
                           "w-4 h-4 transition-colors",
-                          track.liked
-                            ? "text-purple fill-purple"
-                            : "text-white/50 hover:text-white"
+                          track.liked ? "fill-purple" : ""
                         )}
                       />
+                      <span className="text-xs w-4 text-right">
+                        {track.likes}
+                      </span>
                     </button>
-                    <span className="text-xs text-white/50 w-8 text-right">
-                      {track.likes}
-                    </span>
                   </div>
                 </div>
               ))}
