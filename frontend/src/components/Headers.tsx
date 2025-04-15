@@ -140,7 +140,7 @@ const Header: React.FC = () => {
               <h2 className="text-sm font-medium text-white/70 mb-3">
                 Filters
               </h2>
-
+              <div className="h-px bg-gradient-to-r from-transparent via-white/5 to-transparent mb-3" />
               <div className="space-y-2">
                 {/* Genres Button */}
                 <button
@@ -200,6 +200,7 @@ const Header: React.FC = () => {
               <h2 className="text-sm font-medium text-white/70 mb-3">
                 Leaderboard
               </h2>
+              <div className="h-px bg-gradient-to-r from-transparent via-white/5 to-transparent mb-3" />
               <div className="space-y-1.5">
                 {leaderboardData.map((user, index) => (
                   <div
@@ -234,7 +235,7 @@ const Header: React.FC = () => {
               <h2 className="text-sm font-medium text-white/70 mb-3">
                 Prize Pool
               </h2>
-
+              <div className="h-px bg-gradient-to-r from-transparent via-white/5 to-transparent mb-3" />
               <div className="space-y-4">
                 {/* Current Month */}
                 <div>
