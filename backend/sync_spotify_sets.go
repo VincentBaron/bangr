@@ -33,8 +33,13 @@ func NewCronHandler(userRepo *repositories.Repository[models.User], setRepo *rep
 }
 
 func init() {
+	// Load environment variables from .env file
 	config.LoadEnvVariables()
+
+	// Initialize database connection
 	config.ConnectToDb()
+
+	// Sync database
 	config.SyncDatabase()
 }
 
