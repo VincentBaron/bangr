@@ -10,7 +10,15 @@ import {
   fetchLeaderboard,
   fetchPrizePool,
 } from "@/api/api";
-import { Menu, LogOut, CircleX, Check, ChevronDown } from "lucide-react";
+import {
+  Menu,
+  LogOut,
+  CircleX,
+  Check,
+  ChevronDown,
+  MessageSquare,
+} from "lucide-react";
+import { FeedbackDialog } from "@/components/FeedbackDialog";
 
 interface PrizePoolData {
   current_month: number;
@@ -314,13 +322,16 @@ const Header: React.FC = () => {
                   {user.username}
                 </span>
               </div>
-              <Button
-                variant="ghost"
-                className="text-white/50 hover:text-white/70 p-1.5 hover:bg-white/5 rounded-md transition-colors"
-                onClick={handleLogout}
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
+              <div className="flex items-center gap-2">
+                <FeedbackDialog />
+                <Button
+                  variant="ghost"
+                  className="text-white/50 hover:text-white/70 p-1.5 hover:bg-white/5 rounded-md transition-colors"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </DrawerContent>
