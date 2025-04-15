@@ -133,11 +133,14 @@ export default function SpotifyPlaylist({
                     </p>
                   </div>
 
-                  <div className="flex items-center shrink-0">
+                  <div className="flex items-center shrink-0 gap-1.5">
+                    <span className="text-xs text-white/50 w-4 text-right">
+                      {track.likes}
+                    </span>
                     <button
                       onClick={toggleLikeSong(track)}
                       className={cn(
-                        "p-1.5 rounded-full transition-all flex items-center gap-1",
+                        "p-1.5 rounded-full transition-all",
                         track.liked
                           ? "text-purple"
                           : "text-white/50 hover:text-white"
@@ -149,9 +152,6 @@ export default function SpotifyPlaylist({
                           track.liked ? "fill-purple" : ""
                         )}
                       />
-                      <span className="text-xs w-4 text-right">
-                        {track.likes}
-                      </span>
                     </button>
                   </div>
                 </div>
