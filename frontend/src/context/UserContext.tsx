@@ -4,7 +4,7 @@ import { fetchUser } from "@/api/api";
 interface User {
   id: string;
   username: string;
-  profilePicURL: string;
+  profile_pic_url: string;
   genres: string[];
 }
 
@@ -24,6 +24,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     const fetchUserx = async () => {
       try {
         const response = await fetchUser({ withCredentials: true });
+        console.log("response", response);
         setUser(response.data);
       } catch (error) {
         console.error("Failed to fetch user", error);

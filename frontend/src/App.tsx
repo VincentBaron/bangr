@@ -27,14 +27,6 @@ export default function App() {
     checkUserStatus();
   }, []);
 
-  useEffect(() => {
-    console.log("isAuthDialogOpen", isAuthDialogOpen);
-  }, [isAuthDialogOpen]);
-
-  useEffect(() => {
-    console.log("isLoggedIn", isLoggedIn);
-  }, [isLoggedIn]);
-
   const handleDiscoverMusicClick = () => {
     setAuthMode("signup");
     setIsAuthDialogOpen(true);

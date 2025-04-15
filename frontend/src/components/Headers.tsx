@@ -24,14 +24,20 @@ const Header: React.FC = () => {
   const [allGenres, setAllGenres] = useState<string[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>(
-    user?.genres || []
-  );
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
   const [prizePoolData, setPrizePoolData] = useState<PrizePoolData>({
     current_month: 0,
     next_month: 0,
   });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      setSelectedGenres(user.genres || []);
+      setIsLoading(false);
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,7 +111,7 @@ const Header: React.FC = () => {
 
   useEffect(() => {}, [selectedGenres]);
 
-  if (!user) {
+  if (!user || isLoading) {
     return null;
   }
 
@@ -213,13 +219,14 @@ const Header: React.FC = () => {
                       </span>
                       <img
                         src={
-                          user.profilePhoto || "https://github.com/shadcn.png"
+                          user.profile_pic_url ||
+                          "https://github.com/shadcn.png"
                         }
-                        alt={user.name}
+                        alt={user.username}
                         className="w-6 h-6 rounded-full ring-1 ring-white/10"
                       />
                       <span className="text-white/90 text-sm font-medium truncate max-w-[120px]">
-                        {user.name}
+                        {user.username}
                       </span>
                     </div>
                     <span className="text-xs text-white/50">
@@ -294,7 +301,9 @@ const Header: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Avatar className="w-8 h-8 ring-2 ring-purple/20">
                   <AvatarImage
-                    src="https://github.com/shadcn.png"
+                    src={
+                      user.profile_pic_url || "https://github.com/shadcn.png"
+                    }
                     alt={user.username}
                   />
                   <AvatarFallback className="bg-purple/10 text-purple">
