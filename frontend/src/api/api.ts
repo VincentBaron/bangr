@@ -19,10 +19,6 @@ api.interceptors.request.use((config) => {
 
 // Response Interceptor: Handle token updates
 api.interceptors.response.use((response) => {
-  console.log(
-    "response.headers[Authorization]",
-    response.headers["authorization"]
-  );
   // Check if the backend sent updated tokens in the headers
   const authorization = response.headers["authorization"];
   const spotifyToken = response.headers["spotifyauthorization"];

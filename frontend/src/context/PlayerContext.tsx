@@ -54,7 +54,6 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
       playerRef.current = player;
 
       const handleReady = async ({ device_id }: { device_id: string }) => {
-        console.log("Ready with Device ID", device_id);
         setDeviceId(device_id);
         try {
           await activatePlayer(device_id, { withCredentials: true });

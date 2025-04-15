@@ -24,7 +24,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     const fetchUserx = async () => {
       try {
         const response = await fetchUser({ withCredentials: true });
-        console.log("response", response);
         setUser(response.data);
       } catch (error) {
         console.error("Failed to fetch user", error);

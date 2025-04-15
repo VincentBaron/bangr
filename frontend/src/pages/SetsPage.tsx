@@ -44,6 +44,7 @@ export default function SetsPage() {
     };
 
     fetchSetsx();
+    console.log("sets", sets);
   }, []);
 
   useEffect(() => {
