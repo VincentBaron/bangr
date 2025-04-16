@@ -5,6 +5,7 @@ import Header from "./components/Headers";
 import { UserProvider } from "./context/UserContext";
 import WelcomePage from "./pages/WelcomePage";
 import AuthDialog from "./components/AuthDialog";
+import { Toaster } from "./components/ui/toaster";
 import "./styles/fonts.css";
 import "./styles/background-animation.css";
 
@@ -66,6 +67,7 @@ export default function App() {
                 <div className="flex justify-center items-center w-full mt-8">
                   <SetsPage />
                 </div>
+                <Toaster />
               </div>
             </PlayerProvider>
           </UserProvider>

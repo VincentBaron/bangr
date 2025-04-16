@@ -7,6 +7,7 @@ import { Music2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { cn } from "@/lib/utils";
 import { toggleTrackLike } from "@/api/api";
+import { useToast } from "@/hooks/use-toast";
 
 interface SpotifyPlaylistProps extends React.HTMLAttributes<HTMLDivElement> {
   set: Set;
@@ -23,6 +24,7 @@ export default function SpotifyPlaylist({
   index,
   ...props
 }: SpotifyPlaylistProps) {
+  const { toast } = useToast();
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -46,8 +48,20 @@ export default function SpotifyPlaylist({
           : t
       );
       setCurrentSet({ ...currentSet, tracks: updatedTracks });
+      toast({
+        title: track.liked
+          ? "Removed from Liked Songs"
+          : "Added to Liked Songs",
+        duration: 1000,
+      });
     } catch (error) {
       console.error("Failed to toggle like", error);
+      toast({
+        title: "Error",
+        description: "Failed to update like status",
+        variant: "destructive",
+        duration: 1000,
+      });
     }
   };
 
