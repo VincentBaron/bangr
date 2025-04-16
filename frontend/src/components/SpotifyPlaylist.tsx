@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Set, Track } from "@/types/types";
 import { toggleTrackLike } from "@/api/api";
-import { usePlayer } from "@/context/PlayerContext";
 import { Heart, PlayCircle, PauseCircle } from "lucide-react";
 
 interface TrackListProps extends React.HTMLAttributes<HTMLDivElement> {

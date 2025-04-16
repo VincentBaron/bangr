@@ -24,11 +24,6 @@ export default function SpotifyPlaylist({
   index,
   ...props
 }: TrackListProps) {
-  const getTrackIdFromPath = (filePath: string): string | null => {
-    const match = filePath.match(/___(.+)\.mp3$/);
-    return match ? match[1] : null;
-  };
-
   const defaultOptions = {
     loop: true,
     autoplay: true,

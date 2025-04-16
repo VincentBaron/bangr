@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/VincentBaron/bangr/backend/internal/config"
@@ -170,19 +169,12 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 
 func (s *SetService) ToggleLikeTrack(c *gin.Context, trackID uuid.UUID, params models.LikeQueryParams) error {
 	user := c.MustGet("user").(*models.User)
-	spotifyClient := c.MustGet("spotifyClient").(*spotify.Client)
 	track, err := s.tracksRepository.FindByFilter(map[string]interface{}{"id": trackID}, "Likes")
 	if err != nil {
 		return err
 	}
-	trackSpotifyID := spotify.ID(strings.Split(track.URI, ":")[2])
 
 	if params.Liked {
-		// Add track to Spotify library and save like in the database
-		err = spotifyClient.AddTracksToLibrary(c, trackSpotifyID)
-		if err != nil {
-			return err
-		}
 		like := models.Like{
 			UserID:  user.ID,
 			TrackID: track.ID,
@@ -191,11 +183,6 @@ func (s *SetService) ToggleLikeTrack(c *gin.Context, trackID uuid.UUID, params m
 			return err
 		}
 	} else {
-		// Remove track from Spotify library and delete like from the database
-		err = spotifyClient.RemoveTracksFromLibrary(c, trackSpotifyID)
-		if err != nil {
-			return err
-		}
 		if err := config.DB.Where("user_id = ? AND track_id = ?", user.ID, track.ID).Delete(&models.Like{}).Error; err != nil {
 			return err
 		}

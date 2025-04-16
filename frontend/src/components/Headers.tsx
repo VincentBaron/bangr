@@ -10,14 +10,7 @@ import {
   fetchLeaderboard,
   fetchPrizePool,
 } from "@/api/api";
-import {
-  Menu,
-  LogOut,
-  CircleX,
-  Check,
-  ChevronDown,
-  MessageSquare,
-} from "lucide-react";
+import { Menu, LogOut, CircleX, Check, ChevronDown } from "lucide-react";
 import { FeedbackDialog } from "@/components/FeedbackDialog";
 
 interface PrizePoolData {
