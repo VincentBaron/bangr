@@ -13,11 +13,12 @@ type GetSetResp struct {
 }
 
 type GetTrackResp struct {
-	ID     uuid.UUID `json:"id"`
-	URI    string    `json:"uri"`
-	Name   string    `json:"name"`
-	Artist string    `json:"artist"`
-	Liked  bool      `json:"liked"`
-	Likes  int       `json:"likes"`
-	ImgURL string    `json:"img_url"`
+	ID       uuid.UUID `json:"id"`
+	URI      string    `json:"uri"`
+	Name     string    `json:"name"`
+	Artist   string    `json:"artist"`
+	Liked    bool      `json:"liked"`
+	Likes    int       `json:"likes"`
+	ImgURL   string    `json:"img_url"`
+	FilePath string    `json:"file_path"`
 }

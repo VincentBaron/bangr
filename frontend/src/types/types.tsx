@@ -6,6 +6,7 @@ export interface Track {
   liked: boolean;
   likes: number;
   img_url: string;
+  file_path: string;
 }
 export interface Set {
   id: string;

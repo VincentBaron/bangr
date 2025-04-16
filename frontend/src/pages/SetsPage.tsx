@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { usePlayer } from "../context/PlayerContext";
-import SpotifyPlaylist from "../components/SpotifyPlaylist";
+import TrackList from "../components/TrackList";
 import PlayerControls from "../components/PlayerControls";
-import { playTrack, fetchSets } from "@/api/api";
-import { Track, Set, PlayerState } from "@/types/types";
+import { fetchSets } from "@/api/api";
+import { Track, Set } from "@/types/types";
 
 import {
   Carousel,
@@ -14,16 +13,14 @@ import {
 
 export default function SetsPage() {
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
-  const { player, deviceId } = usePlayer();
-  // @ts-ignore
   const [transitionDirection, setTransitionDirection] = useState<string>("");
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [api, setApi] = useState<CarouselApi>();
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null);
   const [sets, setSets] = useState<Set[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const playerIsSet = useRef(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -44,198 +41,113 @@ export default function SetsPage() {
     };
 
     fetchSetsx();
-    console.log("sets", sets);
   }, []);
 
   useEffect(() => {
-    const handleMediaQuery = () => {
-      const isBelowMd = window.matchMedia("(max-width: 768px)").matches;
-      if (isBelowMd && api) {
-        api.scrollNext();
-      }
-    };
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
 
-    handleMediaQuery();
-
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
-    mediaQuery.addEventListener("change", handleMediaQuery);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleMediaQuery);
-    };
-  }, [api]);
-
-  useEffect(() => {
-    if (!playerIsSet.current && deviceId && sets && sets.length > 2) {
-      const uris: string[] = [];
-      sets.slice(1).forEach((set) => {
-        set.tracks.forEach((track) => {
-          uris.push(track.uri);
-        });
+      audioRef.current.addEventListener("timeupdate", () => {
+        setCurrentTime(audioRef.current?.currentTime || 0);
       });
-      const urisx = Array.from(uris).join("&uris=");
-      const play = async () => {
-        // @ts-ignore
-        const response = await playTrack(deviceId, urisx);
-      };
-      play();
-      playerIsSet.current = true;
-    }
-  }, [deviceId, sets]);
 
-  useEffect(() => {
-    const handlePlayerStateChanged = (state: PlayerState) => {
-      if (state) {
-        setPlayingTrack({
-          id: state.track_window.current_track.id,
-          name: state.track_window.current_track.name,
-          artist: state.track_window.current_track.artists[0].name,
-          uri: "spotify:track:" + state.track_window.current_track.id,
-          liked: false,
-          likes: 0,
-          img_url: "",
-        });
-        setIsPlaying(!state.paused);
-        setCurrentTime(state.position / 1000); // Convert milliseconds to seconds
-        setDuration(state.duration / 1000); // Convert milliseconds to seconds
-      }
-    };
+      audioRef.current.addEventListener("loadedmetadata", () => {
+        setDuration(audioRef.current?.duration || 0);
+      });
 
-    if (player) {
-      (player as any).addListener(
-        "player_state_changed",
-        handlePlayerStateChanged
-      );
+      audioRef.current.addEventListener("ended", handleNextTrack);
     }
 
     return () => {
-      if (player) {
-        (player as any).removeListener(
-          "player_state_changed",
-          handlePlayerStateChanged
-        );
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.removeEventListener("timeupdate", () => {});
+        audioRef.current.removeEventListener("loadedmetadata", () => {});
+        audioRef.current.removeEventListener("ended", handleNextTrack);
       }
     };
-  }, [player]);
-
-  // Add progress update interval
-  useEffect(() => {
-    let progressInterval: NodeJS.Timeout;
-
-    if (isPlaying) {
-      progressInterval = setInterval(() => {
-        setCurrentTime((prevTime) => {
-          if (prevTime >= duration) {
-            clearInterval(progressInterval);
-            return duration;
-          }
-          return prevTime + 1;
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (progressInterval) {
-        clearInterval(progressInterval);
-      }
-    };
-  }, [isPlaying, duration]);
+  }, []);
 
   useEffect(() => {
-    const handlePlayerStateChanged = (state: PlayerState) => {
-      if (state && playerIsSet.current) {
-        setSelectedIndex((prevIndex) => {
-          const urisMap = new Map<string, boolean>();
-          sets![prevIndex].tracks.forEach((track) => {
-            urisMap.set(track.uri.split(":")[2], true);
-          });
-
-          if (!urisMap.has(state.track_window.current_track.id)) {
-            api?.scrollNext();
-            setTransitionDirection("right");
-            setCurrentTrackIndex(0);
-            return Math.min(prevIndex + 1, sets!.length - 1);
-          } else {
-            return prevIndex;
-          }
-        });
+    if (sets && sets.length > 2 && !playingTrack) {
+      // Start playing the first track of the first set
+      const firstTrack = sets[1].tracks[0];
+      if (firstTrack) {
+        setPlayingTrack(firstTrack);
+        playTrack(firstTrack);
       }
-    };
-
-    if (player && playerIsSet.current) {
-      (player as any).addListener(
-        "player_state_changed",
-        handlePlayerStateChanged
-      );
     }
+  }, [sets]);
 
-    return () => {
-      if (player) {
-        (player as any).removeListener(
-          "player_state_changed",
-          handlePlayerStateChanged
-        );
-      }
-    };
-  }, [player, sets, api, playerIsSet.current]);
+  const playTrack = (track: Track) => {
+    if (audioRef.current) {
+      const trackPath = `/assets/tracks/${track.file_path}`;
+      audioRef.current.src = trackPath;
+      audioRef.current
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch((error) => console.error("Error playing track:", error));
+    }
+  };
 
   const handlePrevTrack = () => {
-    if (player) {
-      player.previousTrack().catch((error: any) => {
-        console.error("Failed to play previous track", error);
-      });
+    if (!sets) return;
 
-      if (currentTrackIndex === 0) {
-        if (selectedIndex > 1) {
-          setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
-          api?.scrollPrev();
-          setTransitionDirection("left");
-          setCurrentTrackIndex(sets![selectedIndex - 1].tracks.length - 1);
-        }
-      } else {
-        setCurrentTrackIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+    if (currentTrackIndex === 0) {
+      if (selectedIndex > 1) {
+        const prevSet = sets[selectedIndex - 1];
+        const lastTrackIndex = prevSet.tracks.length - 1;
+        setSelectedIndex(selectedIndex - 1);
+        setCurrentTrackIndex(lastTrackIndex);
+        setPlayingTrack(prevSet.tracks[lastTrackIndex]);
+        playTrack(prevSet.tracks[lastTrackIndex]);
+        api?.scrollPrev();
+        setTransitionDirection("left");
       }
+    } else {
+      const prevTrack = sets[selectedIndex].tracks[currentTrackIndex - 1];
+      setCurrentTrackIndex(currentTrackIndex - 1);
+      setPlayingTrack(prevTrack);
+      playTrack(prevTrack);
     }
   };
 
   const handleNextTrack = () => {
-    if (player) {
-      player.nextTrack().catch((error: any) => {
-        console.error("Failed to play next track", error);
-      });
+    if (!sets) return;
 
-      if (currentTrackIndex === sets![selectedIndex].tracks.length - 1) {
-        if (selectedIndex < sets!.length - 2) {
-          setSelectedIndex((prevIndex) =>
-            Math.min(prevIndex + 1, sets!.length - 2)
-          );
-          api?.scrollNext();
-          setTransitionDirection("right");
-          setCurrentTrackIndex(0);
-        }
-      } else {
-        setCurrentTrackIndex((prevIndex) => prevIndex + 1);
+    if (currentTrackIndex === sets[selectedIndex].tracks.length - 1) {
+      if (selectedIndex < sets.length - 2) {
+        const nextSet = sets[selectedIndex + 1];
+        setSelectedIndex(selectedIndex + 1);
+        setCurrentTrackIndex(0);
+        setPlayingTrack(nextSet.tracks[0]);
+        playTrack(nextSet.tracks[0]);
+        api?.scrollNext();
+        setTransitionDirection("right");
       }
+    } else {
+      const nextTrack = sets[selectedIndex].tracks[currentTrackIndex + 1];
+      setCurrentTrackIndex(currentTrackIndex + 1);
+      setPlayingTrack(nextTrack);
+      playTrack(nextTrack);
     }
   };
 
   const HandlePlayPause = () => {
-    if (player) {
-      player.togglePlay().catch((error: any) => {
-        console.error("Failed to pause player", error);
-      });
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
     }
-    setIsPlaying(!isPlaying);
   };
 
-  const handleSeek = async (time: number) => {
-    if (player) {
-      try {
-        await player.seek(time * 1000); // Convert seconds to milliseconds
-        setCurrentTime(time);
-      } catch (error) {
-        console.error("Failed to seek", error);
-      }
+  const handleSeek = (time: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+      setCurrentTime(time);
     }
   };
 
@@ -244,22 +156,12 @@ export default function SetsPage() {
       api.scrollPrev();
       setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
       setTransitionDirection("left");
-
-      // Reset track index when changing playlist
       setCurrentTrackIndex(0);
 
-      // Play the first track of the previous playlist
-      if (
-        sets &&
-        sets[selectedIndex - 1] &&
-        sets[selectedIndex - 1].tracks.length > 0
-      ) {
-        const track = sets[selectedIndex - 1].tracks[0];
-        if (player && deviceId) {
-          playTrack(deviceId, track.uri).catch((error) => {
-            console.error("Failed to play track", error);
-          });
-        }
+      const prevSet = sets![selectedIndex - 1];
+      if (prevSet.tracks.length > 0) {
+        setPlayingTrack(prevSet.tracks[0]);
+        playTrack(prevSet.tracks[0]);
       }
     }
   };
@@ -269,24 +171,23 @@ export default function SetsPage() {
       api.scrollNext();
       setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets.length - 2));
       setTransitionDirection("right");
-
-      // Reset track index when changing playlist
       setCurrentTrackIndex(0);
 
-      // Play the first track of the next playlist
-      if (
-        sets &&
-        sets[selectedIndex + 1] &&
-        sets[selectedIndex + 1].tracks.length > 0
-      ) {
-        const track = sets[selectedIndex + 1].tracks[0];
-        if (player && deviceId) {
-          playTrack(deviceId, track.uri).catch((error) => {
-            console.error("Failed to play track", error);
-          });
-        }
+      const nextSet = sets[selectedIndex + 1];
+      if (nextSet.tracks.length > 0) {
+        setPlayingTrack(nextSet.tracks[0]);
+        playTrack(nextSet.tracks[0]);
       }
     }
+  };
+
+  const handleTrackSelect = (track: Track) => {
+    const trackIndex = sets![selectedIndex].tracks.findIndex(
+      (t) => t.id === track.id
+    );
+    setCurrentTrackIndex(trackIndex);
+    setPlayingTrack(track);
+    playTrack(track);
   };
 
   if (loading) {
@@ -320,11 +221,12 @@ export default function SetsPage() {
                     className="group basis-full md:basis-1/3 flex justify-center"
                     data-active={selectedIndex === index}
                   >
-                    <SpotifyPlaylist
+                    <TrackList
                       set={set}
                       index={index}
                       playingTrack={playingTrack}
                       isPlaying={isPlaying}
+                      onTrackSelect={handleTrackSelect}
                       className="group-data-[active=false]:scale-[85%] transition-all duration-300 group-data-[active=false]:opacity-60"
                     />
                   </CarouselItem>

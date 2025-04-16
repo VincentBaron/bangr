@@ -28,6 +28,7 @@ type Track struct {
 	URI       string    `json:"uri"`
 	Likes     []Like    `json:"likes"`
 	ImgURL    string    `json:"imgURL"`
+	FilePath  string    `json:"filePath"`
 }
 
 type Like struct {

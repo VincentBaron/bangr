@@ -134,13 +134,14 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 				liked = true
 			}
 			tracksResp = append(tracksResp, dto.GetTrackResp{
-				ID:     track.ID,
-				URI:    track.URI,
-				Name:   track.Name,
-				Artist: track.Artist,
-				Liked:  liked,
-				Likes:  trackLikesCountMap[track.ID], // Total likes for the track
-				ImgURL: track.ImgURL,
+				ID:       track.ID,
+				URI:      track.URI,
+				Name:     track.Name,
+				Artist:   track.Artist,
+				Liked:    liked,
+				Likes:    trackLikesCountMap[track.ID], // Total likes for the track
+				ImgURL:   track.ImgURL,
+				FilePath: track.FilePath,
 			})
 		}
 		if set.User.ID == user.ID {
