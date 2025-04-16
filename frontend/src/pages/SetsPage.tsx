@@ -3,6 +3,7 @@ import TrackList from "../components/TrackList";
 import PlayerControls from "../components/PlayerControls";
 import { fetchSets } from "@/api/api";
 import { Track, Set } from "@/types/types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import {
   Carousel,
@@ -12,8 +13,8 @@ import {
 } from "@/components/ui/carousel";
 
 export default function SetsPage() {
+  const isMobile = useIsMobile();
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
-  const [transitionDirection, setTransitionDirection] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [api, setApi] = useState<CarouselApi>();
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
@@ -79,6 +80,15 @@ export default function SetsPage() {
     }
   }, [sets]);
 
+  useEffect(() => {
+    if (api && isMobile && sets && sets.length > 2) {
+      // Scroll to the first set after a small delay to ensure the carousel is ready
+      setTimeout(() => {
+        api.scrollTo(1);
+      }, 100);
+    }
+  }, [api, sets, isMobile]);
+
   const playTrack = (track: Track) => {
     if (audioRef.current) {
       const trackPath = `/assets/tracks/${track.file_path}`;
@@ -102,7 +112,6 @@ export default function SetsPage() {
         setPlayingTrack(prevSet.tracks[lastTrackIndex]);
         playTrack(prevSet.tracks[lastTrackIndex]);
         api?.scrollPrev();
-        setTransitionDirection("left");
       }
     } else {
       const prevTrack = sets[selectedIndex].tracks[currentTrackIndex - 1];
@@ -123,7 +132,6 @@ export default function SetsPage() {
         setPlayingTrack(nextSet.tracks[0]);
         playTrack(nextSet.tracks[0]);
         api?.scrollNext();
-        setTransitionDirection("right");
       }
     } else {
       const nextTrack = sets[selectedIndex].tracks[currentTrackIndex + 1];
@@ -155,7 +163,6 @@ export default function SetsPage() {
     if (api && selectedIndex > 1) {
       api.scrollPrev();
       setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 1));
-      setTransitionDirection("left");
       setCurrentTrackIndex(0);
 
       const prevSet = sets![selectedIndex - 1];
@@ -170,7 +177,6 @@ export default function SetsPage() {
     if (api && sets && selectedIndex < sets.length - 2) {
       api.scrollNext();
       setSelectedIndex((prevIndex) => Math.min(prevIndex + 1, sets.length - 2));
-      setTransitionDirection("right");
       setCurrentTrackIndex(0);
 
       const nextSet = sets[selectedIndex + 1];
