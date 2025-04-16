@@ -7,3 +7,4 @@ frontend/fly.toml
 backend/fly.toml
 backend/tmp/*
 launch.json
+.DS_store

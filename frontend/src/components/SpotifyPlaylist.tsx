@@ -3,7 +3,7 @@ import { Set, Track } from "@/types/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import playerAnimation from "../../public/assets/playing_anim.json";
 import Lottie from "react-lottie";
-import { Flame, Music2 } from "lucide-react";
+import { Music2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { cn } from "@/lib/utils";
 import { toggleTrackLike } from "@/api/api";
@@ -134,9 +134,9 @@ export default function SpotifyPlaylist({
                   </div>
 
                   <div className="flex items-center shrink-0 gap-1.5">
-                    <span className="text-xs text-white/50 w-4 text-right">
+                    {/* <span className="text-xs text-white/50 w-4 text-right">
                       {track.likes}
-                    </span>
+                    </span> */}
                     <button
                       onClick={toggleLikeSong(track)}
                       className={cn(
@@ -146,13 +146,33 @@ export default function SpotifyPlaylist({
                           : "text-white/50 hover:text-white"
                       )}
                     >
-                      <Flame
+                      <img
+                        src={
+                          track.liked
+                            ? "/assets/like-icon-liked.png"
+                            : "/assets/like-icon-like.png"
+                        }
+                        alt="Like"
                         className={cn(
                           "w-4 h-4 transition-colors",
-                          track.liked ? "fill-purple" : ""
+                          track.liked ? "text-purple" : ""
                         )}
                       />
                     </button>
+                    <a
+                      href={`https://open.spotify.com/track/${
+                        track.uri.split(":")[2]
+                      }`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:opacity-80 transition-opacity"
+                    >
+                      <img
+                        src="/assets/spotify_logo.png"
+                        alt="Spotify"
+                        className="w-4 h-4"
+                      />
+                    </a>
                   </div>
                 </div>
               ))}
