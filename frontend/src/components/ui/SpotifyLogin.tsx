@@ -28,7 +28,7 @@ const SpotifySignup: FC = () => {
         { username: username, password },
         { withCredentials: true }
       )
-      .then((response) => {
+      .then((_) => {
         window.location.reload();
       })
       .catch((error) => {

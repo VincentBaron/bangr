@@ -107,9 +107,17 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ authMode }) => {
       })
       .catch((error) => {
         console.log("error response data:", error.response.data);
-        setSignupError(
-          error.response.data.message || "Failed to signup. Please try again."
-        );
+        if (
+          error.response.data.error === "Spotify Premium subscription required"
+        ) {
+          setSignupError(
+            "A Spotify Premium subscription is required to use this app. Please upgrade your account and try again."
+          );
+        } else {
+          setSignupError(
+            error.response.data.message || "Failed to signup. Please try again."
+          );
+        }
       });
   };
 
