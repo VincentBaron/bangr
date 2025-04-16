@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import TrackList from "../components/TrackList";
 import PlayerControls from "../components/PlayerControls";
 import { fetchSets } from "@/api/api";
@@ -44,30 +44,67 @@ export default function SetsPage() {
     fetchSetsx();
   }, []);
 
+  // First effect to initialize audio element
   useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio();
-
-      audioRef.current.addEventListener("timeupdate", () => {
-        setCurrentTime(audioRef.current?.currentTime || 0);
-      });
-
-      audioRef.current.addEventListener("loadedmetadata", () => {
-        setDuration(audioRef.current?.duration || 0);
-      });
-
-      audioRef.current.addEventListener("ended", handleNextTrack);
     }
+  }, []);
+
+  const playTrack = useCallback((track: Track) => {
+    if (audioRef.current) {
+      const trackPath = `/assets/tracks/${track.file_path}`;
+      audioRef.current.src = trackPath;
+      audioRef.current
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch((error) => console.error("Error playing track:", error));
+    }
+  }, []);
+
+  const handleNextTrack = useCallback(() => {
+    if (!sets) return;
+
+    if (currentTrackIndex === sets[selectedIndex].tracks.length - 1) {
+      if (selectedIndex < sets.length - 2) {
+        const nextSet = sets[selectedIndex + 1];
+        setSelectedIndex(selectedIndex + 1);
+        setCurrentTrackIndex(0);
+        setPlayingTrack(nextSet.tracks[0]);
+        playTrack(nextSet.tracks[0]);
+        api?.scrollNext();
+      }
+    } else {
+      const nextTrack = sets[selectedIndex].tracks[currentTrackIndex + 1];
+      setCurrentTrackIndex(currentTrackIndex + 1);
+      setPlayingTrack(nextTrack);
+      playTrack(nextTrack);
+    }
+  }, [sets, currentTrackIndex, selectedIndex, api, playTrack]);
+
+  // Separate effect for event listeners
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime || 0);
+    };
+
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration || 0);
+    };
+
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.addEventListener("ended", handleNextTrack);
 
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.removeEventListener("timeupdate", () => {});
-        audioRef.current.removeEventListener("loadedmetadata", () => {});
-        audioRef.current.removeEventListener("ended", handleNextTrack);
-      }
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.removeEventListener("ended", handleNextTrack);
     };
-  }, []);
+  }, [handleNextTrack]);
 
   useEffect(() => {
     if (sets && sets.length > 2 && !playingTrack) {
@@ -89,17 +126,6 @@ export default function SetsPage() {
     }
   }, [api, sets, isMobile]);
 
-  const playTrack = (track: Track) => {
-    if (audioRef.current) {
-      const trackPath = `/assets/tracks/${track.file_path}`;
-      audioRef.current.src = trackPath;
-      audioRef.current
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch((error) => console.error("Error playing track:", error));
-    }
-  };
-
   const handlePrevTrack = () => {
     if (!sets) return;
 
@@ -118,26 +144,6 @@ export default function SetsPage() {
       setCurrentTrackIndex(currentTrackIndex - 1);
       setPlayingTrack(prevTrack);
       playTrack(prevTrack);
-    }
-  };
-
-  const handleNextTrack = () => {
-    if (!sets) return;
-
-    if (currentTrackIndex === sets[selectedIndex].tracks.length - 1) {
-      if (selectedIndex < sets.length - 2) {
-        const nextSet = sets[selectedIndex + 1];
-        setSelectedIndex(selectedIndex + 1);
-        setCurrentTrackIndex(0);
-        setPlayingTrack(nextSet.tracks[0]);
-        playTrack(nextSet.tracks[0]);
-        api?.scrollNext();
-      }
-    } else {
-      const nextTrack = sets[selectedIndex].tracks[currentTrackIndex + 1];
-      setCurrentTrackIndex(currentTrackIndex + 1);
-      setPlayingTrack(nextTrack);
-      playTrack(nextTrack);
     }
   };
 
