@@ -6,15 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/VincentBaron/bangr/backend/internal/config"
 	"github.com/VincentBaron/bangr/backend/internal/models"
 	"github.com/VincentBaron/bangr/backend/internal/repositories"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/zmb3/spotify/v2"
-	spotifyauth "github.com/zmb3/spotify/v2/auth"
-	"golang.org/x/oauth2"
 )
 
 type Middleware struct {
@@ -67,63 +63,8 @@ func (m *Middleware) RequireAuth(c *gin.Context) {
 		return
 	}
 
-	// Check if the Spotify token has expired
-	spotifyToken := oauth2.Token{
-		AccessToken:  user.SpotifyToken.AccessToken,
-		TokenType:    "Bearer",
-		RefreshToken: user.SpotifyToken.RefreshToken,
-		Expiry:       user.SpotifyToken.Expiry,
-	}
-	httpClient := spotifyauth.New().Client(c, &spotifyToken)
-	client := spotify.New(httpClient)
-	oauthConf := &oauth2.Config{
-		ClientID:     config.Conf.SpotifyClientID,
-		ClientSecret: config.Conf.SpotifyClientSecret,
-		Endpoint: oauth2.Endpoint{
-			TokenURL: spotifyauth.TokenURL,
-		},
-	}
-	if spotifyToken.Expiry.Before(time.Now()) {
-		src := oauthConf.TokenSource(c, &spotifyToken)
-		token, err := src.Token()
-		if err != nil {
-			fmt.Printf("Couldn't refresh token: %v\n", err)
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		newSpotifyToken := models.SpotifyToken{
-			AccessToken:  token.AccessToken,
-			RefreshToken: token.RefreshToken,
-			Expiry:       token.Expiry,
-		}
-		user.SpotifyToken = newSpotifyToken
-
-		// Begin a transaction
-		tx := config.DB.Begin()
-
-		if err := tx.Model(&user).Association("SpotifyToken").Replace(&newSpotifyToken); err != nil {
-			tx.Rollback()
-			c.AbortWithStatus(http.StatusInternalServerError)
-			return
-		}
-		tx.Model(&user).Save(&user)
-
-		// Commit the transaction
-		if err := tx.Commit().Error; err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
-			return
-		}
-
-		httpClient = spotifyauth.New().Client(c, token)
-		client = spotify.New(httpClient)
-		user.SpotifyToken = newSpotifyToken
-		fmt.Printf("Token refreshed for user %s\n", user.ID.String())
-	}
-
 	// Create a new Spotify client with the refreshed token
-	SetTokens(c, tokenString, user.SpotifyToken.AccessToken, user.ID.String())
-	c.Set("spotifyClient", client)
+	SetTokens(c, tokenString, user.ID.String())
 
 	// Attach the request
 	c.Set("user", user)
@@ -132,9 +73,8 @@ func (m *Middleware) RequireAuth(c *gin.Context) {
 	c.Next()
 }
 
-func SetTokens(c *gin.Context, tokenString string, spotifyToken string, userID string) {
+func SetTokens(c *gin.Context, tokenString string, userID string) {
 	// Add tokens to the response headers
 	c.Header("Authorization", tokenString)
-	c.Header("SpotifyAuthorization", spotifyToken)
 	c.Header("UserID", userID)
 }

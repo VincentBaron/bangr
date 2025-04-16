@@ -92,11 +92,10 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ authMode }) => {
   const handleSignup = () => {
     setSignupError(null);
     signup(username, password, selectedGenres)
-      .then((response) => {
+      .then((_) => {
         login(username, password)
           .then(() => {
             window.location.reload();
-            window.location.href = response.data.url;
           })
           .catch((error) => {
             console.log("error response data:", error.response.data);

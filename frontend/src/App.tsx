@@ -15,13 +15,13 @@ export default function App() {
 
   useEffect(() => {
     const checkUserStatus = () => {
-      const spotifyAuthorization = localStorage.getItem("SpotifyAuthorization");
-      if (!spotifyAuthorization) {
+      const userId = localStorage.getItem("UserID");
+      if (!userId) {
         localStorage.removeItem("UserID");
         localStorage.removeItem("SpotifyAuthorization");
         localStorage.removeItem("Authorization");
       }
-      setIsLoggedIn(!!spotifyAuthorization);
+      setIsLoggedIn(!!userId);
     };
 
     checkUserStatus();

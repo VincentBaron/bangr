@@ -4,9 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
-	"strconv"
 	"sync"
 	"time"
 
@@ -163,23 +161,7 @@ func (s *AuthService) Signup(c *gin.Context, payload *dto.PostUserReq) (*string,
 		return nil, fmt.Errorf("failed to associate genres with user: %w", err)
 	}
 
-	// Generate a unique state
-	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
-	state := strconv.FormatUint(rng.Uint64(), 10)
-
-	// Store the state to userID mapping
-	stateToUserIDMap.Lock()
-	stateToUserIDMap.m[state] = user.ID
-	stateToUserIDMap.Unlock()
-
-	// Redirect the user to the Spotify authorization page
-	url := "https://accounts.spotify.com/authorize?response_type=code" +
-		"&client_id=" + config.Conf.SpotifyClientID +
-		"&scope=" + config.Conf.SpotifyScopes +
-		"&redirect_uri=" + config.Conf.SpotifyRedirectURL +
-		"&state=" + state
-
-	return &url, nil
+	return nil, nil
 }
 
 func (s *AuthService) Login(c *gin.Context, username, password string) error {
@@ -218,13 +200,12 @@ func (s *AuthService) Login(c *gin.Context, username, password string) error {
 		return fmt.Errorf("failed to sign token: %w", err)
 	}
 
-	SetTokens(c, tokenString, user.SpotifyToken.AccessToken, user.ID.String())
+	SetTokens(c, tokenString, user.ID.String())
 	return nil
 }
 
-func SetTokens(c *gin.Context, tokenString string, spotifyToken string, userID string) {
+func SetTokens(c *gin.Context, tokenString string, userID string) {
 	// Add tokens to the response headers
 	c.Header("Authorization", tokenString)
-	c.Header("SpotifyAuthorization", spotifyToken)
 	c.Header("UserID", userID)
 }
