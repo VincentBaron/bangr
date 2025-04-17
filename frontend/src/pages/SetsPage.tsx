@@ -35,6 +35,32 @@ export default function SetsPage() {
         const fetchedSets = response.data.sets as Set[];
         const dummySet = { id: "dummy", username: "", link: "", tracks: [] };
         setSets([...fetchedSets, dummySet]);
+        const emptyUserSet = {
+          id: "user-empty",
+          username: "",
+          link: "",
+          tracks: [
+            {
+              id: "empty",
+              title: "You haven't uploaded anything last week 🥲",
+              file_path: "",
+              uri: "",
+              name: "No tracks yet",
+              artist: "",
+              liked: false,
+              likes: 0,
+              img_url: "",
+              duration: 0,
+            },
+          ],
+        };
+
+        const hasUserSet = fetchedSets.some(
+          (set) => set.username === "Your Bangr's"
+        );
+        if (!hasUserSet) {
+          setSets([emptyUserSet, ...fetchedSets, dummySet]);
+        }
         setTimeout(() => setFadeIn(true), 100);
       } catch (error) {
         console.error("Failed to fetch sets", error);
@@ -228,7 +254,7 @@ export default function SetsPage() {
             <img
               src="assets/logo.svg"
               alt="Bangr"
-              className="w-24 h-24 opacity-60"
+              className="w-24 h-24 opacity-80"
             />
           </div>
           <div
