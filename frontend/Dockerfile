@@ -23,7 +23,10 @@ RUN apt-get update -qq && \
 COPY package-lock.json package.json ./
 RUN npm ci --include=dev
 
-# Copy application code
+# Copy assets first - this layer will be cached if assets don't change
+COPY public/assets ./public/assets
+
+# Copy remaining application code
 COPY . .
 
 # Pass the backend URL as a build argument
@@ -39,11 +42,14 @@ RUN npm prune --omit=dev
 # Final stage for app image
 FROM nginx
 
+# Copy nginx configuration if you have any custom settings
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Copy built application
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy assets directory
-COPY public/assets /public/assets
+# Copy assets directory - now they're copied directly to nginx's serving directory
+COPY --from=build /app/public/assets /usr/share/nginx/html/assets
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 80

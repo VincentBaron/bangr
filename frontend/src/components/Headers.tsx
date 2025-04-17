@@ -28,7 +28,7 @@ const Header: React.FC = () => {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
   const [prizePoolData, setPrizePoolData] = useState<PrizePoolData>({
-    current_month: 0,
+    current_month: 25,
     next_month: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -250,17 +250,14 @@ const Header: React.FC = () => {
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs text-white/50">Current Month</span>
                     <span className="text-sm font-medium text-white/90">
-                      ${(prizePoolData?.current_month || 0).toFixed(2)}
+                      ${(25).toFixed(2)}
                     </span>
                   </div>
                   <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-purple rounded-full transition-all duration-300"
                       style={{
-                        width: `${
-                          ((prizePoolData?.current_month || 0) / prizeGoal) *
-                          100
-                        }%`,
+                        width: `${(25 / prizeGoal) * 100}%`,
                       }}
                     />
                   </div>
