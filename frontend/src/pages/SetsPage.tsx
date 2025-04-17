@@ -24,6 +24,7 @@ export default function SetsPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [fadeIn, setFadeIn] = useState(false);
 
   useEffect(() => {
     const fetchSetsx = async () => {
@@ -34,6 +35,7 @@ export default function SetsPage() {
         const fetchedSets = response.data.sets as Set[];
         const dummySet = { id: "dummy", username: "", link: "", tracks: [] };
         setSets([...fetchedSets, dummySet]);
+        setTimeout(() => setFadeIn(true), 100);
       } catch (error) {
         console.error("Failed to fetch sets", error);
       } finally {
@@ -218,14 +220,22 @@ export default function SetsPage() {
     <>
       {sets && sets.length > 1 ? (
         <div className="flex w-full flex-col items-center">
-          <div className="mb-20">
+          <div
+            className={`mb-20 transition-opacity duration-10000 ease-in-out ${
+              fadeIn ? "opacity-100" : "opacity-0"
+            }`}
+          >
             <img
               src="assets/logo.svg"
               alt="Bangr"
               className="w-24 h-24 opacity-40"
             />
           </div>
-          <div>
+          <div
+            className={`transition-opacity duration-10000 ease-in-out ${
+              fadeIn ? "opacity-100" : "opacity-0"
+            }`}
+          >
             <Carousel
               setApi={setApi}
               opts={{
