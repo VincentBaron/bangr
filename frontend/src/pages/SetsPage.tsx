@@ -218,6 +218,13 @@ export default function SetsPage() {
     <>
       {sets && sets.length > 1 ? (
         <div className="flex w-full flex-col items-center">
+          <div className="mb-20">
+            <img
+              src="assets/logo.svg"
+              alt="Bangr"
+              className="w-24 h-24 opacity-40"
+            />
+          </div>
           <div>
             <Carousel
               setApi={setApi}

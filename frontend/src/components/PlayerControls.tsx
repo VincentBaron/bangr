@@ -4,8 +4,8 @@ import {
   Pause,
   SkipBack,
   SkipForward,
-  RotateCcw,
-  RotateCw,
+  ArrowLeft,
+  ArrowRight,
 } from "lucide-react";
 
 interface PlayerControlsProps {
@@ -108,8 +108,8 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
                 onClick={handlePrevPlaylist}
                 className="text-white/50 hover:text-white transition-all duration-200 hover:scale-105"
               >
-                <RotateCcw
-                  className="w-4 h-4 fill-transparent"
+                <ArrowLeft
+                  className="w-6 h-6 fill-transparent"
                   strokeWidth={1.5}
                 />
               </button>
@@ -163,8 +163,8 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
                 onClick={handleNextPlaylist}
                 className="text-white/50 hover:text-white transition-all duration-200 hover:scale-105"
               >
-                <RotateCw
-                  className="w-4 h-4 fill-transparent"
+                <ArrowRight
+                  className="w-6 h-6 fill-transparent"
                   strokeWidth={1.5}
                 />
               </button>

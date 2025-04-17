@@ -41,9 +41,14 @@ module.exports = {
           "0%, 100%": { opacity: 0.3, transform: "scale(0.95)" },
           "50%": { opacity: 1, transform: "scale(1.05)" },
         },
+        pulseSlow: {
+          "0%, 100%": { opacity: 0.6, transform: "scale(1)" },
+          "50%": { opacity: 0.4, transform: "scale(0.98)" },
+        },
       },
       animation: {
         "pulse-custom": "pulseCustom 1.6s ease-in-out infinite",
+        "pulse-slow": "pulseSlow 3s ease-in-out infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
