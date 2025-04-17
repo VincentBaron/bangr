@@ -219,7 +219,7 @@ export default function SetsPage() {
   return (
     <>
       {sets && sets.length > 1 ? (
-        <div className="flex w-full flex-col items-center">
+        <div className="flex w-full flex-col items-center pb-32">
           <div
             className={`mb-20 transition-opacity duration-10000 ease-in-out ${
               fadeIn ? "opacity-100" : "opacity-0"
@@ -228,7 +228,7 @@ export default function SetsPage() {
             <img
               src="assets/logo.svg"
               alt="Bangr"
-              className="w-24 h-24 opacity-40"
+              className="w-24 h-24 opacity-60"
             />
           </div>
           <div
@@ -243,7 +243,7 @@ export default function SetsPage() {
               }}
               className="w-full max-w-[100vw]"
             >
-              <CarouselContent>
+              <CarouselContent className="pb-4">
                 {sets.map((set, index) => (
                   <CarouselItem
                     key={index}
