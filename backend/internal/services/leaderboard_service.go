@@ -26,37 +26,36 @@ func NewLeaderboardService(trackRepo *repositories.Repository[models.Track], lik
 }
 
 func (s *LeaderboardService) GetLeaderboard(c *gin.Context) ([]dto.LeaderboardEntry, error) {
-	// Fetch all likes with user information
-	var likes []models.Like
-	if err := config.DB.Model(&models.Like{}).
-		Preload("User").
-		Find(&likes).Error; err != nil {
+	// Create a slice to store the results
+	var results []struct {
+		UserID        uuid.UUID
+		Username      string
+		ProfilePicURL string
+		LikeCount     int
+	}
+
+	// Execute a SQL query that joins likes, tracks, sets, and users to count received likes per user
+	if err := config.DB.Table("likes").
+		Select("users.id as user_id, users.username, users.profile_pic_url, COUNT(likes.id) as like_count").
+		Joins("JOIN tracks ON likes.track_id = tracks.id").
+		Joins("JOIN set_tracks ON tracks.id = set_tracks.track_id").
+		Joins("JOIN sets ON set_tracks.set_id = sets.id").
+		Joins("JOIN users ON sets.user_id = users.id").
+		Group("users.id, users.username, users.profile_pic_url").
+		Scan(&results).Error; err != nil {
 		log.Println(err)
-		return nil, fmt.Errorf("failed to fetch likes: %w", err)
+		return nil, fmt.Errorf("failed to fetch leaderboard: %w", err)
 	}
 
-	// Map user IDs to their like counts and user info
-	userLikesMap := make(map[uuid.UUID]struct {
-		Count int
-		User  models.User
-	})
-
-	for _, like := range likes {
-		entry := userLikesMap[like.UserID]
-		entry.Count++
-		entry.User = like.User
-		userLikesMap[like.UserID] = entry
-	}
-
-	// Convert map to slice and sort by like count
-	leaderboard := make([]dto.LeaderboardEntry, 0)
-	for _, entry := range userLikesMap {
-		leaderboard = append(leaderboard, dto.LeaderboardEntry{
-			UserID:        entry.User.ID,
-			Username:      entry.User.Username,
-			ProfilePicURL: entry.User.ProfilePicURL,
-			Likes:         entry.Count,
-		})
+	// Convert the results to LeaderboardEntry slice
+	leaderboard := make([]dto.LeaderboardEntry, len(results))
+	for i, result := range results {
+		leaderboard[i] = dto.LeaderboardEntry{
+			UserID:        result.UserID,
+			Username:      result.Username,
+			ProfilePicURL: result.ProfilePicURL,
+			Likes:         result.LikeCount,
+		}
 	}
 
 	// Sort leaderboard by likes in descending order
