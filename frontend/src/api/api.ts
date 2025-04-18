@@ -138,4 +138,17 @@ export const fetchPrizePool = async () => {
   return response;
 };
 
+// Group endpoints
+export const fetchUserGroups = (config = {}) => {
+  return api.get("/groups", config);
+};
+
+export const createGroup = (name: string, config = {}) => {
+  return api.post("/groups", { name }, config);
+};
+
+export const joinGroup = (inviteCode: string, config = {}) => {
+  return api.post(`/groups/join/${inviteCode}`, {}, config);
+};
+
 export default api;

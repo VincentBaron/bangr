@@ -9,10 +9,46 @@ import {
   updateUserGenres,
   fetchLeaderboard,
   fetchPrizePool,
+  fetchUserGroups,
+  createGroup,
+  joinGroup,
 } from "@/api/api";
-import { Menu, LogOut, CircleX, Check, ChevronDown } from "lucide-react";
+import {
+  Menu,
+  LogOut,
+  CircleX,
+  Check,
+  ChevronDown,
+  Plus,
+  Copy,
+  Share2,
+} from "lucide-react";
 import { FeedbackDialog } from "@/components/FeedbackDialog";
 import { PricingModal } from "@/components/PricingModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useSearchParams } from "react-router-dom";
+
+interface Group {
+  id: string;
+  name: string;
+  invite_code: string;
+}
+
+interface BackendGroup {
+  ID?: string;
+  id?: string;
+  Name?: string;
+  name?: string;
+  InviteCode?: string;
+  invite_code?: string;
+}
 
 interface PrizePoolData {
   current_month: number;
@@ -23,10 +59,19 @@ const prizeGoal = 30; // Example goal Replace with real data
 
 const Header: React.FC = () => {
   const { user, setUser } = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [allGenres, setAllGenres] = useState<string[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isGenresDropdownOpen, setIsGenresDropdownOpen] = useState(false);
+  const [isGroupsDropdownOpen, setIsGroupsDropdownOpen] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [isCreateGroupDialogOpen, setIsCreateGroupDialogOpen] = useState(false);
+  const [isShareGroupDialogOpen, setIsShareGroupDialogOpen] = useState(false);
+  const [selectedGroupForShare, setSelectedGroupForShare] =
+    useState<Group | null>(null);
   const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
   const [prizePoolData, setPrizePoolData] = useState<PrizePoolData>({
     current_month: 25,
@@ -34,6 +79,8 @@ const Header: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
+  const [joinGroupError, setJoinGroupError] = useState<string | null>(null);
+  const [isJoinErrorDialogOpen, setIsJoinErrorDialogOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -45,14 +92,25 @@ const Header: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [genres, leaderboard, prizePool] = await Promise.all([
+        const [genres, leaderboard, prizePool, userGroups] = await Promise.all([
           fetchGenres({ withCredentials: true }),
           fetchLeaderboard(),
           fetchPrizePool(),
+          fetchUserGroups(),
         ]);
+        console.log("Initial groups fetch:", userGroups.data);
         setAllGenres(genres.data);
         setLeaderboardData(leaderboard.data);
         setPrizePoolData(prizePool.data);
+        const mappedGroups = userGroups.data.map(
+          (group: BackendGroup): Group => ({
+            id: group.id || group.ID || "",
+            name: group.name || group.Name || "",
+            invite_code: group.invite_code || group.InviteCode || "",
+          })
+        );
+        console.log("Mapped initial groups:", mappedGroups);
+        setGroups(mappedGroups);
       } catch (error) {
         console.error("Failed to fetch data", error);
       }
@@ -60,36 +118,82 @@ const Header: React.FC = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const inviteCode = searchParams.get("invite");
+    if (inviteCode && user) {
+      handleJoinGroup(inviteCode);
+      searchParams.delete("invite");
+      setSearchParams(searchParams);
+    }
+  }, [searchParams, user]);
+
   const handleGenreToggle = (genre: string) => {
     setSelectedGenres((prev) =>
       prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
     );
   };
 
+  const handleGroupSelect = (groupId: string | null) => {
+    setSelectedGroup(groupId);
+    // Trigger refetch of sets with new group filter
+    // This should be handled by your data fetching logic
+  };
+
+  const handleCreateGroup = async () => {
+    try {
+      const response = await createGroup(newGroupName);
+      setGroups((prev) => [...prev, response.data]);
+      setNewGroupName("");
+      setIsCreateGroupDialogOpen(false);
+      setSelectedGroupForShare(response.data);
+      setIsShareGroupDialogOpen(true);
+    } catch (error) {
+      console.error("Failed to create group", error);
+    }
+  };
+
+  const handleJoinGroup = async (inviteCode: string) => {
+    try {
+      const response = await joinGroup(inviteCode);
+      console.log("Join group response:", response.data);
+      const backendGroup: BackendGroup = response.data;
+      const newGroup: Group = {
+        id: backendGroup.id || backendGroup.ID || "",
+        name: backendGroup.name || backendGroup.Name || "",
+        invite_code: backendGroup.invite_code || backendGroup.InviteCode || "",
+      };
+      console.log("Mapped group:", newGroup);
+      setGroups((prev) => {
+        console.log("Previous groups:", prev);
+        return [...prev, newGroup];
+      });
+      setSelectedGroup(newGroup.id);
+      setSelectedGroupForShare(newGroup);
+      setIsShareGroupDialogOpen(true);
+    } catch (error) {
+      console.error("Failed to join group", error);
+      setJoinGroupError(
+        "The invite link might be invalid or you're already a member"
+      );
+      setIsJoinErrorDialogOpen(true);
+    }
+  };
+
+  const handleShareGroup = (group: Group) => {
+    setSelectedGroupForShare(group);
+    setIsShareGroupDialogOpen(true);
+  };
+
+  const copyInviteLink = (inviteCode: string) => {
+    const inviteLink = `${window.location.origin}?invite=${inviteCode}`;
+    navigator.clipboard.writeText(inviteLink);
+  };
+
   const handleCancelGenres = () => {
     // Revert to the original genres
     setSelectedGenres(user?.genres || []);
-    setIsDropdownOpen(false);
+    setIsGenresDropdownOpen(false);
   };
-
-  // const handleUsernameChange = async () => {
-  //   if (user) {
-  //     try {
-  //       const response = await axios.patch(
-  //         `${import.meta.env.VITE_BACKEND_URL}/me`,
-  //         {
-  //           username: newUsername,
-  //           genres: user.genres,
-  //         },
-  //         { withCredentials: true }
-  //       );
-  //       setUser({ ...user, username: newUsername });
-  //       console.log("Username updated successfully", response.data);
-  //     } catch (error) {
-  //       console.error("Failed to update username", error);
-  //     }
-  //   }
-  // };
 
   const handleLogout = () => {
     localStorage.removeItem("Authorization");
@@ -109,7 +213,7 @@ const Header: React.FC = () => {
     updateUserGenres(selectedGenres, { withCredentials: true });
 
     // Close the dropdown
-    setIsDropdownOpen(false);
+    setIsGenresDropdownOpen(false);
   };
 
   useEffect(() => {}, [selectedGenres]);
@@ -156,7 +260,7 @@ const Header: React.FC = () => {
                 {/* Genres Button */}
                 <button
                   className="flex items-center bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-sm transition-colors w-full group"
-                  onClick={() => setIsDropdownOpen((prev) => !prev)}
+                  onClick={() => setIsGenresDropdownOpen((prev) => !prev)}
                 >
                   <span className="text-white/90">Genres</span>
                   <div className="flex items-center justify-center ml-2 bg-purple/20 text-purple border border-purple/20 rounded-md px-1.5 text-xs">
@@ -168,8 +272,23 @@ const Header: React.FC = () => {
                   />
                 </button>
 
-                {/* Dropdown Menu */}
-                {isDropdownOpen && (
+                {/* Groups Button */}
+                <button
+                  className="flex items-center bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-sm transition-colors w-full group"
+                  onClick={() => setIsGroupsDropdownOpen((prev) => !prev)}
+                >
+                  <span className="text-white/90">Groups</span>
+                  <div className="flex items-center justify-center ml-2 bg-purple/20 text-purple border border-purple/20 rounded-md px-1.5 text-xs">
+                    {groups.length}
+                  </div>
+                  <ChevronDown
+                    className="ml-auto text-white/50 group-hover:text-white/70"
+                    size={16}
+                  />
+                </button>
+
+                {/* Genres Dropdown */}
+                {isGenresDropdownOpen && (
                   <Card className="absolute z-10 mt-1 left-3 right-3 bg-black/95 backdrop-blur-md border border-white/10 text-white p-3 shadow-lg rounded-lg">
                     <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto">
                       {allGenres.map((genre) => (
@@ -200,6 +319,82 @@ const Header: React.FC = () => {
                       >
                         <Check className="w-4 h-4" />
                       </button>
+                    </div>
+                  </Card>
+                )}
+
+                {/* Groups Dropdown */}
+                {isGroupsDropdownOpen && (
+                  <Card className="absolute z-10 mt-1 left-3 right-3 bg-black/95 backdrop-blur-md border border-white/10 text-white p-3 shadow-lg rounded-lg">
+                    <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto">
+                      <button
+                        className={`py-1.5 px-3 rounded-md text-xs transition-colors ${
+                          selectedGroup === null
+                            ? "bg-purple/20 text-purple border border-purple/20"
+                            : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white/90"
+                        }`}
+                        onClick={() => handleGroupSelect(null)}
+                      >
+                        All Users
+                      </button>
+                      {groups.map((group) => {
+                        console.log("Rendering group:", group);
+                        return (
+                          <div
+                            key={group.id}
+                            className="flex items-center justify-between gap-2"
+                          >
+                            <button
+                              className={`flex-1 py-1.5 px-3 rounded-md text-xs transition-colors ${
+                                selectedGroup === group.id
+                                  ? "bg-purple/20 text-purple border border-purple/20"
+                                  : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white/90"
+                              }`}
+                              onClick={() => handleGroupSelect(group.id)}
+                            >
+                              {group.name || `Group ${group.id.slice(0, 8)}`}
+                            </button>
+                            <button
+                              className="p-1.5 rounded-md hover:bg-white/5 text-white/50 hover:text-white/70 transition-colors"
+                              onClick={() => handleShareGroup(group)}
+                            >
+                              <Share2 size={14} />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="flex justify-between items-center mt-3 border-t border-white/5 pt-3">
+                      <Dialog
+                        open={isCreateGroupDialogOpen}
+                        onOpenChange={setIsCreateGroupDialogOpen}
+                      >
+                        <DialogTrigger asChild>
+                          <button className="flex items-center gap-2 py-1.5 px-3 rounded-md text-xs bg-purple/20 text-purple hover:bg-purple/30 transition-colors">
+                            <Plus className="w-4 h-4" />
+                            Create Group
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-black/95 backdrop-blur-md border border-white/10 text-white">
+                          <DialogHeader>
+                            <DialogTitle>Create New Group</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 mt-4">
+                            <Input
+                              placeholder="Group Name"
+                              value={newGroupName}
+                              onChange={(e) => setNewGroupName(e.target.value)}
+                              className="bg-white/5 border-white/10 text-white"
+                            />
+                            <Button
+                              onClick={handleCreateGroup}
+                              className="w-full bg-purple/20 text-purple hover:bg-purple/30"
+                            >
+                              Create
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </Card>
                 )}
@@ -330,6 +525,66 @@ const Header: React.FC = () => {
           </div>
         </DrawerContent>
       </Drawer>
+
+      {/* Error Dialog */}
+      <Dialog
+        open={isJoinErrorDialogOpen}
+        onOpenChange={setIsJoinErrorDialogOpen}
+      >
+        <DialogContent className="bg-black/95 backdrop-blur-md border border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle>Failed to Join Group</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="text-sm text-white/70">{joinGroupError}</div>
+            <Button
+              onClick={() => setIsJoinErrorDialogOpen(false)}
+              className="w-full bg-purple/20 text-purple hover:bg-purple/30"
+            >
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share Group Dialog */}
+      <Dialog
+        open={isShareGroupDialogOpen}
+        onOpenChange={setIsShareGroupDialogOpen}
+      >
+        <DialogContent className="bg-black/95 backdrop-blur-md border border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedGroup
+                ? "Share Group"
+                : `Joined ${selectedGroupForShare?.name}`}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="text-sm text-white/70">
+              {selectedGroup
+                ? "Share this invite link with others to join your group:"
+                : "You've successfully joined the group. Share it with others:"}
+            </div>
+            <div className="flex items-center gap-2">
+              <Input
+                readOnly
+                value={`${window.location.origin}?invite=${selectedGroupForShare?.invite_code}`}
+                className="bg-white/5 border-white/10 text-white"
+              />
+              <Button
+                onClick={() =>
+                  selectedGroupForShare &&
+                  copyInviteLink(selectedGroupForShare.invite_code)
+                }
+                className="bg-purple/20 text-purple hover:bg-purple/30"
+              >
+                <Copy size={16} />
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

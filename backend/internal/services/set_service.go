@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"time"
 
@@ -30,6 +31,12 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 	setsResp := make([]dto.GetSetResp, 0)
 	user := c.MustGet("user").(*models.User)
 
+	// Parse query parameters
+	var params models.SetQueryParams
+	if err := c.ShouldBindQuery(&params); err != nil {
+		return nil, fmt.Errorf("failed to parse query parameters: %w", err)
+	}
+
 	// Calculate last Monday at 1 AM
 	now := time.Now()
 	offset := int(time.Monday - now.Weekday())
@@ -50,7 +57,22 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 
 	// Get all users and their genres
 	var users []models.User
-	if err := config.DB.Preload("Genres").Find(&users).Error; err != nil {
+	query := config.DB.Preload("Genres")
+
+	// If group filter is applied, only get users from that group
+	if params.GroupID != nil {
+		var group models.Group
+		if err := config.DB.Preload("Users").First(&group, params.GroupID).Error; err != nil {
+			return nil, fmt.Errorf("failed to find group: %w", err)
+		}
+		userIDs := make([]uuid.UUID, len(group.Users))
+		for i, u := range group.Users {
+			userIDs[i] = u.ID
+		}
+		query = query.Where("id IN ?", userIDs)
+	}
+
+	if err := query.Find(&users).Error; err != nil {
 		return nil, err
 	}
 
@@ -138,7 +160,7 @@ func (s *SetService) GetSets(c *gin.Context) ([]dto.GetSetResp, error) {
 				Name:     track.Name,
 				Artist:   track.Artist,
 				Liked:    liked,
-				Likes:    trackLikesCountMap[track.ID], // Total likes for the track
+				Likes:    trackLikesCountMap[track.ID],
 				ImgURL:   track.ImgURL,
 				FilePath: track.FilePath,
 			})

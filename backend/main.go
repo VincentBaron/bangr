@@ -55,6 +55,7 @@ func main() {
 	trackRepository := repositories.NewRepository[models.Track](config.DB)
 	genreRepository := repositories.NewRepository[models.Genre](config.DB)
 	likesRepository := repositories.NewRepository[models.Like](config.DB)
+	groupRepository := repositories.NewRepository[models.Group](config.DB)
 
 	// Initialize services
 	authService := services.NewAuthService(userRepository, genreRepository)
@@ -63,6 +64,7 @@ func main() {
 	userService := services.NewUserService(userRepository, genreRepository)
 	leaderboardService := services.NewLeaderboardService(trackRepository, likesRepository)
 	prizePoolService := services.NewPrizePoolService(userRepository)
+	groupService := services.NewGroupService(groupRepository, userRepository)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
@@ -71,6 +73,7 @@ func main() {
 	userHandler := handlers.NewUserHandler(userService)
 	leaderBoardHandler := handlers.NewLeaderboardHandler(leaderboardService)
 	prizePoolHandler := handlers.NewPrizePoolHandler(prizePoolService)
+	groupHandler := handlers.NewGroupHandler(groupService)
 
 	// Initialize middlewares
 	middleware := middlewares.NewMiddleware(userRepository)
@@ -85,12 +88,17 @@ func main() {
 	r.PUT("/tracks/:id/like", middleware.RequireAuth, setHandler.ToggleLikeTrack)
 	r.GET("/me", middleware.RequireAuth, userHandler.GetMe)
 	r.PATCH("/me", middleware.RequireAuth, userHandler.UpdateMe)
-	r.GET("/genres", middleware.RequireAuth, userHandler.GetGenres)
 	// Get leaderboard
 	r.GET("/leaderboard", middleware.RequireAuth, leaderBoardHandler.GetLeaderboard)
 
 	// Prize Pool routes
 	r.GET("/prize-pool", middleware.RequireAuth, prizePoolHandler.GetPrizePool)
+
+	// Filter routes
+	r.GET("/genres", middleware.RequireAuth, userHandler.GetGenres)
+	r.GET("/groups", middleware.RequireAuth, groupHandler.GetUserGroups)
+	r.POST("/groups", middleware.RequireAuth, groupHandler.CreateGroup)
+	r.POST("/groups/join/:inviteCode", middleware.RequireAuth, groupHandler.JoinGroup)
 
 	// Start the server
 	log.Printf("Server started at http://localhost:8080...")

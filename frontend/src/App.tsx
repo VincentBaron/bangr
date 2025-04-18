@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BrowserRouter } from "react-router-dom";
 import SetsPage from "./pages/SetsPage";
 import { PlayerProvider } from "./context/PlayerContext";
 import Header from "./components/Headers";
@@ -51,37 +52,39 @@ export default function App() {
   }
 
   return (
-    <div>
-      <div className="absolute w-100%">
-        <div className="z-5" id="stars"></div>
-        <div className="z-5" id="stars2"></div>
-        <div className="z-5" id="stars3"></div>
-      </div>
-      <div className="flex min-h-screen w-full flex-col justify-center items-center">
-        {isLoggedIn ? (
-          <UserProvider>
-            <PlayerProvider>
-              <div>
-                <Header />
-                <div className="flex justify-center items-center w-full mt-8">
-                  <SetsPage />
+    <BrowserRouter>
+      <div>
+        <div className="absolute w-100%">
+          <div className="z-5" id="stars"></div>
+          <div className="z-5" id="stars2"></div>
+          <div className="z-5" id="stars3"></div>
+        </div>
+        <div className="flex min-h-screen w-full flex-col justify-center items-center">
+          {isLoggedIn ? (
+            <UserProvider>
+              <PlayerProvider>
+                <div>
+                  <Header />
+                  <div className="flex justify-center items-center w-full mt-8">
+                    <SetsPage />
+                  </div>
                 </div>
-              </div>
-            </PlayerProvider>
-          </UserProvider>
-        ) : !isAuthDialogOpen ? (
-          <WelcomePage
-            onDiscoverMusicClick={handleDiscoverMusicClick}
-            onLoginClick={handleLoginClick}
-          />
-        ) : (
-          <AuthDialog
-            onClose={handleCloseAuthDialog}
-            onSignUp={() => handleSignupClick()}
-            authMode={authMode}
-          />
-        )}
+              </PlayerProvider>
+            </UserProvider>
+          ) : !isAuthDialogOpen ? (
+            <WelcomePage
+              onDiscoverMusicClick={handleDiscoverMusicClick}
+              onLoginClick={handleLoginClick}
+            />
+          ) : (
+            <AuthDialog
+              onClose={handleCloseAuthDialog}
+              onSignUp={() => handleSignupClick()}
+              authMode={authMode}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </BrowserRouter>
   );
 }

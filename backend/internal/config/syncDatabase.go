@@ -11,7 +11,7 @@ func SyncDatabase() {
 	env := os.Getenv("ENVIRONMENT")
 	if env == "development" {
 		log.Println("Running database migrations in development mode...")
-		err := DB.AutoMigrate(&models.User{}, &models.Set{}, &models.SpotifyToken{}, &models.Track{}, &models.Like{}, &models.Genre{})
+		err := DB.AutoMigrate(&models.User{}, &models.Set{}, &models.SpotifyToken{}, &models.Track{}, &models.Like{}, &models.Genre{}, &models.Group{})
 		if err != nil {
 			log.Printf("Error during migration: %v", err)
 		}

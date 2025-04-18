@@ -4,18 +4,19 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Set struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"-"`
-	Name      string    `json:"name"`
-	Link      string    `json:"link"`
-	UserID    uuid.UUID `gorm:"not null" json:"-"`
-	User      User      `json:"user"`
-	Tracks    []Track   `gorm:"many2many:set_tracks;" json:"tracks"`
-	Dummy     bool      `json:"dummy"`
+	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	UserID    uuid.UUID
+	User      User
+	Link      string
+	Tracks    []Track `gorm:"many2many:set_tracks;"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	Dummy     bool
 }
 
 type Track struct {
@@ -42,6 +43,10 @@ type Like struct {
 
 type SetDetails struct {
 	Tracks []Track `json:"tracks"`
+}
+
+type SetQueryParams struct {
+	GroupID *uuid.UUID `form:"group_id"`
 }
 
 type LikeQueryParams struct {
