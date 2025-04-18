@@ -12,6 +12,7 @@ import {
 } from "@/api/api";
 import { Menu, LogOut, CircleX, Check, ChevronDown } from "lucide-react";
 import { FeedbackDialog } from "@/components/FeedbackDialog";
+import { PricingModal } from "@/components/PricingModal";
 
 interface PrizePoolData {
   current_month: number;
@@ -32,6 +33,7 @@ const Header: React.FC = () => {
     next_month: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -117,13 +119,15 @@ const Header: React.FC = () => {
   }
 
   const handleDonate = () => {
-    // redirect to your donate page / modal
-    // redirect
-    window.location.href = "https://buymeacoffee.com/vinnydapinny";
+    setIsPricingModalOpen(true);
   };
 
   return (
     <div className="flex flex-col items-center justify-between">
+      <PricingModal
+        isOpen={isPricingModalOpen}
+        onClose={() => setIsPricingModalOpen(false)}
+      />
       <Drawer
         open={isDrawerOpen}
         onOpenChange={setIsDrawerOpen}
