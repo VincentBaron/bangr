@@ -52,12 +52,30 @@ export default function SpotifyPlaylist({
     }
   };
 
-  if (currentSet.tracks.length === 0) {
+  // Don't render anything for dummy sets
+  if (set.id === "dummy") {
     return null;
   }
 
-  // Don't render anything for dummy sets
-  if (set.id === "dummy") {
+  // Return empty card for user's empty set
+  if (set.id === "user-empty") {
+    return (
+      <div className="w-full flex justify-center px-4">
+        <Card
+          className={cn(
+            "relative bg-black/40 backdrop-blur-md overflow-hidden rounded-xl border border-white/5",
+            "before:absolute before:inset-0 before:bg-gradient-to-tr before:from-purple/5 before:via-transparent before:to-purple/10",
+            "after:absolute after:inset-0 after:bg-gradient-to-bl after:from-purple/5 after:via-transparent after:to-purple/10",
+            "w-80 shrink-0 h-[300px]",
+            className
+          )}
+          {...props}
+        />
+      </div>
+    );
+  }
+
+  if (currentSet.tracks.length === 0) {
     return null;
   }
 

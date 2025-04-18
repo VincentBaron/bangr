@@ -39,20 +39,8 @@ export default function SetsPage() {
           id: "user-empty",
           username: "",
           link: "",
-          tracks: [
-            {
-              id: "empty",
-              title: "You haven't uploaded anything last week 🥲",
-              file_path: "",
-              uri: "",
-              name: "No tracks yet",
-              artist: "",
-              liked: false,
-              likes: 0,
-              img_url: "",
-              duration: 0,
-            },
-          ],
+          tracks: [],
+          profilePicURL: "",
         };
 
         const hasUserSet = fetchedSets.some(
