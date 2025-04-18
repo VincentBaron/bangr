@@ -56,7 +56,7 @@ export default function SetsPage() {
         };
 
         const hasUserSet = fetchedSets.some(
-          (set) => set.username === "Your Bangr's"
+          (set) => set.username === "Your Bangrs 🔥"
         );
         if (!hasUserSet) {
           setSets([emptyUserSet, ...fetchedSets, dummySet]);

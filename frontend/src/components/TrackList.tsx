@@ -87,7 +87,9 @@ export default function SpotifyPlaylist({
             </Avatar>
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-medium text-white/90 truncate">
-                {currentSet.username}'s Bangers
+                {currentSet.username === "Your Bangrs 🔥"
+                  ? "Your Bangrs 🔥"
+                  : `${currentSet.username}'s Bangers`}
               </h3>
             </div>
           </CardHeader>
